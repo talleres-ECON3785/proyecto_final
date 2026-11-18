@@ -1,0 +1,302 @@
+b1_cov	15349	19	hhid14	0	0		
+b1_ks0	15144	26	hhid14	0	0		
+b1_ks1	560328	9	hhid14+ks1type	0	0		ks1type
+b1_ks2	181692	7	hhid14+ks2type	0	0		ks2type
+b1_ks3	105973	9	hhid14+ks3type	0	0		ks3type
+b1_ks4	151350	14	hhid14+ks4type	0	0		ks4type
+b1_ksr1	45402	15	hhid14+ksr3type	0	0		ksr3type
+b1_ksr2	15134	32	hhid14	0	0		
+b1_ksr3	60532	19	hhid14+ksr2type	0	0		ksr2type
+b1_ksr4	30266	12	hhid14+ksr5type	0	0		ksr5type
+b1_pp	181584	16	hhid14+pptype	0	0		pptype
+b1_time	23369	12	hhid14+time_occ	0	0		time_occ
+b2_bh	15185	20	hhid14	0	0		
+b2_cov	15351	20	hhid14	0	0		
+b2_hi	75875	7	hhid14+hitype	0	0		hitype
+b2_hr1	197314	55	hhid14+hrtype	0	0		hrtype
+b2_hr2	91068	9	hhid14+hr2type	0	0		hr2type
+b2_kr	15185	75	hhid14	0	0		
+b2_nd1	15185	8	hhid14	0	0		
+b2_nd2	3435	31	no determinada	0	0		ndtype
+b2_nt1	15185	6	hhid14	0	0		
+b2_nt2	6724	86	hhid14+nt_num	0	0		nt_num|nt07type|nt07atype|nt08type|nt08atype|nt09ctype|nt09etype|nt09gtype|nt09type|nt09btype|nt09dtype|nt09ftype
+b2_time	18854	12	hhid14+time_occ	0	0		time_occ
+b2_ut1	15185	71	hhid14	0	0		
+b2_ut2	2443	36	hhid14	0	1	idrtk	
+b2_ut3	6450	13	hhid14+ut3type	0	1	idrtk	ut3type
+b2_ut4	80766	54	hhid14+uttype	0	0		uttype
+b3a_br1	31142	25	pidlink	0	0		
+b3a_cov	36391	37	pidlink	0	1	stemid	
+b3a_dl1	34464	49	pidlink	0	0		
+b3a_dl2	33588	23	no determinada	0	0		dl2type
+b3a_dl3	27857	25	no determinada	0	0		dl3type
+b3a_dl4	35642	49	pidlink+dl4type	0	0		dl4type
+b3a_dl5	34464	82	pidlink	0	0		
+b3a_hi	158185	9	pidlink+hitype	0	0		hitype
+b3a_hr0	31662	8	pidlink	0	0		
+b3a_hr1	148551	52	pidlink+hr1type	0	0		hr1type
+b3a_hr2	68544	11	pidlink+hr2type	0	0		hr2type
+b3a_kw1	34464	81	pidlink	0	0		
+b3a_kw3	6107	22	pidlink+kwn_num	0	0		kwn_num
+b3a_mg1	33966	110	pidlink	0	0		
+b3a_mg2	19809	32	pidlink+movenum	0	0		movenum
+b3a_pk1	24892	18	pidlink	0	0		
+b3a_pk2	388638	8	pidlink+pk2type	0	0		pk2type
+b3a_pk3	71032	12	pidlink+pk3type	0	0		pk3type
+b3a_pna1	34464	19	pidlink	0	0		
+b3a_pna2	382592	8	pidlink+pnatype	0	0		pnatype
+b3a_re1	27220	66	pidlink	0	0		
+b3a_re2	5703	11	pidlink	0	0		
+b3a_si	31662	29	pidlink	0	2	idrtk;stemid	
+b3a_sw	31662	21	pidlink	0	0		
+b3a_time	53241	14	pidlink+time_occ	0	0		time_occ
+b3a_tk1	34464	44	pidlink	0	0		
+b3a_tk2	24489	147	pidlink	0	0		
+b3a_tk3	209752	16	pidlink+tk28year	0	0		tk28year
+b3a_tk4	29422	55	pidlink	0	0		
+b3a_tr	31662	42	pidlink	0	0		
+b3b_ak1	201391	13	pidlink+aktype	0	0		aktype
+b3b_ak2	82681	14	pidlink+ak2type	0	0		ak2type
+b3b_ba0	68428	42	no determinada	0	0		
+b3b_ba1	17643	63	pidlink	0	0		
+b3b_ba4	34214	39	pidlink	0	0		
+b3b_ba6	29558	52	pidlink+ba63a	0	0		ba63a
+b3b_cd1	34258	9	pidlink	0	0		
+b3b_cd2	239806	14	pidlink+cd01type	0	0		cd01type
+b3b_cd3	548112	24	pidlink+cdtype	0	0		cdtype
+b3b_co1	31471	51	pidlink	0	0		
+b3b_cob	31409	62	pidlink	0	0		
+b3b_cov	36380	32	pidlink	0	0		
+b3b_eh	31471	15	pidlink	0	0		
+b3b_ep1	31471	12	pidlink	0	0		
+b3b_ep2	13206	22	pidlink+ep05	0	0		ep05|ep06
+b3b_fm1	31471	7	pidlink	0	0		
+b3b_fm2	534072	9	pidlink+fmtype	0	0		fmtype
+b3b_kk1	34271	15	pidlink	0	0		
+b3b_kk2	94389	11	pidlink+kktype	0	0		kktype
+b3b_kk3	787957	9	pidlink+kk3type	0	0		kk3type
+b3b_kk4	34259	40	pidlink	0	0		kk1type
+b3b_km	34271	42	pidlink	0	0		
+b3b_kp	314470	8	pidlink+kptype	0	0		kptype
+b3b_ma1	34271	28	pidlink	0	0		
+b3b_ma2	719058	8	pidlink+matype	0	0		matype
+b3b_pm1	34271	41	pidlink	0	0		pm1type
+b3b_pm2	533966	10	pidlink+pm3type	0	0		pm3type
+b3b_ps	157090	10	pidlink+pstype	0	0		pstype
+b3b_psn	471690	8	pidlink+psntype	0	0		psntype
+b3b_rj0	34271	36	pidlink	0	0		
+b3b_rj1	55656	10	pidlink+rjtype	0	0		rjtype
+b3b_rj2	31421	60	pidlink	0	0		
+b3b_rj3	219940	10	pidlink+rj24type	0	0		rj24type
+b3b_rn1	34271	34	pidlink	0	0		
+b3b_rn2	8360	10	pidlink+rn1type	0	0		rn1type
+b3b_sa	31471	22	pidlink	0	0		
+b3b_tdr	314710	9	pidlink+tdrtype	0	1	idrtk	tdrtype
+b3b_tf	136828	35	pidlink+tftype	0	0		tftype
+b3b_time	47945	14	pidlink+time_occ	0	0		time_occ
+b4_ba6	18619	56	pidlink+ba63a	0	0		ba63a
+b4_bf	12188	21	pidlink	0	0		
+b4_br	12474	30	pidlink	0	0		
+b4_bx6	2126	55	no determinada	0	1	bxar00	
+b4_ch0	12474	27	pidlink	0	0		
+b4_ch1	14958	139	pidlink+ch05	0	0		ch05
+b4_cov	13058	28	pidlink	0	0		
+b4_cx1	106120	12	pidlink+cxtype	0	0		cxtype
+b4_cx2	12474	56	pidlink	0	0		
+b4_ep1	12188	10	pidlink	0	0		
+b4_ep2	14894	23	pidlink+ep05	0	1	ep06	ep05|ep06
+b4_kw2	12188	82	pidlink	0	0		
+b4_kw3	5884	22	pidlink+kwn_num	0	0		kwn_num
+b4_time	15626	14	pidlink+time_occ	0	0		time_occ
+b5_baa	31484	17	pidlink+baatype	0	1	baatype	baatype
+b5_cov	16196	28	pidlink	0	0		
+b5_dla1	15742	29	pidlink	0	0		
+b5_dla2	10838	105	pidlink+dlatype	0	0		dlatype
+b5_dla3	15742	85	pidlink	0	0		
+b5_dla6	40440	19	pidlink+dla2type	0	0		dla2type
+b5_fma1	15742	8	pidlink	0	0		
+b5_fma2	258740	9	pidlink+fmatype	0	0		fmatype
+b5_maa1	15742	18	pidlink	0	0		
+b5_maa2	314780	8	pidlink+maatype	0	0		maatype
+b5_psa	78695	10	pidlink+psatype	0	0		psatype
+b5_rja0	15742	22	pidlink	0	0		
+b5_rja1	24864	15	pidlink+rja1type	0	2	idrtk;stemid	rja1type
+b5_rja2	15742	51	pidlink	0	0		
+b5_rja3	15742	66	pidlink	0	0		
+b5_rna1	3798	11	pidlink+rna1type	0	0		rna1type
+b5_rna2	15742	35	pidlink	0	0		
+b5_time	20571	14	pidlink+time_occ	0	0		time_occ
+bk_ar0	15921	11	hhid14	0	0		
+bk_ar1	89382	57	hhid14+pid14	0	0		
+bk_cov	15921	19	hhid14	0	0		
+bk_krk	15921	19	hhid14	0	0		
+bk_sc1	15921	15	hhid14	0	0		
+bk_time	18968	12	hhid14+time_occ	0	0		time_occ
+bt_cov	18277	11	hhid14	0	0		
+bt_time	24453	13	no determinada	0	0		time_occ
+bus_cov	52580	22	pidlink	0	0		
+bus_time	55036	14	pidlink+time_occ	0	0		time_occ
+bus_us	48139	143	pidlink	0	0		
+dbs_ifls4_public_use	7579	19	hhid14+pid14	0	0		
+dbs_ifls5_public_use	7579	19	hhid14+pid14	0	0		
+ek_ek1	14943	86	pidlink	0	0		ektype|resptype
+ek_ek2	36380	86	pidlink	0	0		ektype|resptype
+ek_time1	15052	17	no determinada	0	0		ektype
+ek_time2	36657	17	no determinada	0	0		ektype
+fe_1	2652	70	pidlink	0	2	idrtfe;idrtk	
+fe_2	26520	17	pidlink+ef1type	0	0		ef1type
+fe_34	4962	13	no determinada	0	1	idrtfe	
+fe_cov	2687	18	pidlink	0	0		
+fe_time	2925	14	pidlink+time_occ	0	0		time_occ
+htrack	19401	123	no determinada	0	0		
+ptrack	83780	131	no determinada	0	0		
+bk1	320	465	no determinada	0	2	ea;idw	
+bk1_a1	2488	10	commid14+atype	0	2	ea;idw	atype
+bk1_b	1866	11	commid14+btype	0	2	ea;idw	btype
+bk1_c1	4043	5	commid14+c0	0	2	ea;idw	c0
+bk1_c2	3421	5	commid14+c16a	0	2	ea;idw	c16a
+bk1_c3	2799	5	commid14+c18a	0	2	ea;idw	c18a
+bk1_d1	588	8	commid14+d1type	0	2	ea;idw	d1type
+bk1_d1a	428	7	commid14+d8atype	0	2	ea;idw	d8atype
+bk1_d2	1060	12	commid14+d2type	0	2	ea;idw	d2type
+bk1_d3	614	11	commid14+d3type	0	2	ea;idw	d3type
+bk1_d4	611	16	commid14+d4type	0	1	ea	d4type
+bk1_e1	18	14	commid14	0	2	ea;idw	e1type
+bk1_e2	537	9	commid14+e10evt	0	2	ea;idw	e10evt
+bk1_f1	2488	9	commid14+f1type	0	2	ea;idw	f1type
+bk1_f2	2160	11	commid14+f2type	0	2	ea;idw	f2type
+bk1_g	3110	8	commid14+gtype	0	2	ea;idw	gtype
+bk1_ir	2488	15	commid14+irtype	0	2	ea;idw	irtype
+bk1_pap0	311	145	commid14	0	2	ea;idw	
+bk1_pap1	6220	16	commid14+pap1type	0	2	ea;idw	pap1type
+bk1_pmkd	5598	10	commid14+pmkdtype	0	2	ea;idw	pmkdtype
+bk1_tr	2177	9	commid14+trtype	0	2	ea;idw	trtype
+bk1a_cov	320	13	no determinada	0	2	ea;idw	
+bk1a_time	937	15	no determinada	0	2	ea;idw	
+bk1b_cov	320	15	no determinada	0	3	ea;idw;eabk1	
+bk1b_time	912	11	no determinada	0	2	ea;idw	
+bk1c_cov	320	16	no determinada	0	3	ea;idw;eabk1	
+bk1c_time	652	11	no determinada	0	2	ea;idw	
+bk2	320	145	no determinada	0	3	ea;idw;eabk2	
+bk2_ka3	336	10	commid14+ka3type	0	3	ea;idw;eabk2	ka3type
+bk2_ka4	880	10	commid14+ka4type	0	3	ea;idw;eabk2	ka4type
+bk2_lu1	3110	6	commid14+s38type	0	3	ea;idw;eabk2	s38type
+bk2_pl	1244	14	commid14+ka1type	0	3	ea;idw;eabk2	ka1type
+bk2_st	3421	6	commid14+s1type	0	3	ea;idw;eabk2	s1type
+bk2_time	544	12	no determinada	0	3	ea;idw;eabk2	
+hin	320	21	fascode	0	3	ea;fascode;idw	fascode
+hin_h	13440	10	fascode+htype	0	3	ea;fascode;idw	fascode|htype
+hin_time	356	12	no determinada	0	3	ea;fascode;idw	fascode
+hps	675	19	no determinada	0	2	ea;idw	fascode
+hps_h	12800	10	fascode+htype	0	2	ea;idw	fascode|htype
+hps_hour	2240	9	fascode+day	0	2	ea;idw	fascode|day
+hps_time	380	12	no determinada	0	2	ea;idw	fascode
+htw	640	16	fascode	0	2	ea;idw	fascode
+htw_h	16640	10	fascode+htype	0	2	ea;idw	fascode|htype
+htw_hour	4480	9	fascode+day	0	2	ea;idw	fascode|day
+htw_time	710	29	no determinada	0	2	ea;idw	fascode
+inf	640	107	fascode	0	2	ea;idw	fascode
+inf_pap0	622	110	fascode	0	2	ea;idw	fascode
+inf_pap1	12420	18	fascode+pap1type	0	2	ea;idw	fascode|pap1type
+inf_time	1901	12	no determinada	0	2	ea;idw	fascode
+inf_tr1	4354	10	fascode+trtype	0	2	ea;idw	fascode|trtype
+mkd_cov	4032	19	mkid14	0	0		
+mkd_ir	9324	15	no determinada	0	0		
+mkd_ir2	4023	14	mkid14	0	0		
+mkd_km1	4023	116	mkid14	0	0		
+mkd_km2	40220	5	no determinada	0	0		
+mkd_km3	24132	6	mkid14+jtype	0	0		jtype
+mkd_km4	32176	10	mkid14+ftype	0	0		ftype
+mkd_km5	28154	9	mkid14+hpj3type	0	0		hpj3type
+mkd_km6	28154	9	mkid14+trtype	0	0		trtype
+mkd_pap	80440	17	mkid14+pap1type	0	0		pap1type
+mkd_time	6779	8	mkid14+time_occ	0	0		time_occ
+pkk	320	130	no determinada	0	2	ea;idw	
+pkk_i	1236	5	commid14+itype	0	1	ea	itype
+pkk_j	2163	5	commid14+j26type	0	1	ea	j26type
+pkk_j1	1280	6	commid14+j25type	0	1	ea	j25type
+pkk_ksr	1236	12	commid14+ksr2type	0	1	ea	ksr2type
+pkk_lk	309	9	commid14	0	1	ea	
+pkk_pm	5562	9	commid14+pmtype	0	1	ea	pmtype
+pkk_time	519	11	no determinada	0	1	ea	
+pls_b1	8910	6	no determinada	0	3	ea;fascode;idw	fascode|b1type
+pls_c1	2669	14	no determinada	0	3	ea;fascode;idw	fascode|cadrenum
+pls_d1	4950	7	no determinada	0	3	ea;fascode;idw	fascode|dtype
+pls_sdp	2094	11	no determinada	0	3	ea;fascode;idw	fascode
+pls_time	732	12	no determinada	0	3	ea;fascode;idw	fascode
+pos	709	148	commid14+fcode14	0	3	ea;fascode;idw	fascode
+pos_b1	6380	13	fcode14+b1type	0	3	ea;fascode;idw	fascode|b1type
+pos_b2	3190	12	fcode14+b2type	0	3	ea;fascode;idw	fascode|b2type
+pos_c0	3688	16	fcode14+cadrenum	0	3	ea;fascode;idw	fascode|cadrenum
+pos_c2	3828	10	no determinada	0	3	ea;fascode;idw	fascode
+pos_d1	11484	11	no determinada	0	3	ea;fascode;idw	fascode
+pos_prp1	288	10	fcode14+prptype	0	4	ea;fascode;idw;prptype	fascode|prptype
+pos_sdp1	1780	13	no determinada	0	3	ea;fascode;idw	fascode
+pos_time	853	14	no determinada	0	3	ea;fascode;idw	fascode
+pra	3529	146	no determinada	0	2	ea;idw	fascode
+pra_a1	15980	9	no determinada	0	2	ea;idw	fascode|atype
+pra_b1	11186	15	no determinada	0	2	ea;idw	fascode|b1type
+pra_b2	83096	13	no determinada	0	2	ea;idw	fascode|b2type
+pra_b3	6392	25	no determinada	0	2	ea;idw	fascode|b3type
+pra_b4	19164	12	no determinada	0	2	ea;idw	fascode|b4type
+pra_b5	5268	9	no determinada	0	2	ea;idw	fascode|b5type
+pra_b6	11165	9	no determinada	0	2	ea;idw	fascode|b6type
+pra_b7	2328	9	fcode14+b7type	0	3	ea;fascode;idw	fascode|b7type
+pra_b8	14382	8	no determinada	0	2	ea;idw	fascode|b8type
+pra_c1	51136	8	no determinada	0	2	ea;idw	fascode|c1type
+pra_c2	30362	9	no determinada	0	2	ea;idw	fascode|c2type
+pra_ph1	1598	8	no determinada	0	2	ea;idw	fascode
+pra_ph2	47580	14	no determinada	0	2	ea;idw	fascode|phtype
+pra_time	5109	14	no determinada	0	2	ea;idw	fascode
+pra_vig	1598	310	no determinada	0	2	ea;idw	fascode
+pusk	961	395	no determinada	0	3	ea;fascode;idw	fascode
+pusk_a1	10560	9	no determinada	0	3	ea;fascode;idw	fascode|atype
+pusk_akm1	7168	9	no determinada	0	3	ea;fascode;idw	fascode|akm1type
+pusk_akm2	7256	9	no determinada	0	3	ea;fascode;idw	fascode|akm2type
+pusk_c0	5760	15	no determinada	0	3	ea;fascode;idw	fascode
+pusk_c1	72000	15	no determinada	0	3	ea;fascode;idw	fascode|c1type
+pusk_c2	2880	19	no determinada	0	3	ea;fascode;idw	fascode|c2type
+pusk_c3	12480	13	no determinada	0	3	ea;fascode;idw	fascode|c3type
+pusk_c4	5754	13	no determinada	0	3	ea;fascode;idw	fascode|c4type
+pusk_d1	3840	9	no determinada	0	3	ea;fascode;idw	fascode|d1type
+pusk_d2	5432	9	no determinada	0	3	ea;fascode;idw	fascode|d2type
+pusk_d3	17493	22	no determinada	0	3	ea;fascode;idw	fascode|d3type
+pusk_dm1	9600	12	no determinada	0	3	ea;fascode;idw	fascode|dm1type
+pusk_dm2	7680	9	no determinada	0	3	ea;fascode;idw	fascode|dm2type
+pusk_e1	27840	9	no determinada	0	3	ea;fascode;idw	fascode|e1type
+pusk_e2	15360	9	no determinada	0	3	ea;fascode;idw	fascode|e2type
+pusk_g1	5742	10	no determinada	0	3	ea;fascode;idw	fascode|g1type
+pusk_vig	960	309	no determinada	0	3	ea;fascode;idw	fascode
+puska_cov	1271	20	no determinada	0	3	ea;fascode;idw	fascode
+puska_time	2437	14	no determinada	0	3	ea;fascode;idw	fascode
+puskb_cov	1271	17	no determinada	0	3	ea;fascode;idw	fascode
+puskb_time	1699	14	no determinada	0	3	ea;fascode;idw	fascode
+puskc_cov	1271	17	no determinada	0	3	ea;fascode;idw	fascode
+puskc_time	2471	14	no determinada	0	3	ea;fascode;idw	fascode
+sar	60522	35	no determinada	0	2	ea;idw	fascode|bdkf_type
+sar_cov	320	20	no determinada	0	1	idw	bdkf_type
+scha_time	5608	13	no determinada	0	2	ea;idw	fascode
+schb_cov	2854	18	no determinada	0	2	ea;idw	fascode
+schb_time	3468	13	no determinada	0	2	ea;idw	fascode
+schc_cov	2854	17	no determinada	0	1	ea	fascode
+schc_f2	60775	12	no determinada	0	1	idw	fascode
+schc_time	3754	13	no determinada	0	2	ea;idw	fascode
+schd_cov	2854	17	no determinada	0	1	ea	fascode
+schd_d1	2560	44	fcode14	0	2	ea;idw	fascode
+schd_time	3458	9	no determinada	0	2	ea;idw	fascode
+schl	2668	485	no determinada	0	1	ea	fascode
+schl_a1	7680	15	fcode14+a1type	0	2	ea;idw	fascode|a1type
+schl_a2	702	8	fcode14+a2type	0	3	ea;fascode;idw	fascode|a2type
+schl_b10	38400	8	fcode14+b10type	0	2	ea;idw	fascode|b10type
+schl_b2	1080	9	fcode14+b2type	0	2	ea;idw	fascode|b2type
+schl_b3	58880	8	fcode14+b3type	0	2	ea;idw	fascode|b3type
+schl_b5	12800	15	fcode14+b5type	0	2	ea;idw	fascode|b5type
+schl_c1	7677	15	fcode14+c1type	0	2	ea;idw	fascode|c1type
+schl_d1	5760	10	fcode14+d1type	0	2	ea;idw	fascode|d1type
+schl_d2	4800	10	fcode14+d2type	0	2	ea;idw	fascode|d2type
+schl_e	53760	8	fcode14+etype	0	2	ea;idw	fascode|etype
+schl_g1	5760	10	fcode14+prmgrd	0	2	ea;idw	fascode|prmgrd
+schl_g2	4800	10	fcode14+scdgrade	0	2	ea;idw	fascode|scdgrade
+schl_g3	15360	11	no determinada	0	2	ea;idw	fascode
+tra	4717	201	commid14+fcode14+b1type	0	3	ea;fascode;idw	fascode|b1type
+tra_time	948	14	no determinada	0	3	ea;fascode;idw	fascode

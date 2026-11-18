@@ -1,0 +1,45 @@
+# --- R y sistema --------------------------------------------------------------
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+__pycache__/
+*.pyc
+~$*
+
+# --- Datos de la IFLS (licencia RAND: prohibido redistribuirlos) --------------
+# El repositorio es PÚBLICO. Los microdatos y todo lo que se derive de ellos a
+# nivel de persona, hogar o comunidad viven en la copia local de cada
+# integrante y nunca se suben. Ver 01_Datos/README.md (descarga) y
+# 01_Datos/CLAUDE.md (reglas de manejo).
+
+# Crudos: se ignora todo menos las guías .md y los scripts/tablas de revisión
+01_Datos/01_Crudos/**
+!01_Datos/01_Crudos/**/
+!01_Datos/01_Crudos/**/*.md
+!01_Datos/01_Crudos/**/_revision/*.py
+!01_Datos/01_Crudos/**/_revision/*.tsv
+!01_Datos/01_Crudos/.gitkeep
+
+# Procesados y listos: son microdatos derivados; solo se versiona la carpeta
+01_Datos/02_Procesados/*
+!01_Datos/02_Procesados/.gitkeep
+01_Datos/03_Listos/*
+!01_Datos/03_Listos/.gitkeep
+
+# Por si alguien guarda una base fuera de 01_Datos/
+*.dta
+*.sav
+*.rds
+*.Rds
+*.RDS
+
+# --- Material con derechos de terceros ----------------------------------------
+# Los PDF de los artículos y las presentaciones de referencia se guardan
+# localmente; el README de cada carpeta dice cómo conseguirlos
+07_Recursos/Articulos/*.pdf
+07_Recursos/Insumos/*.pdf
+
+# --- Registro crudo (.jsonl) de las conversaciones con los agentes ------------
+09_Conversaciones/

@@ -1,0 +1,129 @@
+# =============================================================================
+# Formato compartido de las graficas del proyecto
+# Proyecto final - ECON-3785 (IFLS, precio del arroz 1997-98)
+# Copiado del Taller 2 el 2026-11-18 para que las figuras sigan la misma familia
+#
+# Este script NO genera figuras: solo define la paleta, el tema y los
+# parametros de exportacion que deben usar TODAS las graficas del proyecto.
+# Se creo para que el formato deje de estar copiado en cada script (y por
+# lo tanto no se pueda desincronizar entre ellos).
+#
+# Uso: al inicio de cualquier script que produzca figuras,
+#   source("02_Scripts/00_formato_graficas.R")
+# y despues construir cada grafica con `tema_presentacion` (mas
+# `tema_paneles` si usa facetas) y guardarla con `guardar_figura()`.
+#
+# =============================================================================
+
+# los paquetes los carga 00_main.R con pacman
+
+# -----------------------------------------------------------------------------
+# 1. Paleta categorica
+# -----------------------------------------------------------------------------
+
+# paleta categorica sobria del proyecto: tonos desaturados de azul, ocre y
+# verde-azulado, validados para diferenciarse entre si (incluyendo daltonismo)
+# a pesar del bajo croma. Se reutiliza la misma terna en todas las graficas
+# del proyecto para mantener una identidad visual unica y consistente
+paleta_categorica <- c(
+  "#2B5FA3", # azul
+  "#B8863B", # ocre
+  "#0E8A6C"  # verde-azulado
+)
+
+# grises de apoyo: texto principal, texto secundario / lineas de referencia,
+# notas al pie y lineas de la grilla. No son categorias, son estructura
+gris_texto      <- "#0b0b0b"
+gris_secundario <- "#52514e"
+gris_nota       <- "#898781"
+gris_grilla     <- "#e1e0d9"
+
+# -----------------------------------------------------------------------------
+# 2. Subtitulos por tipo de afirmacion
+# -----------------------------------------------------------------------------
+
+# cada grafica declara en su subtitulo que tipo de afirmacion sostiene. Todas
+# las figuras salen de la IFLS (RAND); lo que cambia es el alcance:
+#   - descriptivo: medias, distribuciones, desgaste. No es un efecto.
+#   - contraste: comunidades con mayor frente a menor alza del precio del
+#     arroz 1997-2000 (CLAUDE.md, "Conclusiones sustantivas" 2). Es causal
+#     bajo los supuestos del diseno, no el efecto de "la crisis".
+#   - placebo: cohortes o periodos donde el efecto deberia ser cero.
+subtitulo_descriptivo <- paste(
+  "Indonesia Family Life Survey (RAND).",
+  "Diferencias descriptivas, no causales."
+)
+subtitulo_contraste <- paste(
+  "IFLS. Comunidades con mayor frente a menor alza del precio del arroz,",
+  "1997-2000."
+)
+subtitulo_placebo <- paste(
+  "IFLS. Prueba placebo: grupos que no deberian mostrar efecto."
+)
+
+# -----------------------------------------------------------------------------
+# 3. Tema
+# -----------------------------------------------------------------------------
+
+# tema compartido por todas las graficas del proyecto, para mantener la misma
+# estetica en todos los exports de la presentacion
+tema_presentacion <- theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = gris_texto),
+    plot.subtitle = element_text(
+      color = gris_secundario, size = 11, margin = margin(b = 10)
+    ),
+    plot.caption = element_text(
+      color = gris_nota, size = 8.5, hjust = 0, margin = margin(t = 10)
+    ),
+    axis.text.x = element_text(size = 12, color = gris_texto, face = "bold"),
+    axis.text.y = element_text(color = gris_secundario),
+    axis.title.y = element_text(color = gris_secundario),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(color = gris_grilla, linewidth = 0.4)
+  )
+
+# complemento para las graficas con facetas: el titulo de cada panel hace de
+# etiqueta de la categoria, asi que va en negrita y sin caja de fondo
+tema_paneles <- theme(
+  strip.background = element_blank(),
+  strip.text = element_text(face = "bold", size = 12, color = gris_texto)
+)
+
+# -----------------------------------------------------------------------------
+# 4. Exportacion
+# -----------------------------------------------------------------------------
+
+# todas las figuras se exportan con el mismo tamano y resolucion para que se
+# vean homogeneas al insertarlas en la presentacion. El fondo blanco es
+# explicito porque ggplot lo deja transparente por defecto y eso se ve mal
+# sobre el fondo de una diapositiva.
+# Cada script guarda sus figuras en su propia subcarpeta:
+# 03_Resultados/Figuras/<script>/<muestra>_<contenido>.png, donde <script> es el
+# nombre del script sin '.R' (p. ej. '02_precio_arroz') y
+# <muestra> es la muestra o el resultado (p. ej. 'escolaridad', 'haz',
+# 'comunidades'). `carpeta` es ese <script>; la subcarpeta debe
+# estar en `carpetas_salida` de 00_main.R (esta funcion no crea carpetas).
+guardar_figura <- function(nombre_archivo, grafica, carpeta,
+                           width = 9, height = 6, dpi = 300) {
+  ggsave(
+    file.path("03_Resultados/Figuras", carpeta, nombre_archivo),
+    grafica,
+    width = width, height = height, dpi = dpi, bg = "white"
+  )
+}
+
+# version de `guardar_figura()` para las figuras que se dibujan con graficos
+# base de R (p. ej. el arbol de `rpart.plot`), que `ggsave()` no puede guardar.
+# `dibujar` es una funcion sin argumentos que hace la figura; se exporta con el
+# mismo tamano, resolucion y fondo blanco que las demas. Tampoco crea carpetas
+guardar_figura_base <- function(nombre_archivo, dibujar, carpeta,
+                                width = 9, height = 6, dpi = 300) {
+  png(
+    file.path("03_Resultados/Figuras", carpeta, nombre_archivo),
+    width = width, height = height, units = "in", res = dpi, bg = "white"
+  )
+  on.exit(dev.off(), add = TRUE)
+  dibujar()
+}
