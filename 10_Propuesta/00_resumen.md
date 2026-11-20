@@ -13,6 +13,7 @@ Con la IFLS, replicar el efecto promedio del alza del precio del arroz de 1997-9
 | Alcance | **Solo estatura.** Fuera, por ahora, la escolaridad 2014 (antes resultado primario), la cognición, la estatura adulta y la salud mental. Decisión del equipo |
 | Arco | Tres preguntas: ¿dolió? (`feols`), ¿a quién? (GATE pre-declarados con puntajes AIPW del bosque y Holm), ¿el bosque supera a las reglas simples? (calibración y RATE) |
 | Tratamiento | Cuatro versiones: T1 réplica E-Q (cambio **proporcional**, no Δlog; todas las fuentes), T2 dosis limpia (principal), T3 cuartiles, T4 terciles para el bosque (`PLAN.md` H1) |
+| Precio | Principal: solo fuentes presentes en 1997 y 2000 (posyandu + `bk2_hpj`), cambio proporcional nominal. El suplemento de E-Q no dice qué usaron en 2000 ni agrupa los errores por comunidad (`PLAN.md` H1) |
 | Réplica | Con `feols` (panel con EF individuales ≡ primeras diferencias). La pendiente promedio de `grf` continuo es otro estimando: solo una fila de robustez |
 | No linealidad | Nueva: cuartiles del alza y spline con `feols`. No con bosques (suponen un efecto lineal en W dado x) |
 | Validación | Placebo de tendencias previas con la cohorte de 0-5 años en 1993; desgaste según el alza; errores agrupados por provincia como robustez |
@@ -46,6 +47,6 @@ Con la IFLS, replicar el efecto promedio del alza del precio del arroz de 1997-9
 ## Qué no está verificado
 
 - Ningún número sale de estimaciones propias.
-- El apéndice de E-Q (controles, deflactor, agrupamiento de errores) no se ha revisado.
+- Qué fuente de precio usan E-Q en 2000 (ni el artículo ni el suplemento lo dicen) y en qué ola miden los programas que usan como controles.
 - La simulación sobre la potencia usa datos inventados y una sola semilla.
 - Que haya suficiente cohorte de 0-5 años en 1993 con talla en 1993 y 1997 para el placebo.

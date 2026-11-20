@@ -214,8 +214,11 @@ los talleres (nombre + primer apellido + inicial del segundo):
    causales para este choque. Decir «hasta donde revisamos».
 6. **Hipótesis de heterogeneidad H1-H9** (`10_Propuesta/04` §4): se fijan por
    escrito antes de correr el bosque. Pregunta concreta: ¿el bosque recupera,
-   sin escogerlos a mano, los subgrupos de E-Q para la talla (urbano, madre con
-   primaria o menos, varones)? Con unos cientos de comunidades, los GATE
+   sin escogerlos a mano, los subgrupos de E-Q para la talla? En su cuadro A4
+   (suplemento; EE robustos sin agrupar, sin corregir por comparaciones
+   múltiples) solo dos interacciones son significativas, y al 10 %: urbano
+   −0,270 (0,153) y madre con educación alta +0,129 (0,075). Varones y pobres no
+   lo son: mujer +0,099 (0,073), pobre +0,216 (0,180). Con unos cientos de comunidades, los GATE
    pre-declarados tienen mucha más potencia que la búsqueda del bosque (una
    simulación con datos inventados del 20-nov no pasó `test_calibration` aun con
    heterogeneidad grande); hay que preparar la lámina del nulo.
@@ -361,6 +364,7 @@ et al. (2004) usa datos de Java rural, no la IFLS.
 | 2026-11-18 | Los PDF de artículos (`07_Recursos/Articulos/`) e insumos de terceros (`07_Recursos/Insumos/`) se guardan solo en local | Derechos de autor en un repositorio público |
 | 2026-11-20 | **Alcance: solo estatura** (ΔHAZ 1997-2000, cohorte 0-5). Se descartan por ahora la escolaridad 2014, la cognición y la salud mental. Presentación en tres preguntas: ¿dolió?, ¿a quién?, ¿el bosque supera a las reglas simples? | Decisión del equipo: 20 minutos que deben quedar pulidos y defendibles sin abarcar de más |
 | 2026-11-20 | Tratamiento en cuatro versiones: T1 réplica E-Q (cambio proporcional, todas las fuentes, nominal); T2 dosis limpia, principal (fuentes comunes 1997-2000, calidad media, kg, winsorizada p1/p99); T3 cuartiles de T2; T4 terciles de T2, alto frente a bajo sin el medio, para el bosque. Terciles nacionales o dentro de provincia según la prueba 1 (pendiente) | E-Q usan cambio proporcional, no Δlog (p. 5); el PKK no trae precios en 2000; cola de +729 %; RATE nativo exige W binario. Recomendación de la sesión de Santiago tras evaluarla con un consejo de cinco asesores; **confirmar con el equipo** |
+| 2026-11-20 | **Precio:** el tratamiento principal usa solo las fuentes presentes en 1997 y 2000 (posyandu + `bk2_hpj`), con cambio proporcional **nominal**. El PKK de 1997 entra solo en T1 (réplica aproximada). El deflactor de E-Q queda como extensión opcional. Errores robustos y agrupados, uno al lado del otro, en la réplica; los programas de la red de seguridad social, solo en la columna de réplica | El suplemento de E-Q no dice qué fuente usaron en 2000 ni agrupa por comunidad. Con un deflactor común, el cambio real solo reescala β. Decisión de Santiago en la sesión del 20-nov (`PLAN.md` H1); informar al equipo |
 | 2026-11-20 | El ATE se replica con `feols` (panel con EF individuales ≡ primeras diferencias); la pendiente promedio del bosque solo como fila de robustez. La no linealidad se estudia con `feols` (cuartiles y spline), no con bosques | El estimando de `grf` continuo no es el β MCO de E-Q, y el bosque supone efecto lineal en W dado x. Recomendación; **confirmar con el equipo** |
 
 ## 12. Análisis descartados

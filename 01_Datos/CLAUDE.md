@@ -198,7 +198,9 @@ S §11), ninguna es definitiva. Cuando se aprueben, se registran aquí y en
 Recomendaciones vigentes (pendientes de aprobación): unidad `commid97` (312);
 tratamiento por residencia en 1997 (fuera los 894 hogares sin `commid97`); dos
 construcciones del precio (principal: mediana de fuentes comunes 1997-2000,
-calidad media, kg, Δlog winsorizado p1/p99; réplica E-Q); indicador de
+posyandu + `bk2_hpj`, calidad media, kg, cambio proporcional nominal
+winsorizado p1/p99, no Δlog; réplica E-Q aproximada con todas las fuentes de
+cada año; registrado el 20-nov en `CLAUDE.md` §11 y `PLAN.md` H1); indicador de
 entrevista en 1998; sin pesos en lo principal; posición neta en arroz desde
 `b1_ks1` 1997; agregado de gasto propio de 1997; cohorte no expuesta de 22-30
 años en 1997.

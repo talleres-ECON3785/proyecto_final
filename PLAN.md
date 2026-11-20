@@ -89,8 +89,32 @@ es un resultado útil.
   Con dos olas equivale a regresar ΔHAZ sobre `C_j` y X de 1997. HAZ con
   estándares OMS (p. 2).
 - **Para replicar:** en 2000 el libro PKK no trae precios, así que el promedio de
-  E-Q cambia de fuentes entre años. La cola de +729 % puede mover β. El texto no
-  dice si agrupan los errores por comunidad.
+  E-Q cambia de fuentes entre años. Ni el artículo ni el suplemento dicen qué
+  usaron en 2000 (PL.3 abierta). La cola de +729 % puede mover β.
+- **Del suplemento** (leído el 20-nov; detalle en
+  `07_Recursos/Articulos/00_hallazgos_articulos.md` §1):
+  - errores robustos, **sin agrupar por comunidad**;
+  - lista completa de controles del cuadro A1, que incluye cinco programas de la
+    red de seguridad social (desde 1998), probablemente posteriores al
+    tratamiento;
+  - 3.338 observaciones de HAZ, frente a los 2.112 niños del cuadro 1 (sin
+    explicar);
+  - deflactor por hogar con el IPC mensual del BPS, que no viene en la IFLS.
+
+### Construcción del precio (registrada el 20-nov)
+
+- **Fuentes:** el tratamiento principal usa solo las fuentes presentes en 1997 y
+  en 2000, el posyandu (`pos_h`) y tiendas y mercados (`bk2_hpj`). Así el cambio
+  no mezcla el alza con el cambio de fuentes. El PKK de 1997 entra solo en T1.
+- **Escala:** cambio proporcional `(P2000 − P1997) / P1997` (1 = +100 %), como
+  E-Q (p. 5); no Δlog ni diferencia en Rp.
+- **Nominal:** con un deflactor común, el cambio real es una transformación
+  lineal del nominal (β_real ≈ β_nominal × D), así que no cambia la variación
+  entre comunidades que identifica β. El deflactor de E-Q queda como extensión
+  opcional (exige conseguir el IPC del BPS).
+- **Diagnóstico** dentro de `02_precio_arroz`: en 1997, comparar PKK y posyandu
+  en las mismas comunidades (nivel y correlación). No decide la construcción;
+  sirve para explicar en la sustentación una eventual diferencia entre T1 y T2.
 
 ### Tratamiento: cuatro versiones
 
@@ -99,8 +123,8 @@ observación es el niño y los errores se agrupan por comunidad.
 
 | Versión | Definición | Uso |
 |---|---|---|
-| **T1. Réplica E-Q** | Cambio proporcional, todas las fuentes y calidades, nominal (real si se consigue el deflactor) | Comparar con −0,135 |
-| **T2. Dosis limpia (principal)** | Cambio proporcional solo con fuentes presentes en 1997 y 2000 (posyandu + `bk2_hpj`), calidad media, kg, winsorizado en p1/p99 (`02` §5.3) | β sin el artefacto de fuentes ni la cola |
+| **T1. Réplica E-Q (aproximada)** | Cambio proporcional nominal, promedio de todas las fuentes y calidades de cada año (PKK + posyandu + `bk2_hpj` en 1997; posyandu + `bk2_hpj` en 2000) | Comparar con −0,135; se declara aproximada |
+| **T2. Dosis limpia (principal)** | Cambio proporcional nominal, solo con fuentes presentes en 1997 y 2000 (posyandu + `bk2_hpj`), calidad media, kg, mediana por comunidad, winsorizado en p1/p99 (`02` §5.3) | β sin el artefacto de fuentes ni la cola |
 | **T3. Cuartiles de T2** | Q2, Q3 y Q4 frente a Q1 | Forma de la respuesta: lineal, umbral o saturación |
 | **T4. Terciles de T2** | Tercil alto = 1, bajo = 0, sin el medio (~208 comunidades) | Bosque: calibración, GATE, RATE |
 
@@ -192,9 +216,10 @@ demás:** dos integrantes en la semana 1.
 - [ ] **P2.1** `01_tracks`: `htrack`/`ptrack` 1993-2000, `commid97`, cohortes (0-5
   años en 1997; 0-5 en 1993 para el placebo) y desgaste por ola.
 - [ ] **P2.2** `02_precio_arroz`: precios de 1997 y 2000 por comunidad (y de 1993
-  para el placebo), unidades y calidades, y **T1-T4**. Marcar las 27 comunidades
-  levantadas en 1998. Prueba 1 (varianza dentro y entre provincias) y figura de
-  la distribución del alza.
+  para el placebo), unidades y calidades, y **T1-T4** (construcción en H1).
+  Marcar las 27 comunidades levantadas en 1998. Prueba 1 (varianza dentro y
+  entre provincias), diagnóstico PKK frente a posyandu en 1997 y figura de la
+  distribución del alza.
 - [ ] **P2.3** `03_x_1997`: roster, educación de los padres, línea de pobreza de
   los noventa (Widyanti et al. 2009, según E-Q p. 4), posición neta en arroz
   (`b1_ks1`), gasto per cápita, oro y tierra, composición del hogar e indicadores
@@ -227,10 +252,14 @@ base cuando exista el precio.
   primeras diferencias `d_haz ~ alza + x97`, con `cluster = ~commid97`. Con T1 y
   con T2.
 - [ ] **P4.2** Tabla de especificaciones (T1 y T2 lado a lado): (1) sin controles;
-  (2) controles de E-Q; (3) más EF de provincia o provincia × zona; (4) más el log
-  del precio de 1997; (5) Lasso de doble selección (`glmnet`); (6) pendiente
-  promedio de `causal_forest` continuo como robustez. β con su escala (HAZ por
-  +100 %), traducido a cm, con n de niños y de comunidades.
+  (2a) controles completos de E-Q (cuadro A1 del suplemento, con los programas
+  de la red de seguridad social), solo como réplica; (2b) controles de E-Q sin
+  esos programas (principal, sin controles posteriores al tratamiento); (3) más
+  EF de provincia o provincia × zona; (4) más el log del precio de 1997; (5)
+  Lasso de doble selección (`glmnet`); (6) pendiente promedio de
+  `causal_forest` continuo como robustez. β con su escala (HAZ por +100 %),
+  traducido a cm, con n de niños y de comunidades. En la columna de réplica,
+  errores robustos (los de E-Q) y agrupados por `commid97`, uno al lado del otro.
 - [ ] **P4.3** No linealidad: `feols` con `i(cuartil_alza, ref = 1)` (T3) y un
   spline de la dosis como robustez. Figura de los coeficientes contra el alza
   media de cada cuartil, con la recta de E-Q encima.
@@ -291,14 +320,17 @@ base cuando exista el precio.
 
 - [ ] **PL.1** Buscar en Google Scholar si ya existen CATEs con bosques causales
   para este choque.
-- [ ] **PL.2** **Revisar el apéndice en línea de E-Q.** Parece ser
-  `07_Recursos/Articulos/1-s2.0-S2211912425000756-mmc1.docx` (apareció el 20-nov;
-  solo local, sin abrir). Se busca: cuadros A1-A7 y deflactor
-  A1): lista exacta de controles, cuadro A4 de diferencias por subgrupo, **si
-  agrupan los errores por comunidad** y la convención de HAZ. Sin él, la réplica
-  de P4.1 no puede ser exacta.
+- [x] **PL.2** Revisar el apéndice en línea de E-Q
+  (`07_Recursos/Articulos/1-s2.0-S2211912425000756-mmc1.docx`, 20-nov). Trae
+  los controles, el deflactor, el cuadro A4 y errores robustos sin agrupar. No
+  trae las fuentes del precio de 2000 ni la convención de HAZ. Resumen en
+  `07_Recursos/Articulos/00_hallazgos_articulos.md` §1.
 - [ ] **PL.3** Confirmar qué fuente es el "grupo comunitario de mujeres" de E-Q
-  en 2000, año en que el PKK no trae precios (¿el posyandu?).
+  en 2000, año en que el PKK no trae precios (¿el posyandu?). El suplemento no lo
+  dice. Ya no bloquea: T2 no depende de esto y T1 se declara aproximada.
+- [ ] **PL.7** Confirmar en qué ola miden E-Q los programas de la red de
+  seguridad social que usan como controles, y qué definen como "edad crítica" y
+  "pobre" en el cuadro A4 (texto principal).
 - [ ] **PL.4** Confirmar los códigos 51 y 52 de `ar10`/`ar11` (IFLS1, Libro K).
 - [ ] **PL.5** Insertar en `01_Datos/01_Crudos/IFLS5/00_guia_IFLS5.md` §5 el
   catálogo de `IFLS5/_revision/_cat.md` (marcador `<<CATALOGO>>`).
@@ -310,8 +342,11 @@ base cuando exista el precio.
 - Ninguna versión de W se ha construido. La variación del alza dentro de
   provincia (prueba 1), que decide el tipo de terciles, es el supuesto más
   importante sin comprobar.
-- No sabemos si E-Q recortan la cola de `C_j`, qué controles usan exactamente ni
-  si agrupan los errores: falta el apéndice (PL.2).
+- No sabemos si E-Q recortan la cola de `C_j` ni qué fuente de precio usan en
+  2000. Tampoco por qué el cuadro A1 tiene 3.338 observaciones si el cuadro 1
+  describe 2.112 niños.
+- Que el cociente −0,251 / −0,135 ≈ 1,86 sea la inflación acumulada 1997-2000
+  es una inferencia nuestra, no de E-Q.
 - La simulación que sugiere poca potencia para la heterogeneidad usa datos
   inventados y una sola semilla; no es un cálculo de potencia.
 - Que exista suficiente cohorte de 0-5 años en 1993 con talla en 1993 y 1997

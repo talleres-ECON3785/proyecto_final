@@ -11,3 +11,4 @@ estos nombres, que son los que citan `10_Propuesta/01` y `06`:
 | `FrankenbergSmithThomas_2003_JHR_Economic_shocks_wealth_welfare.pdf` | Frankenberg, E., Smith, J. P. y Thomas, D. (2003). *Journal of Human Resources*, 38(2), 280-321. https://doi.org/10.2307/1558746 |
 | `FriedmanLevinsohn_2002_WBER_Distributional_impacts_Indonesia_crisis.pdf` | Friedman, J. y Levinsohn, J. (2002). *World Bank Economic Review*, 16(3), 397-423. https://doi.org/10.1093/wber/lhf001 |
 | `FriedmanThomas_2009_WBER_Psychological_health_economic_crisis.pdf` | Friedman, J. y Thomas, D. (2009). *World Bank Economic Review*, 23(1), 57-76. https://doi.org/10.1093/wber/lhn013 |
+| `c13829.rev1.pdf` | Frankenberg, E. y Thomas, D. Versión revisada de «Human Capital and Shocks», noviembre de 2017 (41 p.). Referencia bibliográfica exacta por verificar; sus páginas impresas van una más que el WP de abril desde la p. 7 |
