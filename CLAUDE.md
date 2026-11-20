@@ -1,7 +1,7 @@
 # CLAUDE.md · Proyecto final ECON-3785 (Ciencia de Datos y Econometría Aplicada, 2026-2)
 
 > Reglas del proyecto para los agentes y el equipo. Reúne lo decidido hasta el
-> 18-nov-2026 (el `CLAUDE.md` anterior, del 17-nov, está archivado en
+> 20-nov-2026 (el `CLAUDE.md` anterior, del 17-nov, está archivado en
 > `10_Propuesta/_obsoleto/CLAUDE_2026-11-17.md`) y adapta el flujo de trabajo de
 > los Talleres 1 y 2 (repositorios `talleres-ECON3785/taller_01` y `taller_02`).
 > **Las reglas para manejar los datos están en [`01_Datos/CLAUDE.md`](01_Datos/CLAUDE.md):
@@ -12,25 +12,34 @@
 ## 1. El proyecto en una frase
 
 ¿A quién afectó más el arroz caro? Con la Indonesia Family Life Survey (IFLS),
-**replicar** el efecto promedio del alza del precio del arroz de 1997-98 sobre
-la estatura (Elmira y Qaim 2026), **extenderlo** a la escolaridad completada en
-2014 (resultado primario recomendado) y a la cognición, y estimar **para quién
-fue peor** con bosques causales honestos agrupados por comunidad. Salud mental
-queda como extensión opcional.
+**solo estatura** (ΔHAZ 1997→2000 de los niños de 0-5 años en 1997; alcance del
+20-nov). La presentación responde tres preguntas:
+
+1. **¿Dolió?** Replicar con `feols` el ATE de Elmira y Qaim (2026), −0,135 HAZ
+   por +100 % del precio, y ver su forma (cuartiles).
+2. **¿A quién?** GATE pre-declarados (edad, urbano, educación de la madre,
+   sexo, comprador neto, pobreza) con puntajes AIPW del bosque causal y Holm.
+3. **¿El bosque supera a las reglas simples?** Bosque con terciles, calibración
+   y RATE/TOC frente a pobre, urbano y comprador neto.
+
+Escolaridad, cognición y salud mental quedan fuera por ahora.
 
 - **Cliente propuesto:** agencia que focaliza ayuda ante choques de precios de
   alimentos (p. ej., Programa Mundial de Alimentos). Entregable para el cliente:
-  la priorización del bosque, el perfil de los hogares priorizados con variables
-  que el cliente observa y cuánto daño evita frente a focalizar por pobreza.
-- **Tratamiento:** cambio del precio comunitario del arroz 1997→2000 (Δlog o
-  terciles), asignado por la comunidad de residencia en 1997 (`commid97`).
-  Tratados = comunidades con mayor alza; controles = comunidades con menor alza.
-- **Documento central:** `10_Propuesta/04_heterogeneidad_bosques_honestos.md`
-  (hipótesis H1-H9, diseño del bosque, inferencia). Resumen:
-  `10_Propuesta/00_resumen.md` (v4).
-- **Estado al 18-nov:** propuesta v4 escrita; las cinco olas de la IFLS
-  revisadas, con guías en `01_Datos/01_Crudos/IFLSx/`; **ninguna estimación
-  corrida todavía**. El avance y lo que sigue están en `HANDOFF.md`.
+  la comparación del bosque con reglas simples, el perfil de los niños que
+  prioriza con variables que el cliente observa y, si el bosque no las supera,
+  la evidencia de que basta una regla simple.
+- **Tratamiento:** cambio proporcional del precio comunitario del arroz
+  1997→2000, asignado por la comunidad de residencia en 1997 (`commid97`), en
+  cuatro versiones: T1 réplica E-Q, T2 dosis limpia (principal), T3 cuartiles y
+  T4 terciles para el bosque. Definiciones en `PLAN.md` (H1).
+- **Documentos:** `PLAN.md` (H1: tratamiento, identificación y hechos de `grf`
+  verificados) y `10_Propuesta/04_heterogeneidad_bosques_honestos.md` (hipótesis,
+  diseño del bosque). Resumen: `10_Propuesta/00_resumen.md` (v5).
+- **Estado al 20-nov:** propuesta v4 y plan reorganizado; las cinco olas de la
+  IFLS revisadas, con guías en `01_Datos/01_Crudos/IFLSx/`; **ninguna estimación
+  corrida y el precio sin construir**. El avance y lo que sigue están en
+  `HANDOFF.md`.
 
 ## 2. Lo que exige el curso (`07_Recursos/ProyectoFinal.pdf`)
 
@@ -191,7 +200,9 @@ los talleres (nombre + primer apellido + inicial del segundo):
 2. **Se identifica un contraste, no el efecto de la crisis.** No hay comunidades
    sin tratar. Con tratamiento continuo hace falta "tendencias paralelas
    fuertes" (Callaway, Goodman-Bacon y Sant'Anna); los terciles son más
-   defendibles. Reportar ambos y decir qué supuesto usa cada uno.
+   defendibles. Reportar ambos y decir qué supuesto usa cada uno. La pendiente
+   promedio de `causal_forest` con W continuo no es el β MCO de E-Q (pondera
+   distinto): la réplica se hace con `feols`.
 3. **Amenaza principal: choques simultáneos** correlacionados con el precio
    (sequía de El Niño, humo de 1997, disturbios). Mitigar con EF de comunidad,
    diseño productor/comprador neto, controles de humo/sequía y excluir Sumatra y
@@ -203,24 +214,26 @@ los talleres (nombre + primer apellido + inicial del segundo):
    causales para este choque. Decir «hasta donde revisamos».
 6. **Hipótesis de heterogeneidad H1-H9** (`10_Propuesta/04` §4): se fijan por
    escrito antes de correr el bosque. Pregunta concreta: ¿el bosque recupera,
-   sin escogerlos a mano, los subgrupos de la literatura (cohorte urbana pobre de
-   8 años; urbano × educación materna)?
+   sin escogerlos a mano, los subgrupos de E-Q para la talla (urbano, madre con
+   primaria o menos, varones)? Con unos cientos de comunidades, los GATE
+   pre-declarados tienen mucha más potencia que la búsqueda del bosque (una
+   simulación con datos inventados del 20-nov no pasó `test_calibration` aun con
+   heterogeneidad grande); hay que preparar la lámina del nulo.
 
 ## 6. Diseño y métodos
 
+Rediseñado el 20-nov (solo estatura). Detalle de cada paso en `PLAN.md` (H4-H6).
+
 | Etapa | Qué | Método |
 |---|---|---|
-| 1 | Replicar ATE: ΔHAZ 1997-2000, cohorte 0-5 (diseño B, EF individuales). Meta β ≈ −0,135 | `feols`, cluster `commid97`; Lasso de doble selección |
-| 2 | **Primario:** escolaridad 2014, cohortes de 5-21 años frente a la cohorte no expuesta (diseño C) | `feols` |
-| 3 | Pruebas: tendencias previas 1993-97, Yamauchi-Larson, balance, traslape, desgaste | `feols` |
-| 4 | Heterogeneidad: bosque con `clusters`, calibración, BLP, GATE de H1-H8 (Holm) | `grf` |
-| 5 | Recuperación de la celda de F-T y bosque placebo | `grf` + puntajes AIPW |
-| 6 | Focalización: RATE del bosque frente a reglas simples (pobre, urbano, comprador neto) | `rank_average_treatment_effect` |
-| Sec. | Estatura adulta y cognición 2014 | mismo flujo, exploratorio |
-| Ext. | Salud mental de adultos 1993-2000 | `feols`, sin CATEs |
+| 1 | **¿Dolió?** Réplica de E-Q: ΔHAZ 1997-2000, cohorte 0-5, con T1 y T2; tabla de especificaciones (sin controles → controles E-Q → EF de provincia → log precio 1997 → Lasso de doble selección; pendiente promedio del bosque como fila de robustez) | `feols`, cluster `commid97`; `glmnet` |
+| 2 | No linealidad: cuartiles del alza (Q2-Q4 frente a Q1) y spline, figura contra la recta de E-Q | `feols` con `i(cuartil, ref = 1)` |
+| 3 | Validación: placebo de tendencias previas (ΔHAZ 1993-97 de la cohorte 0-5 de 1993), Yamauchi-Larson, desgaste según el alza, sin Sumatra/Kalimantan, sin comunidades de 1998, errores por provincia | `feols` |
+| 4 | **¿A quién?** Bosque con T4 (terciles), traslape, GATE pre-declarados (edad primero) con Holm, BLP | `grf` + puntajes AIPW |
+| 5 | **¿El bosque supera a las reglas simples?** Calibración; RATE/TOC en dos mitades de comunidades frente a pobre, urbano y comprador neto; perfil de los priorizados | `test_calibration`, `rank_average_treatment_effect` |
 
-**Alcance mínimo:** etapas 1-4 y 6 con el resultado primario. **Recorte en
-orden:** CES-D 2014 → salud mental de adultos → cognición → estatura adulta.
+**Alcance mínimo:** etapas 1-4. Si falta tiempo, la etapa 5 queda como
+exploratoria.
 
 Reglas de los métodos:
 
@@ -233,7 +246,15 @@ Reglas de los métodos:
   `feols`. El N efectivo es de cientos de comunidades (~208 en la comparación por
   terciles), no de miles de personas.
 - Partición de muestras **por comunidad completa** (focalización en dos mitades).
-- Revisar `cf$W.hat` (traslape); recortar si se pega a 0 o 1.
+- Revisar `cf$W.hat` (traslape); recortar si se pega a 0 o 1. Con terciles
+  nacionales, poner la provincia en X puede pegarlo; la prueba 1 (variación del
+  alza dentro de provincia) decide entre terciles nacionales y dentro de
+  provincia.
+- `causal_forest` con W continuo supone un efecto lineal en W dado x: no sirve
+  para estudiar la no linealidad de la dosis (va con `feols`).
+  `rank_average_treatment_effect(forest)` solo acepta W binario (`grf` 2.6.1).
+- El HAZ de 1997 no se usa como modificador (regresión a la media); la edad en
+  1997 entra de forma flexible.
 - Si `test_calibration` no rechaza: reportar "no hay evidencia de
   heterogeneidad" y apoyarse en el ATE y los GATE pre-declarados.
 - No controlar por variables posteriores al tratamiento.
@@ -338,6 +359,9 @@ et al. (2004) usa datos de Java rural, no la IFLS.
 | 2026-11-18 | Repositorio `talleres-ECON3785/proyecto_final` con la estructura de los talleres (`01_Datos`…`10_Propuesta`), `HANDOFF.md`, `PLAN.md` y las skills de bitácora, cierre y hallazgos | Mismo flujo que dio buenos resultados en los Talleres 1 y 2 |
 | 2026-11-18 | Los datos de la IFLS viven dentro del repositorio local (`01_Datos/01_Crudos/`) pero **no se versionan**, ni sus derivados (`02_Procesados/`, `03_Listos/`). Sí se versionan las guías `.md`, la síntesis y los scripts de revisión. Reglas de datos en `01_Datos/CLAUDE.md` | La licencia de RAND prohíbe redistribuir y el repositorio es público; además pesan 4,3 GB (GitHub rechaza archivos de más de 100 MB). La entrega pide "datos o instrucciones": van las instrucciones (`01_Datos/README.md`) |
 | 2026-11-18 | Los PDF de artículos (`07_Recursos/Articulos/`) e insumos de terceros (`07_Recursos/Insumos/`) se guardan solo en local | Derechos de autor en un repositorio público |
+| 2026-11-20 | **Alcance: solo estatura** (ΔHAZ 1997-2000, cohorte 0-5). Se descartan por ahora la escolaridad 2014, la cognición y la salud mental. Presentación en tres preguntas: ¿dolió?, ¿a quién?, ¿el bosque supera a las reglas simples? | Decisión del equipo: 20 minutos que deben quedar pulidos y defendibles sin abarcar de más |
+| 2026-11-20 | Tratamiento en cuatro versiones: T1 réplica E-Q (cambio proporcional, todas las fuentes, nominal); T2 dosis limpia, principal (fuentes comunes 1997-2000, calidad media, kg, winsorizada p1/p99); T3 cuartiles de T2; T4 terciles de T2, alto frente a bajo sin el medio, para el bosque. Terciles nacionales o dentro de provincia según la prueba 1 (pendiente) | E-Q usan cambio proporcional, no Δlog (p. 5); el PKK no trae precios en 2000; cola de +729 %; RATE nativo exige W binario. Recomendación de la sesión de Santiago tras evaluarla con un consejo de cinco asesores; **confirmar con el equipo** |
+| 2026-11-20 | El ATE se replica con `feols` (panel con EF individuales ≡ primeras diferencias); la pendiente promedio del bosque solo como fila de robustez. La no linealidad se estudia con `feols` (cuartiles y spline), no con bosques | El estimando de `grf` continuo no es el β MCO de E-Q, y el bosque supone efecto lineal en W dado x. Recomendación; **confirmar con el equipo** |
 
 ## 12. Análisis descartados
 
@@ -346,3 +370,5 @@ et al. (2004) usa datos de Java rural, no la IFLS.
 | 2026-11-10 | Texto como datos (salud mental) | Ver "Decisiones tomadas" |
 | 2026-11-10 | `causalTree` y econometría espacial | Fuera del curso |
 | 2026-11-18 | Árbol causal honesto sobre puntajes AIPW (antes etapa 7) | Decisión del equipo; ver "Decisiones tomadas" |
+| 2026-11-20 | Escolaridad 2014 (con la recuperación de la celda de 8 años de F-T y el bosque placebo en la cohorte no expuesta), cognición, estatura adulta y salud mental | Alcance; ver "Decisiones tomadas" |
+| 2026-11-20 | Bosque causal para replicar el ATE y para la no linealidad; `lm_forest` y `multi_arm_causal_forest` | Estimando distinto o sin herramientas de inferencia (`lm_forest` solo tiene `predict`); fuera del catálogo del curso |

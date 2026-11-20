@@ -15,31 +15,37 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      aplica, el integrante a cargo. Se derivan de las primeras casillas sin
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
-Objetivos derivados de [`PLAN.md`](PLAN.md).
+Objetivos derivados de [`PLAN.md`](PLAN.md). El alcance cambió el 20-nov: solo
+estatura, en tres preguntas (¿dolió?, ¿a quién?, ¿el bosque supera a las reglas
+simples?).
 
-1. **P0.3 y P1.1-P1.6: poner al equipo en el repositorio y tomar las
-   decisiones previas** (todo el equipo).
-   - Cada integrante clona, pone los datos de RAND en `01_Datos/01_Crudos/`
-     (`01_Datos/README.md`) y crea su rama.
-   - Reunión corta para cerrar cliente, resultado primario, lenguaje del
-     pipeline, recomendaciones de datos de `10_Propuesta/02` §5 e hipótesis
-     H1-H9.
+1. **P0.3 y P1.1, P1.3-P1.5: equipo en el repositorio y decisiones previas**
+   (todo el equipo).
+   - Cada integrante clona, pone los datos de RAND en `01_Datos/01_Crudos/` y
+     crea su rama.
+   - Reunión corta para confirmar:
+     - el tratamiento T1-T4 y la réplica con `feols` (`PLAN.md` H1; en
+       `CLAUDE.md` §11 figuran como recomendación por confirmar);
+     - los GATE pre-declarados, con la edad primero, la familia de Holm y la
+       métrica de RATE;
+     - el lenguaje del pipeline;
+     - las recomendaciones de datos de `10_Propuesta/02` §5.
    - *Terminado cuando:* las decisiones están en "Decisiones tomadas" de
-     `CLAUDE.md` y en `01_Datos/CLAUDE.md` §9, con fecha, y las H1-H9 quedan
-     fijadas por escrito.
+     `CLAUDE.md` y en `01_Datos/CLAUDE.md` §9, con fecha, y los GATE quedan
+     escritos.
 2. **P2.1: `02_Scripts/01_tracks.R`.**
-   - `htrack`/`ptrack` 1997-2014, `commid97`, cohortes y desgaste por ola, en
-     `01_Datos/02_Procesados/`.
+   - `htrack`/`ptrack` 1993-2000, `commid97`, cohortes (0-5 años en 1997; 0-5 en
+     1993 para el placebo) y desgaste por ola, en `01_Datos/02_Procesados/`.
    - *Terminado cuando:* corre desde `00_main.R`, verifica la unicidad de las
      llaves con `stopifnot()` y reproduce los conteos de la síntesis (p. ej.
      3.851 niños de 0-5 años en 1997; 894 hogares sin `commid97`).
-3. **P2.2: `02_Scripts/02_precio_arroz.R`** (es lo primero que pide la
-   asesoría).
-   - Precio por comunidad en 1997 y 2000 con las dos construcciones, Δlog y
-     terciles, y la figura de su distribución.
+3. **P2.2: `02_Scripts/02_precio_arroz.R`.** Bloquea todo lo demás; dos
+   integrantes en la semana 1.
+   - Precio por comunidad en 1997 y 2000, T1-T4, prueba 1 (variación del alza
+     dentro y entre provincias) y figura de la distribución.
    - *Terminado cuando:* hay una base de comunidades en `01_Datos/03_Listos/`,
-     una figura en `03_Resultados/Figuras/02_precio_arroz/` y su nota en
-     `05_Notas/`.
+     una figura en `03_Resultados/Figuras/02_precio_arroz/`, su nota en
+     `05_Notas/` y una decisión entre terciles nacionales y dentro de provincia.
 
 **Bloqueos / preguntas abiertas:**
 
@@ -47,31 +53,62 @@ Objetivos derivados de [`PLAN.md`](PLAN.md).
   ramas de `CLAUDE.md` se copió de ahí).
 - Lenguaje del pipeline sin decidir (P1.4): bloquea el estilo de los scripts de
   construcción.
+- Revisar el suplemento de E-Q (PL.2): parece ser
+  `07_Recursos/Articulos/1-s2.0-S2211912425000756-mmc1.docx` (solo local, no se
+  ha abierto). Sin él, la réplica no puede ser exacta.
+- `10_Propuesta/03` y `04` siguen en v4, con la escolaridad como resultado
+  primario (P1.6).
 - Fechas exactas de las semanas 15 y 16.
 
 ## Estado actual
 
 - **Repositorio:** `talleres-ECON3785/proyecto_final` (público), con la
-  estructura de los talleres. `main` tiene el commit inicial; todavía no hay
-  ramas de integrantes.
+  estructura de los talleres. `main` tiene el commit inicial; Santiago trabaja en
+  `SantiagoMunozM`.
 - **Datos:** las cinco olas de la IFLS (4,3 GB) están en la copia local de
-  Santiago, en `01_Datos/01_Crudos/IFLS1…5/`, y no se versionan. Revisadas las
-  cinco; guías descriptivas `00_guia_IFLSx.md` y síntesis
+  Santiago, en `01_Datos/01_Crudos/IFLS1…5/`, y no se versionan. Las cinco están
+  revisadas, con guías descriptivas `00_guia_IFLSx.md` y la síntesis
   `01_Datos/00_sintesis_revision_IFLS.md`. Reglas en `01_Datos/CLAUDE.md`.
 - **Derivados:** solo `01_Datos/02_Procesados/salud_mental_1993.{csv,dta}`, de
-  `02_Scripts/_exploratorio/01_salud_mental_1993.py` (uso no decidido).
+  `02_Scripts/_exploratorio/01_salud_mental_1993.py`. Queda fuera del alcance
+  actual.
 - **Scripts del pipeline:** ninguno. `00_main.R` tiene paquetes, verificación de
   datos y de carpetas, y la lista `scripts` vacía. Formatos de figuras y tablas
-  copiados del Taller 2 y adaptados (`02_Scripts/00_formato_*.R`).
+  en `02_Scripts/00_formato_*.R`.
 - **Resultados y notas:** ninguno.
-- **Propuesta:** v4 en `10_Propuesta/` (documento central `04`); desde el 18-nov
-  sin árbol causal. PDF en `10_Propuesta/Propuesta Proyecto Final.pdf` y
-  presentación en `04_Presentaciones/propuesta_presentacion.pdf`.
+- **Plan y alcance:** `PLAN.md` reorganizado el 20-nov. Solo estatura (ΔHAZ
+  1997-2000, cohorte 0-5) y tratamiento en cuatro versiones: T1 réplica E-Q, T2
+  dosis limpia (principal), T3 cuartiles, T4 terciles para el bosque. La
+  réplica y la no linealidad van con `feols`; el bosque causal se usa para los
+  GATE pre-declarados, la calibración y RATE.
+- **Propuesta:** resumen v5 en `10_Propuesta/00_resumen.md`; los documentos
+  `01`-`06` siguen en v4 (central: `04`). PDF en
+  `10_Propuesta/Propuesta Proyecto Final.pdf` y presentación en
+  `04_Presentaciones/propuesta_presentacion.pdf`.
+- **`grf` 2.6.1 instalado:** verificado que RATE nativo solo acepta W binario y
+  que `lm_forest` solo tiene `predict`.
 
 ## Registro de sesiones
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-20: identificación del tratamiento y alcance
+
+- Santiago Muñoz (`SantiagoMunozM`).
+  - Se revisó contra el PDF cómo asignan E-Q el tratamiento: dosis continua y
+    cambio proporcional, sin grupo de control.
+  - Se discutieron las alternativas (continuo, terciles, otros cortes,
+    cuartiles) y se verificaron en `grf` 2.6.1 el bosque continuo, RATE y
+    `lm_forest`.
+  - El equipo dejó solo estatura. La propuesta se evaluó con un consejo de cinco
+    asesores, y la recomendación quedó en `PLAN.md`, `CLAUDE.md` y el resumen
+    v5: réplica y no linealidad con `feols`, el bosque para los GATE y RATE.
+  - Cierra P1.2. Ninguna estimación.
+- Bitácora: [2026-11-20_identificacion-tratamiento-y-alcance.md](06_Bitacoras/2026-11-20_identificacion-tratamiento-y-alcance.md)
+- **Siguientes objetivos:** (1) P0.3 y P1.1, P1.3-P1.5: equipo en el
+  repositorio y confirmación de las decisiones; (2) P2.1: `01_tracks.R`; (3)
+  P2.2: `02_precio_arroz.R` con T1-T4 y la prueba 1.
 
 ### 2026-11-18: configuración del repositorio
 
