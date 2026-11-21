@@ -30,11 +30,11 @@ presentación y entrega en la semana 16 (miércoles, 11:59 pm). Por confirmar.
 
 ## H0. Equipo
 
-- [ ] **P0.1** Cada integrante clona el repositorio, pone los datos de RAND en
+- [X] **P0.1** Cada integrante clona el repositorio, pone los datos de RAND en
   `01_Datos/01_Crudos/`, crea su rama y confirma que `00_main.R` pasa la
   verificación de datos.
-- [ ] **P0.2** Confirmar que quien toque los datos esté registrado en RAND.
-- [ ] **P0.3** Contar al equipo lo registrado el 20-nov y recoger objeciones
+- [X] **P0.2** Confirmar que quien toque los datos esté registrado en RAND.
+- [X] **P0.3** Contar al equipo lo registrado el 20-nov y recoger objeciones
   antes de H2.
 
 ## H1. Bases
@@ -42,24 +42,30 @@ presentación y entrega en la semana 16 (miércoles, 11:59 pm). Por confirmar.
 Cada script deja su base en `01_Datos/02_Procesados/` o `03_Listos/`, imprime las
 observaciones que pierde y se agrega a `00_main.R` y al README.
 
-- [ ] **P1.1** `01_tracks`: seguimiento 1993-2000 desde `htrack`/`ptrack`,
+- [x] **P1.1** `01_tracks`: seguimiento 1993-2000 desde `htrack`/`ptrack`,
   `commid97`, cohorte de 0-5 años en 1997 y cohorte de 0-5 en 1993 (placebo).
   Desgaste por ola.
-- [ ] **P1.2** `02_precio_arroz`: precio por comunidad en 1997 y 2000 con el
-  registro §4. Dosis, cuartiles y terciles. Marcar las 27 comunidades con precio
+- [x] **P1.2** `02_precio_arroz`: precio por comunidad en 1997 y 2000 con el
+  registro §4. Dosis, cuartiles y terciles. Marcar las 38 comunidades con precio
   levantado en 1998. Figura de la distribución del alza.
   - **Decidir con los datos:** terciles nacionales o dentro de provincia, según
     cuánta variación del alza hay dentro de provincia. Luego, al registro.
-- [ ] **P1.3** `03_x_1997`: controles de E-Q sin los programas, comprador neto,
+- [x] **P1.3** `03_x_1997`: controles de E-Q sin los programas, comprador neto,
   gasto per cápita y pobreza, educación de la madre, urbano, sexo, edad e
   indicador de entrevista en 1998.
   - **Decidir:** el valor de la línea de Widyanti et al. (2009) o, si no se
     consigue, el cuartil inferior. Luego, al registro.
-- [ ] **P1.4** `04_haz`: HAZ de 1997 y 2000 (cohorte principal) y de 1993 y 1997
+- [x] **P1.4** `04_haz`: HAZ de 1997 y 2000 (cohorte principal) y de 1993 y 1997
   (placebo) con el registro §5. Registrar `anthro`/`anthroplus` como
   ampliaciones al crear el script.
-- [ ] **P1.5** Base lista para estimar (un niño por fila: ΔHAZ, tratamiento, X de
+- [x] **P1.5** Base lista para estimar (un niño por fila: ΔHAZ, tratamiento, X de
   1997, `commid97`, provincia) y tabla de desgaste según el alza.
+- [ ] **P1.6** Antes de H2, revisar la base (de la sesión del 20-nov (4)):
+  (a) por qué falta más el HAZ de 1997 en el cuartil de mayor alza (no medido,
+  sin fecha de nacimiento o fuera de ±6; relación con las comunidades con campo
+  en 1998; X de 1997 de los niños con y sin HAZ, según el alza), con una tabla en
+  `03_Resultados/Tablas/05_base/`; (b) la cola del ΔHAZ (110 niños con
+  |ΔHAZ| > 3), para que el equipo decida si se deja o se recorta, y registrarlo.
 
 **En paralelo a P1.2:** escribir los scripts de H2-H4 sobre datos simulados, para
 que solo haya que cambiar la base.
@@ -68,6 +74,7 @@ que solo haya que cambiar la base.
 
 - [ ] **P2.1** ATE con `feols`, dosis, primeras diferencias y
   `cluster = ~commid97`. Tabla de especificaciones:
+
   1. sin controles;
   2. con los controles del registro;
   3. más EF de provincia;
@@ -125,8 +132,6 @@ que solo haya que cambiar la base.
 
 ## Por verificar antes de usar
 
-- El valor de la línea de pobreza de Widyanti et al. (2009) (P1.3).
-- Las variables y unidades de `b1_ks1` para el comprador neto (P1.3).
 - Cómo trata `rank_average_treatment_effect` los empates de una regla binaria y
   si da la diferencia entre dos prioridades con EE emparejado (P4.2).
 - Que la "edad crítica" de E-Q sea 0-2 años (se infiere de su fig. 5).

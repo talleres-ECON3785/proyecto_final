@@ -249,13 +249,11 @@ Reglas de los métodos:
   **ampliaciones**: se registran en "Decisiones tomadas" (y en el README)
   **antes** de usarlas.
 - `clusters = commid97` siempre en `grf`; errores agrupados por comunidad en
-  `feols`. El N efectivo es de cientos de comunidades (~208 en la comparación por
+  `feols`. El N efectivo es de cientos de comunidades (197 en la comparación por
   terciles), no de miles de personas.
 - Partición de muestras **por comunidad completa** (focalización en dos mitades).
-- Revisar `cf$W.hat` (traslape); recortar si se pega a 0 o 1. Con terciles
-  nacionales, poner la provincia en X puede pegarlo; la prueba 1 (variación del
-  alza dentro de provincia) decide entre terciles nacionales y dentro de
-  provincia.
+- Revisar `cf$W.hat` (traslape); recortar si se pega a 0 o 1. Los terciles son
+  dentro de provincia (registro §3), así que poner la provincia en X no lo pega.
 - `causal_forest` con W continuo supone un efecto lineal en W dado x: no sirve
   para estudiar la no linealidad de la dosis (va con `feols`).
   `rank_average_treatment_effect(forest)` solo acepta W binario (`grf` 2.6.1).

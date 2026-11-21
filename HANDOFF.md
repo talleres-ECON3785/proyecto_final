@@ -15,66 +15,80 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      aplica, el integrante a cargo. Se derivan de las primeras casillas sin
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
-Objetivos derivados de [`PLAN.md`](PLAN.md) (rehecho el 20-nov). Lo confirmado
-está en [`registro_decisiones.md`](registro_decisiones.md); `10_Propuesta/` ya no
-se consulta, salvo el pre-registro.
+Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
+[`registro_decisiones.md`](registro_decisiones.md). H1 (bases) quedó completo
+el 20-nov (4).
 
-1. **P0.1-P0.3: equipo en el repositorio** (todo el equipo).
-   - Cada integrante clona, pone los datos de RAND en `01_Datos/01_Crudos/`,
-     crea su rama y corre la verificación de datos de `00_main.R`.
-   - Santiago cuenta al equipo lo decidido el 20-nov: `registro_decisiones.md` y
-     `10_Propuesta/07_preregistro_heterogeneidad.md`.
-   - *Terminado cuando:* las cuatro ramas existen y las objeciones al registro,
-     si las hay, quedan resueltas en el registro (con su historial).
-2. **P1.1: `02_Scripts/01_tracks.R`.**
-   - Seguimiento 1993-2000 desde `htrack`/`ptrack`, `commid97`, cohorte de 0-5
-     años en 1997 y de 0-5 en 1993 (placebo), y desgaste por ola, en
-     `01_Datos/02_Procesados/`.
-   - *Terminado cuando:* corre desde `00_main.R`, verifica la unicidad de las
-     llaves con `stopifnot()` y reproduce los conteos de la sesión del 20-nov
-     (3.851 niños de 0-5 años en 1997; 3.369 con `commid97`).
-3. **P1.2: `02_Scripts/02_precio_arroz.R`.**
-   - Precio por comunidad con el registro §4. Dosis, cuartiles y terciles.
-     Marcar las 27 comunidades de 1998. Figura de la distribución del alza.
-   - *Terminado cuando:* hay una base de comunidades en `01_Datos/03_Listos/`,
-     la figura en `03_Resultados/Figuras/02_precio_arroz/` con su nota en
-     `05_Notas/`, y la decisión entre terciles nacionales y dentro de provincia
-     está en el registro.
+1. **P1.6: revisar la base antes de H2** (Santiago o quien tome H2).
+   - (a) Por qué falta más el HAZ de 1997 en el cuartil de mayor alza
+     (76 % frente a 82-84 %; nota `05_Notas/05_base/D_desgaste_segun_alza.md`).
+     (b) La cola del ΔHAZ (110 niños con |ΔHAZ| > 3).
+   - *Terminado cuando:* hay una tabla en `03_Resultados/Tablas/05_base/` con
+     los motivos por cuartil y las X de 1997 con y sin HAZ, la nota está
+     actualizada y la decisión sobre la cola está en el registro.
+2. **P2.1: ATE con `feols`** (`02_Scripts/10_ate.R` o el nombre que se acuerde).
+   - Dosis, primeras diferencias, `cluster = ~commid97`. Tabla de
+     especificaciones (1-4) con errores robustos al lado y β en HAZ por +100 %.
+   - *Terminado cuando:* la tabla está en `03_Resultados/Tablas/<script>/` con el
+     n de niños y de comunidades, y su nota en `05_Notas/` está contrastada con
+     el −0,135 de E-Q.
+3. **P2.2: forma con cuartiles** (Q2-Q4 frente a Q1).
+   - *Terminado cuando:* la figura de los coeficientes, con la recta de E-Q
+     encima, está exportada y tiene nota.
 
 **Bloqueos / preguntas abiertas:**
 
-- Las decisiones del 20-nov las tomó Santiago; falta que el equipo las conozca
-  (P0.3).
-- Confirmar que el equipo y las ramas de `CLAUDE.md` §4.2 son los correctos.
-- Por verificar antes de usar: el valor de la línea de pobreza de Widyanti et
-  al. (2009); las variables de `b1_ks1` para el comprador neto; cómo trata `grf`
-  los empates en el RATE.
+- **Contar al equipo** las decisiones del 20-nov (4): litros a kg, 38
+  comunidades de 1998, terciles dentro de provincia, línea de Widyanti et al.
+  (2009) y la base fuera de GitHub (cada uno la regenera con `00_main.R`).
+- **Muestra frente a E-Q:** nuestros 2.421 niños frente a los 2.112 de su cuadro
+  1, cuyos filtros no se conocen.
+- **Por verificar antes de usar:** cómo trata `grf` los empates en el RATE;
+  que la «edad crítica» de E-Q sea 0-2 años.
 - Fechas exactas de las semanas 15 y 16.
 
 ## Estado actual
 
 - **Repositorio:** `talleres-ECON3785/proyecto_final` (público). Santiago
   trabaja en `SantiagoMunozM`.
-- **Datos:** las cinco olas de la IFLS en la copia local de Santiago
-  (`01_Datos/01_Crudos/`, sin versionar), revisadas, con guías y síntesis.
-  Reglas en `01_Datos/CLAUDE.md`; §9 tiene las decisiones de datos aprobadas.
-- **Decisiones:** `registro_decisiones.md` (lenguaje R, tres preguntas,
-  tratamiento en tres versiones: dosis, cuartiles y terciles, precio, muestra,
-  controles, modificadores, Holm y AUTOC). Pre-registro de subgrupos en
+- **Datos:** las cinco olas de la IFLS en local (`01_Datos/01_Crudos/`, sin
+  versionar). Reglas en `01_Datos/CLAUDE.md`.
+- **Pipeline:** `00_main.R` corre de principio a fin cinco scripts:
+  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz` y `05_base`. Las
+  ampliaciones `anthro` y `anthroplus` están registradas.
+- **Bases** (locales, ignoradas por git):
+  - `02_Procesados/`: `tracks`, `precio_arroz` (297 comunidades), `x_1997` y
+    `haz`;
+  - `03_Listos/base_estimacion.rds`: **2.421 niños en 294 comunidades**, un niño
+    por fila, con ΔHAZ, dosis, cuartiles, terciles y X de 1997;
+  - no se comparten por GitHub: se regeneran con `00_main.R`.
+- **Resultados** (`03_Resultados/`): desgaste por ola, distribución del alza y
+  resumen del precio, resumen del HAZ, desgaste según el alza. Todos
+  descriptivos; **ninguna estimación del ATE todavía**.
+- **Notas** (`05_Notas/`): cohortes y desgaste, distribución del precio,
+  desgaste según el alza.
+- **Decisiones:** `registro_decisiones.md`, al día con lo de H1. Pre-registro en
   `10_Propuesta/07_preregistro_heterogeneidad.md`.
-- **Plan:** `PLAN.md` rehecho el 20-nov con lo que falta (H0-H7).
-- **Scripts del pipeline:** ninguno. `00_main.R` tiene paquetes, verificaciones y
-  la lista `scripts` vacía. Formatos en `02_Scripts/00_formato_*.R`.
-- **Derivados:** solo `salud_mental_1993` (exploratorio, fuera de alcance).
-- **Resultados y notas:** ninguno. Hay un conteo exploratorio de la muestra
-  potencial de estatura (2.668 niños con talla en 1997 y 2000, 307 comunidades;
-  bitácora del 20-nov (3)), fuera del pipeline.
-- **Propuesta (`10_Propuesta/`):** histórica.
 
 ## Registro de sesiones
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-20 (4): las bases del hito H1
+
+- Santiago Muñoz (`SantiagoMunozM`).
+  - Se escribieron y corrieron `01_tracks`, `02_precio_arroz`, `03_x_1997`,
+    `04_haz` y `05_base`. **Cierra H1 (P1.1-P1.5).**
+  - La base lista tiene 2.421 niños en 294 comunidades.
+  - Decisiones: litros a kg, 38 comunidades de 1998, terciles dentro de
+    provincia, línea de Widyanti et al. (2009) verificada en el PDF y la base
+    fuera de GitHub (repositorio público).
+  - El seguimiento 1997-2000 no depende del alza, pero la cobertura del HAZ de
+    1997 sí (P1.6).
+- Bitácora: [2026-11-20_bases-h1_4.md](06_Bitacoras/2026-11-20_bases-h1_4.md)
+- **Siguientes objetivos:** (1) P1.6: revisar la base (HAZ de 1997 faltante y
+  cola del ΔHAZ); (2) P2.1: ATE con `feols`; (3) P2.2: forma con cuartiles.
 
 ### 2026-11-20 (3): registro de decisiones, pre-registro y plan nuevo
 

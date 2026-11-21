@@ -10,6 +10,7 @@
 |---|---|---|
 | **R para todo el pipeline**, incluida la construcción de bases (`haven::read_dta()` + `tidyverse`). `00_main.R` es el único punto de entrada | 20-nov | Santiago |
 | Ampliaciones frente al curso: `haven`, `get_scores`, `best_linear_projection`, `average_treatment_effect(subset = …)`; `fwildclusterboot` si se usa | 20-nov | Santiago |
+| Ampliaciones: `anthro` (HAZ OMS hasta 60 meses) y `anthroplus` (desde 61 meses), para `04_haz` | 20-nov | Santiago |
 
 ## 2. Las tres preguntas
 
@@ -41,7 +42,7 @@ Detalle de los subgrupos: `10_Propuesta/07_preregistro_heterogeneidad.md`.
 |---|---|---|
 | **Dosis** (principal) | Cambio proporcional del precio 1997→2000 por comunidad (§4) | Pregunta 1 y réplica de las interacciones de E-Q |
 | **Cuartiles** | Q2, Q3 y Q4 de la dosis frente a Q1 | Forma de la respuesta |
-| **Terciles** | Tercil alto = 1, bajo = 0, sin el medio | Bosque: GATE, calibración, RATE |
+| **Terciles** | Terciles de la dosis **dentro de cada provincia**; tercil alto = 1, bajo = 0, sin el medio (197 comunidades). Los terciles nacionales, como robustez | Bosque: GATE, calibración, RATE |
 
 La comparación con el −0,135 de E-Q es aproximada: ellos combinan fuentes
 distintas en cada año (en 1997 incluyen el PKK, que en 2000 no trae precios).
@@ -57,26 +58,75 @@ distintas en cada año (en 1997 incluyen el PKK, que en 2000 no trae precios).
 - **Resumen por comunidad y año:** mediana de los reportes de todas las
   calidades (Rp/kg).
 - **Cola:** el cambio proporcional se winsoriza en p1/p99.
+- **Reglas operativas** (`02_Scripts/02_precio_arroz.R`): arroz = `htype` 1-3 en
+  `pos_h` y `hpj3type` = 1 en `bk2_hpj`; solo respuestas válidas; el posyandu de
+  1997 se asigna por los 4 primeros dígitos de `fcode`. **Los reportes por litro
+  se pasan a kg** con un factor estimado en los datos (0,833: mediana, en 142
+  comunidades-año con las dos unidades, del precio por litro sobre el precio por
+  kg), el mismo en los dos años. Así quedan 297 comunidades con precio en 1997 y
+  en 2000; solo con kg, 254, lo que dejaría fuera de forma selectiva a las que
+  venden por litro. La dosis solo con kg (`dosis_kg`) es una robustez.
+- Cuartiles y terciles se cortan **entre comunidades** (la unidad del
+  tratamiento), no entre niños.
+- **Terciles dentro de provincia:** la provincia explica el 14,6 % de la varianza
+  de la dosis; con terciles nacionales, algunas provincias quedan casi enteras en
+  un extremo y el traslape se pega a 0 o 1 si la provincia entra en X.
 
 ## 5. Muestra, medición, controles y modificadores
 
+- **Cohortes** (`02_Scripts/01_tracks.R`, solo el `ptrack`/`htrack` de 2000,
+  que ya trae 1993-2000): principal = `age_97` ≤ 5 y `member97` = 1 (3.851
+  niños); placebo = `age_93` ≤ 5 y `member93` = 1 (4.268). La placebo guarda
+  `commid93` y `commid97`; cuál asigna el alza se decide en P2.3.
 - **HAZ:** estándares OMS (`anthro` hasta 60 meses, `anthroplus` desde 61);
   edad en meses = fecha de medición − fecha de nacimiento; acostado o de pie
   según `us05`; se excluyen los HAZ fuera de ±6.
+  - Fecha de nacimiento: la construida en el `ptrack` de 2000, la misma para
+    todas las olas (sin día → 15). Sin ella no hay HAZ (85 niños de la
+    cohorte principal). Medición: `bukcca2` (1993, sin las filas
+    `person = 96`), `bus_1` (1997), `bus2_1` (2000).
+  - El método va **al revés entre olas**: en 1993 (`ca11`) 1 = acostado y
+    3 = de pie; en 1997 y 2000 (`us05`) 1 = de pie y 3 = acostado.
+- **Muestra analítica** (`05_base.R`): niños de 0-5 años en 1997 con
+  comunidad IFLS, precio en su comunidad y HAZ válido en 1997 y 2000: 2.421
+  niños en 294 comunidades. La base vive en `01_Datos/03_Listos/` y **no se
+  comparte por GitHub** (repositorio público, licencia de RAND): cada integrante
+  la regenera con `00_main.R`.
+- **Faltantes en los controles:** en los controles lógicos el NA pasa a `FALSE`
+  con un indicador `falta_<variable>`; en el tamaño del hogar, a la mediana con
+  indicador; en la educación de los padres y el quintil de gasto, a la categoría
+  «falta». Los moderadores pre-registrados conservan sus NA.
 - **Entrevistas de 1997 hechas en 1998:** entran con un indicador en X; una
-  robustez excluye las 27 comunidades con precio levantado en 1998 y a los niños
+  robustez excluye las 38 comunidades con precio levantado en 1998 (libro 2 o
+  algún posyandu entrevistado en 1998; 34 de ellas tienen precio en los dos años) y a los niños
   medidos en 1998.
 - **Sin pesos muestrales** en lo principal; versión con pesos longitudinales de
   la IFLS como robustez.
 - **Controles de la pregunta 1** (todos de 1997): la lista del cuadro A1 de E-Q medida en 1997,
   sin los cinco programas de la red de seguridad social (tarjeta de salud, arroz
   gratis, arroz subsidiado, programa de empleo, transferencia a la aldea).
-- **Comprador neto:** hogar cuyo valor de arroz comprado supera el de su
-  producción propia (`b1_ks1` 1997). Binaria.
-- **Pobre:** gasto per cápita de 1997 bajo la línea oficial de pobreza de fines
-  de los 90 (Widyanti et al. 2009), como E-Q. Si no se consigue el valor de la
-  línea, el cuartil inferior nacional del gasto per cápita. Se fija en H2, antes
-  de ver resultados.
+- **Comprador neto:** hogar cuyo valor de arroz comprado la última semana
+  (`b1_ks1`, ítem A, `ks02`) supera el de su producción propia (`ks03`).
+  Binaria. **Productor de arroz** (control de E-Q): producción propia > 0.
+- **Gasto per cápita** (agregado propio, mensual, nominal; `03_x_1997.R`):
+  alimentos de la última semana (comprados y propios) × 30/7, más no alimentos
+  del mes (sin rifas ni arisan), más no alimentos del año / 12, más educación
+  de los miembros / 12, más vivienda (arriendo pagado o el que pagaría), todo
+  dividido por los miembros de 1997. Los rubros sin valor (rechazo o no sabe)
+  cuentan como 0. Quintiles entre los 7.565 hogares de 1997, sin pesos.
+- **Pobre:** gasto per cápita bajo la línea regional de diciembre de 1997, por
+  provincia y zona urbana o rural (Widyanti, Suryahadi, Sumarto y Yumna 2009,
+  *The Relationship between Chronic Poverty and Household Dynamics: Evidence
+  from Indonesia*, SMERU Working Paper; apéndice 1, p. 18; método en la sección
+  IV, p. 5; nivel de verificación: PDF). Es la misma edición que citan E-Q; no
+  hay versión en revista. Detalle en `07_Recursos/Articulos/00_hallazgos_articulos.md` §7. El cuartil inferior del gasto
+  per cápita (`pobre_q1`) queda como robustez.
+- **Educación de la madre:** nivel más alto del roster de 1997 (`ar16`) de la
+  madre si vive en el hogar; «más que primaria» = secundaria o superior.
+- **Controles de comunidad** (libro 1 de la comunidad de 1997; E-Q no definen
+  cada uno): puskesmas, agua para beber por tubería, vía transitable por
+  vehículos, vía asfaltada, parada de bus, mercado, teléfono, correo y banco en
+  la aldea, e incendio o sequía registrados en 1997.
 
 Fecha: 20-nov. Quién: Santiago.
 
@@ -97,3 +147,14 @@ Fecha: 20-nov. Quién: Santiago.
 ## Historial
 
 - 20-nov-2026: creación (Santiago).
+- 20-nov-2026: §5, definición de las cohortes al completar P1.1 (Santiago).
+- 20-nov-2026: §5, al completar P1.5: muestra analítica, faltantes de los
+  controles y la base fuera de GitHub (Santiago).
+- 20-nov-2026: §1 y §5, al completar P1.4: `anthro` y `anthroplus` como
+  ampliaciones; fuente de la fecha de nacimiento y códigos del método (Santiago).
+- 20-nov-2026: §5, al completar P1.3: definiciones operativas de comprador
+  neto, gasto per cápita, pobre (línea de Widyanti et al. verificada en el PDF),
+  educación de la madre y controles de comunidad (Santiago).
+- 20-nov-2026: §3-4, al completar P1.2: litros pasados a kg, cortes entre
+  comunidades y terciles dentro de provincia; §5, las comunidades con precio de
+  1998 pasan de 27 a 38, porque también cuenta el posyandu (Santiago).

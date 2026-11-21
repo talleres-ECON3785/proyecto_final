@@ -10,7 +10,8 @@
 >
 > Siglas: **E-Q** = Elmira y Qaim (2026); **F-T 2017** = Frankenberg y Thomas
 > (2017); **FST** = Frankenberg, Smith y Thomas (2003); **F-L** = Friedman y
-> Levinsohn (2002); **F-T 2009** = Friedman y Thomas (2009).
+> Levinsohn (2002); **F-T 2009** = Friedman y Thomas (2009). La §7 (Widyanti
+> et al. 2009, línea de pobreza) se agregó el 20-nov-2026.
 
 ---
 
@@ -380,6 +381,54 @@ prueba global diga si la heterogeneidad es real.
 
 ---
 
+## 7. Widyanti et al. (2009): la línea de pobreza de 1997
+
+Widyanti, W., Suryahadi, A., Sumarto, S. y Yumna, A. (2009). *The Relationship between Chronic Poverty and Household Dynamics: Evidence from Indonesia*. SMERU Working Paper, enero de 2009. Jakarta: The SMERU Research Institute. https://smeru.or.id/sites/default/files/publication/chronicpovertyhouseholddynamics.pdf
+
+Nivel de verificación: PDF (descargado y leído el 20-nov-2026; páginas
+impresas). Es el trabajo que citan E-Q para definir «pobre» («official poverty
+line in Indonesia for the late-1990s», p. 4), en la misma edición de SMERU.
+También circula como CPRC Working Paper 132 y EABER Microeconomics WP 22554.
+**No encontramos versión en revista** (búsqueda del 20-nov-2026 en SMERU,
+IDEAS/RePEc, EABER y GOV.UK): la versión citable es el working paper.
+
+- **Método (sección IV, p. 5):** la línea de cada región (provincia × urbano o
+  rural) parte de las de diciembre de 2000 que calcularon Strauss et al. (2004,
+  *Indonesian Living Standards Before and After the Financial Crisis*, RAND)
+  para IFLS3. Esas, a su vez, inflan las de febrero de 1999 de Pradhan et al.
+  (2001). Widyanti et al. las deflactan a diciembre de 1997 (IFLS2) y de 1993
+  (IFLS1) con un IPC reponderado a 80 % de alimentos (Suryahadi et al. 2003),
+  con el mismo deflactor para lo urbano y lo rural de cada provincia. La canasta
+  de alimentos es nacional; el componente no alimentario sale de curvas de
+  Engel.
+- **Valores de diciembre de 1997 (apéndice 1, p. 18; Rp por persona al mes):**
+
+| Provincia | Urbano | Rural |
+|---|---:|---:|
+| Sumatra del Norte | 39.496 | 38.260 |
+| Sumatra Occidental | 36.275 | 32.811 |
+| Sumatra del Sur | 40.381 | 37.911 |
+| Lampung | 41.837 | 36.881 |
+| Yakarta | 54.280 | — |
+| Java Occidental | 45.892 | 40.974 |
+| Java Central | 42.165 | 37.329 |
+| Yogyakarta | 46.839 | 39.213 |
+| Java Oriental | 41.571 | 39.737 |
+| Bali | 46.962 | 43.734 |
+| Nusa Tenggara Occidental | 38.909 | 40.072 |
+| Kalimantan del Sur | 42.768 | 37.026 |
+| Sulawesi del Sur | 40.949 | 38.557 |
+
+- **Uso en el proyecto:** `pobre` = gasto per cápita del hogar de 1997 por
+  debajo de la línea de su provincia y zona (`02_Scripts/03_x_1997.R`;
+  `registro_decisiones.md` §5).
+- **Diferencia con nuestro uso:** ellos comparan la línea con el gasto per
+  cápita de los hogares de origen del panel, pero el texto no detalla cómo
+  arman el agregado. Nosotros usamos un agregado propio, que puede no ser el
+  mismo.
+
+---
+
 ## Qué no está verificado
 
 - De FST, F-L y F-T 2009 se releyeron hoy el resumen, las conclusiones y pasajes
@@ -387,6 +436,9 @@ prueba global diga si la heterogeneidad es real.
   (`10_Propuesta/01` §6). E-Q y la parte de la crisis de F-T 2017 se releyeron
   completas. La §2 (F-T 2017) se cotejó el 20-nov contra la versión final de
   nov-2017 y contra el WP de abril (diferencias en la §2).
+- Widyanti et al. (2009): no se cotejaron las ediciones de CPRC y EABER con la
+  de SMERU, ni las fuentes originales de la línea (Strauss et al. 2004; Pradhan
+  et al. 2001).
 - Los apéndices de E-Q (cuadros A1-A7) no están en la carpeta: las pruebas de
   diferencias entre subgrupos (A4, A5, A7) no se han revisado.
 - Tsunami de F-T 2017: se extrajeron las cifras del cuadro 4 y las del texto de la

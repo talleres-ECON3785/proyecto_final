@@ -40,6 +40,15 @@ central: `04_heterogeneidad_bosques_honestos.md`).
 
 Semilla: 2026 en todo paso aleatorio.
 
+### Cómo obtener la base lista para estimar
+
+La base final (`01_Datos/03_Listos/base_estimacion.rds`: un niño por fila, con
+ΔHAZ, tratamiento, características de 1997, `commid97` y provincia) **no está
+en GitHub**: el repositorio es público y la licencia de RAND prohíbe
+redistribuir los microdatos y sus derivados. Para tenerla basta con
+`git pull` y correr `00_main.R` con los datos de RAND en `01_Datos/01_Crudos/`;
+sale idéntica en la máquina de cada integrante.
+
 ## Estructura
 
 | Carpeta | Contenido |
@@ -66,18 +75,22 @@ Semilla: 2026 en todo paso aleatorio.
 |---|---|---|
 | `02_Scripts/00_formato_graficas.R` | Paleta, tema y `guardar_figura()` | — |
 | `02_Scripts/00_formato_tablas.R` | Estilo `gt` y `guardar_tabla()` | — |
+| `02_Scripts/01_tracks.R` | Cohortes de 0-5 años en 1997 (principal) y en 1993 (placebo) desde el `ptrack`/`htrack` de 2000; `commid97`, `commid93`, provincia y urbano de 1997; desgaste por ola | `01_Datos/02_Procesados/tracks.rds` (local); `03_Resultados/Tablas/01_tracks/cohortes_desgaste.{png,csv}` |
+| `02_Scripts/02_precio_arroz.R` | Precio del arroz por comunidad en 1997 y 2000 (posyandu y tiendas, Rp/kg, litros convertidos); dosis, cuartiles, terciles dentro de provincia y nacionales; marca de precio levantado en 1998 | `01_Datos/02_Procesados/precio_arroz.rds` (local); `03_Resultados/Figuras/02_precio_arroz/comunidades_distribucion_alza.png`; `03_Resultados/Tablas/02_precio_arroz/comunidades_resumen_precio.{png,csv}` |
+| `02_Scripts/03_x_1997.R` | Características de 1997 de la cohorte principal: controles de E-Q sin los programas, moderadores pre-registrados (pobre con la línea de Widyanti et al. 2009), entrevista en 1998 | `01_Datos/02_Procesados/x_1997.rds` (local) |
+| `02_Scripts/04_haz.R` | HAZ (OMS) de la cohorte principal en 1997 y 2000 y de la placebo en 1993 y 1997; edad en meses y medición en 1998 | `01_Datos/02_Procesados/haz.rds` (local); `03_Resultados/Tablas/04_haz/cohortes_haz_resumen.{png,csv}` |
+| `02_Scripts/05_base.R` | Base lista para estimar (cohorte principal con precio y HAZ válido en 1997 y 2000) y desgaste según el alza | `01_Datos/03_Listos/base_estimacion.rds` (local); `03_Resultados/Tablas/05_base/ninos_desgaste_alza.{png,csv}` y `ninos_desgaste_alza_pendientes.csv` |
 | `02_Scripts/_exploratorio/01_salud_mental_1993.py` | Índice de síntomas de 1993 (Python, fuera del pipeline) | `01_Datos/02_Procesados/salud_mental_1993.*` (local) |
 
 ### Scripts previstos (por llenar)
 
-`01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz_9700`,
-`05_escolaridad_2014`, `06_cognicion`, `10_validacion`, `20_bosques`,
-`40_focalizacion` (`10_Propuesta/02` §6).
+Los scripts de H2-H4 de `PLAN.md`.
 
 ## Paquetes
 
 `tidyverse`, `gt`, `modelsummary`, `fixest`, `glmnet` y `grf` son los del curso.
-**Ampliaciones** frente al curso: `haven` (lectura de `.dta`) y, de `grf`,
+**Ampliaciones** frente al curso: `haven` (lectura de `.dta`), `anthro` y
+`anthroplus` (HAZ con los estándares de la OMS) y, de `grf`,
 `get_scores`, `best_linear_projection` y `average_treatment_effect(subset = …)`;
 `fwildclusterboot` si se usa. Cualquier otra se registra en `CLAUDE.md`
 ("Decisiones tomadas") antes de usarla.

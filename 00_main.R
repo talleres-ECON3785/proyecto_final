@@ -36,6 +36,8 @@ if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
   tidyverse,    # limpieza, manipulacion y graficas (incluye ggplot2)
   haven,        # AMPLIACION: lectura de los .dta de la IFLS (read_dta)
+  anthro,       # AMPLIACION: HAZ con los estandares OMS hasta 60 meses
+  anthroplus,   # AMPLIACION: HAZ con la referencia OMS 2007 desde 61 meses
   gt,           # formato de las tablas de la presentacion
   modelsummary, # tablas de regresion (output = "gt")
   fixest,       # feols(): efectos fijos y errores agrupados por commid97
@@ -64,7 +66,12 @@ if (length(faltan) > 0) {
 # 01_Datos/01_Crudos/ no va aqui: no es una salida y nunca se escribe en ella
 carpetas_salida <- c(
   "01_Datos/02_Procesados", "01_Datos/03_Listos",
-  "03_Resultados/Tablas", "03_Resultados/Figuras"
+  "03_Resultados/Tablas", "03_Resultados/Figuras",
+  "03_Resultados/Tablas/01_tracks",
+  "03_Resultados/Figuras/02_precio_arroz",
+  "03_Resultados/Tablas/02_precio_arroz",
+  "03_Resultados/Tablas/04_haz",
+  "03_Resultados/Tablas/05_base"
   # una subcarpeta por script que genera tablas o figuras (nombre del script),
   # p. ej. "03_Resultados/Tablas/02_precio_arroz"
 )
@@ -76,11 +83,14 @@ for (carpeta in carpetas_salida) {
 # 5. Orden de ejecucion de los scripts (segun su numeracion)
 # -----------------------------------------------------------------------------
 
-# cada script nuevo se agrega aqui en la misma sesion en que se crea. Orden
-# previsto (10_Propuesta/02_datos_ifls_acceso_y_manejo.md, seccion 6):
-#   01_tracks, 02_precio_arroz, 03_x_1997, 04_haz_9700, 05_escolaridad_2014,
-#   06_cognicion, 10_validacion, 20_bosques, 40_focalizacion
+# cada script nuevo se agrega aqui en la misma sesion en que se crea; faltan
+# los de H2-H4 de PLAN.md
 scripts <- c(
+  "02_Scripts/01_tracks.R",      # cohortes 0-5 de 1997 y 1993, commid97 y desgaste
+  "02_Scripts/02_precio_arroz.R", # precio por comunidad 1997 y 2000; dosis, cuartiles, terciles
+  "02_Scripts/03_x_1997.R",       # X de 1997: controles de E-Q, moderadores, entrevista en 1998
+  "02_Scripts/04_haz.R",          # HAZ OMS de 1993, 1997 y 2000 de las dos cohortes
+  "02_Scripts/05_base.R"          # base lista para estimar y desgaste segun el alza
 )
 
 # nota: los '00_formato_*.R' no aparecen en esta lista porque no producen
