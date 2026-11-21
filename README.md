@@ -77,8 +77,10 @@ Semilla: 2026 en todo paso aleatorio.
 ## Paquetes
 
 `tidyverse`, `gt`, `modelsummary`, `fixest`, `glmnet` y `grf` son los del curso.
-**Ampliaciones** frente al curso: `haven` (lectura de `.dta`). Cualquier otra se
-registra en `CLAUDE.md` ("Decisiones tomadas") antes de usarla.
+**Ampliaciones** frente al curso: `haven` (lectura de `.dta`) y, de `grf`,
+`get_scores`, `best_linear_projection` y `average_treatment_effect(subset = …)`;
+`fwildclusterboot` si se usa. Cualquier otra se registra en `CLAUDE.md`
+("Decisiones tomadas") antes de usarla.
 
 ## Datos y licencia
 

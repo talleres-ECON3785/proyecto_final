@@ -15,95 +15,81 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      aplica, el integrante a cargo. Se derivan de las primeras casillas sin
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
-Objetivos derivados de [`PLAN.md`](PLAN.md). El alcance cambió el 20-nov: solo
-estatura, en tres preguntas (¿dolió?, ¿a quién?, ¿el bosque supera a las reglas
-simples?).
+Objetivos derivados de [`PLAN.md`](PLAN.md) (rehecho el 20-nov). Lo confirmado
+está en [`registro_decisiones.md`](registro_decisiones.md); `10_Propuesta/` ya no
+se consulta, salvo el pre-registro.
 
-1. **P0.3 y P1.1, P1.3-P1.5: equipo en el repositorio y decisiones previas**
-   (todo el equipo).
-   - Cada integrante clona, pone los datos de RAND en `01_Datos/01_Crudos/` y
-     crea su rama.
-   - Reunión corta para confirmar:
-     - el tratamiento T1-T4 y la réplica con `feols` (`PLAN.md` H1; en
-       `CLAUDE.md` §11 figuran como recomendación por confirmar), y la
-       construcción del precio decidida por Santiago el 20-nov (fuentes
-       comunes, cambio proporcional nominal);
-     - los GATE pre-declarados, con la edad primero, la familia de Holm y la
-       métrica de RATE;
-     - el lenguaje del pipeline;
-     - las recomendaciones de datos de `10_Propuesta/02` §5.
-   - *Terminado cuando:* las decisiones están en "Decisiones tomadas" de
-     `CLAUDE.md` y en `01_Datos/CLAUDE.md` §9, con fecha, y los GATE quedan
-     escritos.
-2. **P2.1: `02_Scripts/01_tracks.R`.**
-   - `htrack`/`ptrack` 1993-2000, `commid97`, cohortes (0-5 años en 1997; 0-5 en
-     1993 para el placebo) y desgaste por ola, en `01_Datos/02_Procesados/`.
+1. **P0.1-P0.3: equipo en el repositorio** (todo el equipo).
+   - Cada integrante clona, pone los datos de RAND en `01_Datos/01_Crudos/`,
+     crea su rama y corre la verificación de datos de `00_main.R`.
+   - Santiago cuenta al equipo lo decidido el 20-nov: `registro_decisiones.md` y
+     `10_Propuesta/07_preregistro_heterogeneidad.md`.
+   - *Terminado cuando:* las cuatro ramas existen y las objeciones al registro,
+     si las hay, quedan resueltas en el registro (con su historial).
+2. **P1.1: `02_Scripts/01_tracks.R`.**
+   - Seguimiento 1993-2000 desde `htrack`/`ptrack`, `commid97`, cohorte de 0-5
+     años en 1997 y de 0-5 en 1993 (placebo), y desgaste por ola, en
+     `01_Datos/02_Procesados/`.
    - *Terminado cuando:* corre desde `00_main.R`, verifica la unicidad de las
-     llaves con `stopifnot()` y reproduce los conteos de la síntesis (p. ej.
-     3.851 niños de 0-5 años en 1997; 894 hogares sin `commid97`).
-3. **P2.2: `02_Scripts/02_precio_arroz.R`.** Bloquea todo lo demás; dos
-   integrantes en la semana 1.
-   - Precio por comunidad en 1997 y 2000 con la construcción de `PLAN.md` H1:
-     T2 con posyandu + `bk2_hpj`, calidad media, kg, mediana, cambio
-     proporcional nominal winsorizado; T1 como réplica aproximada.
-   - T1-T4, prueba 1 (variación del alza dentro y entre provincias),
-     diagnóstico PKK frente a posyandu en 1997 y figura de la distribución.
+     llaves con `stopifnot()` y reproduce los conteos de la sesión del 20-nov
+     (3.851 niños de 0-5 años en 1997; 3.369 con `commid97`).
+3. **P1.2: `02_Scripts/02_precio_arroz.R`.**
+   - Precio por comunidad con el registro §4. Dosis, cuartiles y terciles.
+     Marcar las 27 comunidades de 1998. Figura de la distribución del alza.
    - *Terminado cuando:* hay una base de comunidades en `01_Datos/03_Listos/`,
-     una figura en `03_Resultados/Figuras/02_precio_arroz/`, su nota en
-     `05_Notas/` y una decisión entre terciles nacionales y dentro de provincia.
+     la figura en `03_Resultados/Figuras/02_precio_arroz/` con su nota en
+     `05_Notas/`, y la decisión entre terciles nacionales y dentro de provincia
+     está en el registro.
 
 **Bloqueos / preguntas abiertas:**
 
-- Confirmar que el equipo del proyecto es el mismo del Taller 2 (la tabla de
-  ramas de `CLAUDE.md` se copió de ahí).
-- Lenguaje del pipeline sin decidir (P1.4): bloquea el estilo de los scripts de
-  construcción.
-- La réplica de E-Q será aproximada: ni el artículo ni el suplemento dicen qué
-  fuente de precio usan en 2000 (PL.3). Tampoco se sabe en qué ola miden los
-  programas que usan como controles (PL.7) ni por qué el cuadro A1 tiene 3.338
-  observaciones frente a los 2.112 niños del cuadro 1.
-- `10_Propuesta/03` y `04` siguen en v4, con la escolaridad como resultado
-  primario (P1.6).
+- Las decisiones del 20-nov las tomó Santiago; falta que el equipo las conozca
+  (P0.3).
+- Confirmar que el equipo y las ramas de `CLAUDE.md` §4.2 son los correctos.
+- Por verificar antes de usar: el valor de la línea de pobreza de Widyanti et
+  al. (2009); las variables de `b1_ks1` para el comprador neto; cómo trata `grf`
+  los empates en el RATE.
 - Fechas exactas de las semanas 15 y 16.
 
 ## Estado actual
 
-- **Repositorio:** `talleres-ECON3785/proyecto_final` (público), con la
-  estructura de los talleres. `main` tiene el commit inicial; Santiago trabaja en
-  `SantiagoMunozM`.
-- **Datos:** las cinco olas de la IFLS (4,3 GB) están en la copia local de
-  Santiago, en `01_Datos/01_Crudos/IFLS1…5/`, y no se versionan. Las cinco están
-  revisadas, con guías descriptivas `00_guia_IFLSx.md` y la síntesis
-  `01_Datos/00_sintesis_revision_IFLS.md`. Reglas en `01_Datos/CLAUDE.md`.
-- **Derivados:** solo `01_Datos/02_Procesados/salud_mental_1993.{csv,dta}`, de
-  `02_Scripts/_exploratorio/01_salud_mental_1993.py`. Queda fuera del alcance
-  actual.
-- **Scripts del pipeline:** ninguno. `00_main.R` tiene paquetes, verificación de
-  datos y de carpetas, y la lista `scripts` vacía. Formatos de figuras y tablas
-  en `02_Scripts/00_formato_*.R`.
-- **Resultados y notas:** ninguno.
-- **Plan y alcance:** `PLAN.md` reorganizado el 20-nov. Solo estatura (ΔHAZ
-  1997-2000, cohorte 0-5) y tratamiento en cuatro versiones: T1 réplica E-Q, T2
-  dosis limpia (principal), T3 cuartiles, T4 terciles para el bosque. La
-  réplica y la no linealidad van con `feols`; el bosque causal se usa para los
-  GATE pre-declarados, la calibración y RATE.
-- **Precio (sin construir):** construcción definida el 20-nov (`PLAN.md` H1,
-  `CLAUDE.md` §11). Fuentes comunes 1997-2000 (posyandu + `bk2_hpj`) y cambio
-  proporcional nominal; T1 es una réplica aproximada.
-- **Suplemento de E-Q revisado** (PL.2): controles, deflactor, errores robustos
-  sin agrupar por comunidad y cuadro A4, en
-  `07_Recursos/Articulos/00_hallazgos_articulos.md` §1.
-- **Propuesta:** resumen v5 en `10_Propuesta/00_resumen.md`; los documentos
-  `01`-`06` siguen en v4 (central: `04`). PDF en
-  `10_Propuesta/Propuesta Proyecto Final.pdf` y presentación en
-  `04_Presentaciones/propuesta_presentacion.pdf`.
-- **`grf` 2.6.1 instalado:** verificado que RATE nativo solo acepta W binario y
-  que `lm_forest` solo tiene `predict`.
+- **Repositorio:** `talleres-ECON3785/proyecto_final` (público). Santiago
+  trabaja en `SantiagoMunozM`.
+- **Datos:** las cinco olas de la IFLS en la copia local de Santiago
+  (`01_Datos/01_Crudos/`, sin versionar), revisadas, con guías y síntesis.
+  Reglas en `01_Datos/CLAUDE.md`; §9 tiene las decisiones de datos aprobadas.
+- **Decisiones:** `registro_decisiones.md` (lenguaje R, tres preguntas,
+  tratamiento en tres versiones: dosis, cuartiles y terciles, precio, muestra,
+  controles, modificadores, Holm y AUTOC). Pre-registro de subgrupos en
+  `10_Propuesta/07_preregistro_heterogeneidad.md`.
+- **Plan:** `PLAN.md` rehecho el 20-nov con lo que falta (H0-H7).
+- **Scripts del pipeline:** ninguno. `00_main.R` tiene paquetes, verificaciones y
+  la lista `scripts` vacía. Formatos en `02_Scripts/00_formato_*.R`.
+- **Derivados:** solo `salud_mental_1993` (exploratorio, fuera de alcance).
+- **Resultados y notas:** ninguno. Hay un conteo exploratorio de la muestra
+  potencial de estatura (2.668 niños con talla en 1997 y 2000, 307 comunidades;
+  bitácora del 20-nov (3)), fuera del pipeline.
+- **Propuesta (`10_Propuesta/`):** histórica.
 
 ## Registro de sesiones
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-20 (3): registro de decisiones, pre-registro y plan nuevo
+
+- Santiago Muñoz (`SantiagoMunozM`).
+  - Se revisó volver a incluir 2014 y el logro educativo (escolaridad y pruebas
+    EK de 2000) con conteos exploratorios. Santiago lo descartó: la prueba de
+    2000 no es comparable con la de 1997. Se mantiene solo estatura.
+  - Pre-registro de las cinco interacciones de E-Q, seis GATE, Holm (F1-F3) y
+    AUTOC. R para todo. T1 descartada.
+  - Nuevo `registro_decisiones.md` (solo lo confirmado, manda), `PLAN.md`
+    rehecho desde cero y `10_Propuesta/` histórica. Ninguna estimación.
+- Bitácora: [2026-11-20_registro-decisiones-y-plan_3.md](06_Bitacoras/2026-11-20_registro-decisiones-y-plan_3.md)
+- **Siguientes objetivos:** (1) P0.1-P0.3: equipo en el repositorio y
+  conocimiento del registro; (2) P1.1: `01_tracks.R`; (3) P1.2:
+  `02_precio_arroz.R` con la decisión de los terciles.
 
 ### 2026-11-20 (2): el precio de 2000 y el suplemento de E-Q
 

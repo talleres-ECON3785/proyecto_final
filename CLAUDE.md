@@ -6,8 +6,11 @@
 > los Talleres 1 y 2 (repositorios `talleres-ECON3785/taller_01` y `taller_02`).
 > **Las reglas para manejar los datos están en [`01_Datos/CLAUDE.md`](01_Datos/CLAUDE.md):
 > léalo antes de escribir cualquier script que lea o una datos.**
-> Si algo de aquí contradice un archivo más reciente de `10_Propuesta/`, manda el
-> más reciente y se actualiza este archivo en el mismo cambio.
+> **Lo confirmado está en [`registro_decisiones.md`](registro_decisiones.md) y lo
+> que falta, en [`PLAN.md`](PLAN.md).** Si algo de aquí los contradice, mandan
+> ellos y se corrige este archivo en el mismo cambio. `10_Propuesta/` es
+> histórica desde el 20-nov y ya no se consulta, salvo
+> `07_preregistro_heterogeneidad.md` (vigente).
 
 ## 1. El proyecto en una frase
 
@@ -30,14 +33,13 @@ Escolaridad, cognición y salud mental quedan fuera por ahora.
   prioriza con variables que el cliente observa y, si el bosque no las supera,
   la evidencia de que basta una regla simple.
 - **Tratamiento:** cambio proporcional del precio comunitario del arroz
-  1997→2000, asignado por la comunidad de residencia en 1997 (`commid97`), en
-  cuatro versiones: T1 réplica E-Q, T2 dosis limpia (principal), T3 cuartiles y
-  T4 terciles para el bosque. Definiciones en `PLAN.md` (H1).
-- **Documentos:** `PLAN.md` (H1: tratamiento, identificación y hechos de `grf`
-  verificados) y `10_Propuesta/04_heterogeneidad_bosques_honestos.md` (hipótesis,
-  diseño del bosque). Resumen: `10_Propuesta/00_resumen.md` (v5).
-- **Estado al 20-nov:** propuesta v4 y plan reorganizado; las cinco olas de la
-  IFLS revisadas, con guías en `01_Datos/01_Crudos/IFLSx/`; **ninguna estimación
+  1997→2000 (fuentes presentes en ambos años), asignado por la comunidad de
+  residencia en 1997 (`commid97`), en tres versiones: dosis (principal),
+  cuartiles y terciles (bosque). Definiciones en `registro_decisiones.md` §3-4.
+- **Documentos:** `registro_decisiones.md` (lo confirmado), `PLAN.md` (lo que
+  falta) y `10_Propuesta/07_preregistro_heterogeneidad.md` (subgrupos y Holm).
+- **Estado al 20-nov:** decisiones previas tomadas y las cinco olas de la IFLS
+  revisadas (guías en `01_Datos/01_Crudos/IFLSx/`); **ninguna estimación
   corrida y el precio sin construir**. El avance y lo que sigue están en
   `HANDOFF.md`.
 
@@ -66,7 +68,8 @@ confirmen.
 - `proyecto_final.Rproj`     proyecto de RStudio (raíz)
 - `CLAUDE.md`                este archivo
 - `HANDOFF.md`               estado actual, siguientes objetivos y registro de sesiones
-- `PLAN.md`                  plan de implementación por hitos (P*k.n*)
+- `registro_decisiones.md`   lo confirmado para el trabajo (manda sobre todo lo demás)
+- `PLAN.md`                  lo que falta por ejecutar, por hitos (P*k.n*)
 - `README.md`                objetivo, instrucciones de ejecución y mapa script → resultados
 - `01_Datos/`                ver [`01_Datos/CLAUDE.md`](01_Datos/CLAUDE.md) y [`01_Datos/README.md`](01_Datos/README.md)
   - `01_Crudos/IFLS1…IFLS5/` datos de RAND (**no se versionan**) + guía `00_guia_IFLSx.md` (sí)
@@ -84,17 +87,16 @@ confirmen.
   (`Articulos/`, PDF solo en local) e insumos de referencia (`Insumos/`, solo en local)
 - `08_Entregables/`          presentación final y `.zip` de entrega
 - `09_Conversaciones/`       registro crudo (`.jsonl`) de las conversaciones; en `.gitignore`
-- `10_Propuesta/`            propuesta v4 (`00`-`06`, PDF y fuentes); versiones viejas en `_obsoleto/`
+- `10_Propuesta/`            histórica (propuesta v4, no se consulta); vigente solo `07_preregistro_heterogeneidad.md`
 - `.claude/skills/`          `bitacora-sesion`, `cerrar-sesion`, `registrar-hallazgo`
 
 ## 4. Reglas de trabajo
 
 - **Idioma:** español en todo (documentos, comentarios del código, láminas).
-- **Lenguaje:** R con `tidyverse` para el pipeline. Python (`pyreadstat`) solo
-  existe hoy en `02_Scripts/_exploratorio/` y en los scripts de revisión de
-  datos. Si el equipo decide construir bases en Python, se registra en
-  "Decisiones tomadas" y `00_main.R`/README explican cómo se corre (decisión
-  pendiente, ver `HANDOFF.md`).
+- **Lenguaje:** R para todo el pipeline, incluida la construcción de bases
+  (`haven::read_dta()` + `tidyverse`; decisión del 20-nov). Python
+  (`pyreadstat`) queda solo en `02_Scripts/_exploratorio/` y en los scripts de
+  revisión de datos, fuera del pipeline.
 - Explique lo que va a hacer ANTES de editar o crear archivos.
 - Rutas relativas a la raíz del repositorio. Nunca rutas absolutas.
 - **Semilla:** `set.seed(2026)` en todo paso aleatorio; `grf` recibe
@@ -106,13 +108,14 @@ confirmen.
 - Cada documento de análisis o de propuesta cierra con una sección "Qué no está
   verificado".
 - Las decisiones del equipo (cliente, resultado primario, alcance, hipótesis) se
-  **recomiendan**; las toma el equipo. Se registran en "Decisiones tomadas" con
-  fecha.
+  **recomiendan**; las toma el equipo. Se registran en `registro_decisiones.md`
+  con fecha y quién las tomó.
 - Pensar siempre en la sustentación: preferir lo que el equipo pueda defender
   bajo preguntas sobre lo más sofisticado.
-- Al cambiar el alcance o una decisión de la propuesta, actualizar
-  `10_Propuesta/00_resumen.md` (versión y tabla "qué cambió") y este archivo;
-  mover lo reemplazado a `10_Propuesta/_obsoleto/`.
+- **Registro y plan:** lo pendiente vive en `PLAN.md`; pasa a
+  `registro_decisiones.md` solo cuando la tarea se completa. El registro es
+  conciso: solo lo confirmado, sin lo descartado ni lo que no se hará. Al cambiar
+  una decisión, se edita el registro y se anota en su historial.
 - Al cerrar una sesión: `bitacora-sesion` y después `cerrar-sesion` (§7).
 
 ### 4.1 Reproducibilidad y salidas (heredado del Taller 2)
@@ -195,7 +198,7 @@ los talleres (nombre + primer apellido + inicial del segundo):
    −1,95 años (EE 0,63) en la cohorte urbana pobre de 8 años en 1997**, que cae
    a −1,24 (EE 0,69, al 10 %) con EF de hogar (cuadro 3; −2,09 (0,66) con
    controles; −1,82 (0,73) frente a urbanos no pobres; DiD urbano-rural 1,97
-   (0,87)). Cifras cotejadas con los PDF el 17-nov (`10_Propuesta/01` §6). Un
+   (0,87)). Cifras cotejadas con los PDF el 17-nov (`07_Recursos/Articulos/00_hallazgos_articulos.md`). Un
    nulo bien documentado es un resultado válido.
 2. **Se identifica un contraste, no el efecto de la crisis.** No hay comunidades
    sin tratar. Con tratamiento continuo hace falta "tendencias paralelas
@@ -212,8 +215,8 @@ los talleres (nombre + primer apellido + inicial del segundo):
 5. **Hueco aparente** (sin confirmar en Google Scholar): no encontramos un ATE
    del precio del arroz sobre escolaridad o cognición, ni CATEs con bosques
    causales para este choque. Decir «hasta donde revisamos».
-6. **Hipótesis de heterogeneidad H1-H9** (`10_Propuesta/04` §4): se fijan por
-   escrito antes de correr el bosque. Pregunta concreta: ¿el bosque recupera,
+6. **Heterogeneidad pre-registrada** (`10_Propuesta/07_preregistro_heterogeneidad.md`,
+   20-nov). Pregunta concreta: ¿el bosque recupera,
    sin escogerlos a mano, los subgrupos de E-Q para la talla? En su cuadro A4
    (suplemento; EE robustos sin agrupar, sin corregir por comparaciones
    múltiples) solo dos interacciones son significativas, y al 10 %: urbano
@@ -225,15 +228,15 @@ los talleres (nombre + primer apellido + inicial del segundo):
 
 ## 6. Diseño y métodos
 
-Rediseñado el 20-nov (solo estatura). Detalle de cada paso en `PLAN.md` (H4-H6).
+Rehecho el 20-nov. Detalle de cada paso en `PLAN.md` (H2-H4).
 
 | Etapa | Qué | Método |
 |---|---|---|
-| 1 | **¿Dolió?** Réplica de E-Q: ΔHAZ 1997-2000, cohorte 0-5, con T1 y T2; tabla de especificaciones (sin controles → controles E-Q → EF de provincia → log precio 1997 → Lasso de doble selección; pendiente promedio del bosque como fila de robustez) | `feols`, cluster `commid97`; `glmnet` |
-| 2 | No linealidad: cuartiles del alza (Q2-Q4 frente a Q1) y spline, figura contra la recta de E-Q | `feols` con `i(cuartil, ref = 1)` |
-| 3 | Validación: placebo de tendencias previas (ΔHAZ 1993-97 de la cohorte 0-5 de 1993), Yamauchi-Larson, desgaste según el alza, sin Sumatra/Kalimantan, sin comunidades de 1998, errores por provincia | `feols` |
-| 4 | **¿A quién?** Bosque con T4 (terciles), traslape, GATE pre-declarados (edad primero) con Holm, BLP | `grf` + puntajes AIPW |
-| 5 | **¿El bosque supera a las reglas simples?** Calibración; RATE/TOC en dos mitades de comunidades frente a pobre, urbano y comprador neto; perfil de los priorizados | `test_calibration`, `rank_average_treatment_effect` |
+| 1 | **¿Dolió?** ΔHAZ 1997-2000, cohorte 0-5, con la dosis; tabla de especificaciones (sin controles → controles → EF de provincia → log precio 1997; EE robustos al lado; pendiente promedio del bosque como fila de robustez) | `feols`, cluster `commid97` |
+| 2 | Forma: cuartiles de la dosis (Q2-Q4 frente a Q1), figura contra la recta de E-Q | `feols` con `i(cuartil, ref = 1)` |
+| 3 | Validación: placebo ΔHAZ 1993-97 de la cohorte 0-5 de 1993, desgaste según el alza, sin comunidades de 1998, con pesos, sin winsorizar | `feols` |
+| 4 | **¿A quién?** Réplica de las cinco interacciones de E-Q (Holm F2); bosque con terciles, traslape, seis GATE (Holm F1), BLP | `feols`; `grf` + puntajes AIPW |
+| 5 | **¿El bosque supera a las reglas simples?** Calibración; RATE con AUTOC en dos mitades de comunidades frente a pobre, urbano y comprador neto (Holm F3); perfil de los priorizados | `test_calibration`, `rank_average_treatment_effect` |
 
 **Alcance mínimo:** etapas 1-4. Si falta tiempo, la etapa 5 queda como
 exploratoria.
@@ -261,8 +264,9 @@ Reglas de los métodos:
 - Si `test_calibration` no rechaza: reportar "no hay evidencia de
   heterogeneidad" y apoyarse en el ATE y los GATE pre-declarados.
 - No controlar por variables posteriores al tratamiento.
-- Corregir comparaciones múltiples (Holm sobre H1-H8); un solo resultado
-  primario; los secundarios son exploratorios.
+- Corregir comparaciones múltiples con Holm en las familias F1-F3 del
+  registro; un solo resultado primario (el ATE); lo demás no pre-registrado es
+  exploratorio.
 - Distinguir siempre **estimando**, **estimador** y **estimación**, y la escala
   (z de HAZ, años, cm, Δlog del precio).
 - No emitir juicios de "bueno" o "malo" sobre resultados ni entusiasmo por
@@ -314,7 +318,7 @@ dicen qué se hizo). Quien arme la presentación debe poder leer solo las notas.
   Etapa / alcance (descriptivo, contraste, placebo); Script de origen; Última
   verificación; Evidencia (rutas exactas en `03_Resultados/`, cifras con escala,
   n de personas y de comunidades); Qué dice en lenguaje intuitivo; Por qué
-  importa (pregunta del cliente, hipótesis H1-H9, relación con E-Q y F-T);
+  importa (pregunta del cliente, subgrupos pre-registrados, relación con E-Q y F-T);
   Límites e incertidumbre; Historial.
 - Solo se cita lo que está en `03_Resultados/`. `05_Notas/README.md` es el índice.
 - **Contraste con lo registrado:** ante cada resultado nuevo se compara con las
@@ -325,7 +329,7 @@ dicen qué se hizo). Quien arme la presentación debe poder leer solo las notas.
   sin su decisión. Una diferencia con la literatura atribuible no es una
   contradicción: es parte del aporte (reconciliar E-Q y F-T).
 
-## 9. Literatura clave (detalle en `10_Propuesta/01` y `06`)
+## 9. Literatura clave (detalle en `07_Recursos/Articulos/00_hallazgos_articulos.md`)
 
 Elmira y Qaim (2026) · Frankenberg y Thomas (2017) · Frankenberg, Smith y Thomas
 (2003) · Friedman y Levinsohn (2002) · Friedman y Thomas (2009) · Thomas et al.
@@ -349,6 +353,11 @@ et al. (2004) usa datos de Java rural, no la IFLS.
 
 ## 11. Decisiones tomadas
 
+> **Histórica.** Desde el 20-nov las decisiones vigentes están en
+> `registro_decisiones.md`, que manda sobre esta tabla (por ejemplo, T1 está
+> descartada y las versiones se llaman dosis, cuartiles y terciles). No se
+> agregan filas nuevas aquí.
+
 | Fecha | Decisión | Justificación |
 |---|---|---|
 | 2026-11-09 | Tema IFLS / crisis de 1998 en lugar de tweets de Petro y la bolsa | — |
@@ -366,6 +375,11 @@ et al. (2004) usa datos de Java rural, no la IFLS.
 | 2026-11-20 | Tratamiento en cuatro versiones: T1 réplica E-Q (cambio proporcional, todas las fuentes, nominal); T2 dosis limpia, principal (fuentes comunes 1997-2000, calidad media, kg, winsorizada p1/p99); T3 cuartiles de T2; T4 terciles de T2, alto frente a bajo sin el medio, para el bosque. Terciles nacionales o dentro de provincia según la prueba 1 (pendiente) | E-Q usan cambio proporcional, no Δlog (p. 5); el PKK no trae precios en 2000; cola de +729 %; RATE nativo exige W binario. Recomendación de la sesión de Santiago tras evaluarla con un consejo de cinco asesores; **confirmar con el equipo** |
 | 2026-11-20 | **Precio:** el tratamiento principal usa solo las fuentes presentes en 1997 y 2000 (posyandu + `bk2_hpj`), con cambio proporcional **nominal**. El PKK de 1997 entra solo en T1 (réplica aproximada). El deflactor de E-Q queda como extensión opcional. Errores robustos y agrupados, uno al lado del otro, en la réplica; los programas de la red de seguridad social, solo en la columna de réplica | El suplemento de E-Q no dice qué fuente usaron en 2000 ni agrupa por comunidad. Con un deflactor común, el cambio real solo reescala β. Decisión de Santiago en la sesión del 20-nov (`PLAN.md` H1); informar al equipo |
 | 2026-11-20 | El ATE se replica con `feols` (panel con EF individuales ≡ primeras diferencias); la pendiente promedio del bosque solo como fila de robustez. La no linealidad se estudia con `feols` (cuartiles y spline), no con bosques | El estimando de `grf` continuo no es el β MCO de E-Q, y el bosque supone efecto lineal en W dado x. Recomendación; **confirmar con el equipo** |
+| 2026-11-20 | **R para todo el pipeline**, también para construir las bases (`haven::read_dta()`, ampliación). Python solo en lo exploratorio | Un solo lenguaje para la entrega reproducible y un solo punto de entrada (`00_main.R`). Decisión de Santiago (P1.4) |
+| 2026-11-20 | **Pre-registro de la heterogeneidad** (`10_Propuesta/07_preregistro_heterogeneidad.md`): réplica de las cinco interacciones de E-Q (edad crítica, mujer, madre con educación alta, pobre, urbano; cuadros A4-A5) con `feols`; seis GATE con el bosque T4 (edad 3-5 frente a 0-2, urbano, madre con más que primaria, mujer, comprador neto, pobre) | Fijar subgrupos antes de ver resultados (§5.6). Decisión de Santiago (P1.3) |
+| 2026-11-20 | **Familias de Holm** (α = 0,05, bilateral): F1 = los seis contrastes GATE (m = 6); F2 = las cinco interacciones de E-Q con T1 y EE agrupados (m = 5); F3 = las tres diferencias de RATE bosque − regla (m = 3). El ATE, `test_calibration`, el AUTOC del bosque y la BLP quedan fuera de toda familia. Holm simple, sin secuencia con la edad primero | Controla la probabilidad de algún falso positivo por familia con cualquier dependencia; la predicción para la edad viene de una asociación de 2014, demasiado débil para una secuencia fija. Decisión de Santiago (P1.3) |
+| 2026-11-20 | **Métrica de RATE: AUTOC** (`target = "AUTOC"`); QINI no se reporta | El cliente atiende primero a quien más sufre (pesa la cabeza del orden) y es la métrica del Lab 10. Decisión de Santiago (P1.3) |
+| 2026-11-20 | **Ampliaciones registradas:** `haven`, `get_scores`, `best_linear_projection`, `average_treatment_effect(subset = …)` (ya registrada en el Taller 2) y, si se usa, `fwildclusterboot` | Requisito de §6 (registrar antes de usar). `anthro`/`anthroplus` (HAZ OMS) se registran cuando se cree `04_haz` |
 
 ## 12. Análisis descartados
 
@@ -376,3 +390,4 @@ et al. (2004) usa datos de Java rural, no la IFLS.
 | 2026-11-18 | Árbol causal honesto sobre puntajes AIPW (antes etapa 7) | Decisión del equipo; ver "Decisiones tomadas" |
 | 2026-11-20 | Escolaridad 2014 (con la recuperación de la celda de 8 años de F-T y el bosque placebo en la cohorte no expuesta), cognición, estatura adulta y salud mental | Alcance; ver "Decisiones tomadas" |
 | 2026-11-20 | Bosque causal para replicar el ATE y para la no linealidad; `lm_forest` y `multi_arm_causal_forest` | Estimando distinto o sin herramientas de inferencia (`lm_forest` solo tiene `predict`); fuera del catálogo del curso |
+| 2026-11-20 | Rendimiento escolar en 2000 (prueba EK de 2000, cohorte de 7-11 años en 1997; ~2.904 niños en 308 comunidades según un conteo exploratorio) | Decisión de Santiago: la prueba de 2000 no es comparable con la de 1997 (instrumento rediseñado, sin puntaje total, 18 ítems) y el efecto dependería de cómo se construya el resultado (corte transversal, valor agregado o cambio en z). El EBTANAS reportado solo lo tienen 989 niños en 1997 |

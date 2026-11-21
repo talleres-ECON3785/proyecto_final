@@ -102,6 +102,15 @@ leído completo el 20-nov-2026, nivel de verificación: texto del archivo)
   pobre 0,216 (0,180); urbano −0,270* (0,153). Solo al 10 %, sin agrupar y sin
   corregir por comparaciones múltiples. Lo de "más daño en varones" no es
   significativo.
+- **Cuadro A5 (las mismas interacciones, retraso en talla):** edad crítica
+  −0,053 (0,036); mujer −0,026 (0,032); madre con educación alta −0,028
+  (0,032); pobre −0,085 (0,079); urbano 0,051 (0,058). Ninguna significativa.
+- **Definiciones (texto principal, cotejado el 20-nov):** pobre = línea oficial
+  de pobreza de Indonesia de fines de los 90 (Widyanti et al. 2009; nota 3,
+  p. 4); educación baja de la madre = primaria o menos (p. 5); la fig. 5 parte
+  la edad en 0-2 y 3-5 años en 1997. No dicen cuál es la "edad crítica"; por el
+  color de la fig. 5 sería 0-2 años (inferencia nuestra). Todo esto queda
+  pre-registrado en `10_Propuesta/07_preregistro_heterogeneidad.md`.
 - **Figura A1:** subgrupos para retraso en talla, emaciación, sobrepeso y
   obesidad (no para HAZ). La emaciación (WHZ) solo se estima para los niños de
   0-31 meses en 1997.

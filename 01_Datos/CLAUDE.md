@@ -193,7 +193,7 @@ S §11), ninguna es definitiva. Cuando se aprueben, se registran aquí y en
 
 | Fecha | Pregunta (S §11) | Decisión | Razón |
 |---|---|---|---|
-| — | — | Ninguna aprobada todavía | — |
+| 2026-11-20 | 1-6, 10-13, 15, 17 | Aprobadas, con ajustes, en `registro_decisiones.md` §4-5 (raíz): precio con mediana de todas las calidades y cambio proporcional; comprador neto binario | Decisión de Santiago; el registro manda sobre las recomendaciones de abajo |
 
 Recomendaciones vigentes (pendientes de aprobación): unidad `commid97` (312);
 tratamiento por residencia en 1997 (fuera los 894 hogares sin `commid97`); dos
