@@ -1,0 +1,7 @@
+cohorte,anio,con_talla,con_talla_y_edad,fuera_de_6,haz_valido,comunidades,edad_media_meses,haz_media,haz_de
+0-5 años en 1997 (principal),1997,3217,3168,64,3043,308,37.6,-1.755,1.575
+0-5 años en 1997 (principal),2000,3422,3422,15,3359,311,71.9,-1.729,1.14
+0-5 años en 1997 (principal),1997 y 2000 (cambio),NA,NA,NA,2526,307,NA,0.026,1.333
+0-5 años en 1993 (placebo),1993,3261,3111,99,2970,303,36.9,-1.704,1.605
+0-5 años en 1993 (placebo),1997,3530,3493,6,3429,306,84.3,-1.816,1.133
+0-5 años en 1993 (placebo),1993 y 1997 (cambio),NA,NA,NA,2504,301,NA,-0.072,1.434

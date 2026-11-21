@@ -15,63 +15,142 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      aplica, el integrante a cargo. Se derivan de las primeras casillas sin
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
-Objetivos derivados de [`PLAN.md`](PLAN.md).
+Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
+[`registro_decisiones.md`](registro_decisiones.md). H1 (bases) quedó completo
+el 20-nov (4).
 
-1. **P0.3 y P1.1-P1.6: poner al equipo en el repositorio y tomar las
-   decisiones previas** (todo el equipo).
-   - Cada integrante clona, pone los datos de RAND en `01_Datos/01_Crudos/`
-     (`01_Datos/README.md`) y crea su rama.
-   - Reunión corta para cerrar cliente, resultado primario, lenguaje del
-     pipeline, recomendaciones de datos de `10_Propuesta/02` §5 e hipótesis
-     H1-H9.
-   - *Terminado cuando:* las decisiones están en "Decisiones tomadas" de
-     `CLAUDE.md` y en `01_Datos/CLAUDE.md` §9, con fecha, y las H1-H9 quedan
-     fijadas por escrito.
-2. **P2.1: `02_Scripts/01_tracks.R`.**
-   - `htrack`/`ptrack` 1997-2014, `commid97`, cohortes y desgaste por ola, en
-     `01_Datos/02_Procesados/`.
-   - *Terminado cuando:* corre desde `00_main.R`, verifica la unicidad de las
-     llaves con `stopifnot()` y reproduce los conteos de la síntesis (p. ej.
-     3.851 niños de 0-5 años en 1997; 894 hogares sin `commid97`).
-3. **P2.2: `02_Scripts/02_precio_arroz.R`** (es lo primero que pide la
-   asesoría).
-   - Precio por comunidad en 1997 y 2000 con las dos construcciones, Δlog y
-     terciles, y la figura de su distribución.
-   - *Terminado cuando:* hay una base de comunidades en `01_Datos/03_Listos/`,
-     una figura en `03_Resultados/Figuras/02_precio_arroz/` y su nota en
-     `05_Notas/`.
+1. **P2.1: ATE con `feols`** (`02_Scripts/10_ate.R` o el nombre que se acuerde).
+   - Dosis, primeras diferencias, `cluster = ~commid97`. Tabla de
+     especificaciones (1-4) con errores robustos al lado y β en HAZ por +100 %.
+   - *Terminado cuando:* la tabla está en `03_Resultados/Tablas/<script>/` con el
+     n de niños y de comunidades, y su nota en `05_Notas/` está contrastada con
+     el −0,135 de E-Q. Leer la especificación 3 (efectos fijos de provincia)
+     junto con la nota de desgaste.
+2. **P2.2: forma con cuartiles** (Q2-Q4 frente a Q1).
+   - *Terminado cuando:* la figura de los coeficientes, con la recta de E-Q
+     encima, está exportada y tiene nota.
+3. **P2.3: validación.**
+   - Placebo 1993→1997 (decidir antes si se asigna por `commid93` o `commid97`),
+     desgaste según el alza, sin las comunidades de 1998, con pesos, sin
+     winsorizar y sin |ΔHAZ| > 3.
+   - *Terminado cuando:* la tabla de robustez está exportada y tiene nota.
 
 **Bloqueos / preguntas abiertas:**
 
-- Confirmar que el equipo del proyecto es el mismo del Taller 2 (la tabla de
-  ramas de `CLAUDE.md` se copió de ahí).
-- Lenguaje del pipeline sin decidir (P1.4): bloquea el estilo de los scripts de
-  construcción.
+- **Contar al equipo** las decisiones del 20-nov (4): litros a kg, 38
+  comunidades de 1998, terciles dentro de provincia, línea de Widyanti et al.
+  (2009) y la base fuera de GitHub (cada uno la regenera con `00_main.R`).
+- **Muestra frente a E-Q:** nuestros 2.421 niños frente a los 2.112 de su cuadro
+  1, cuyos filtros no se conocen.
+- **Por verificar antes de usar:** cómo trata `grf` los empates en el RATE;
+  que la «edad crítica» de E-Q sea 0-2 años.
 - Fechas exactas de las semanas 15 y 16.
 
 ## Estado actual
 
-- **Repositorio:** `talleres-ECON3785/proyecto_final` (público), con la
-  estructura de los talleres. `main` tiene el commit inicial; todavía no hay
-  ramas de integrantes.
-- **Datos:** las cinco olas de la IFLS (4,3 GB) están en la copia local de
-  Santiago, en `01_Datos/01_Crudos/IFLS1…5/`, y no se versionan. Revisadas las
-  cinco; guías descriptivas `00_guia_IFLSx.md` y síntesis
-  `01_Datos/00_sintesis_revision_IFLS.md`. Reglas en `01_Datos/CLAUDE.md`.
-- **Derivados:** solo `01_Datos/02_Procesados/salud_mental_1993.{csv,dta}`, de
-  `02_Scripts/_exploratorio/01_salud_mental_1993.py` (uso no decidido).
-- **Scripts del pipeline:** ninguno. `00_main.R` tiene paquetes, verificación de
-  datos y de carpetas, y la lista `scripts` vacía. Formatos de figuras y tablas
-  copiados del Taller 2 y adaptados (`02_Scripts/00_formato_*.R`).
-- **Resultados y notas:** ninguno.
-- **Propuesta:** v4 en `10_Propuesta/` (documento central `04`); desde el 18-nov
-  sin árbol causal. PDF en `10_Propuesta/Propuesta Proyecto Final.pdf` y
-  presentación en `04_Presentaciones/propuesta_presentacion.pdf`.
+- **Repositorio:** `talleres-ECON3785/proyecto_final` (público). Santiago
+  trabaja en `SantiagoMunozM`.
+- **Datos:** las cinco olas de la IFLS en local (`01_Datos/01_Crudos/`, sin
+  versionar). Reglas en `01_Datos/CLAUDE.md`.
+- **Pipeline:** `00_main.R` corre de principio a fin cinco scripts:
+  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz` y `05_base`. Las
+  ampliaciones `anthro` y `anthroplus` están registradas.
+- **Bases** (locales, ignoradas por git):
+  - `02_Procesados/`: `tracks`, `precio_arroz` (297 comunidades), `x_1997` y
+    `haz`;
+  - `03_Listos/base_estimacion.rds`: **2.421 niños en 294 comunidades**, un niño
+    por fila, con ΔHAZ, dosis, cuartiles, terciles y X de 1997;
+  - no se comparten por GitHub: se regeneran con `00_main.R`.
+- **Resultados** (`03_Resultados/`): desgaste por ola, distribución del alza y
+  resumen del precio, resumen del HAZ, desgaste según el alza y la revisión de
+  P1.6 (motivos del HAZ faltante en 1997, balance y cola del ΔHAZ). Todos
+  descriptivos; **ninguna estimación del ATE todavía**.
+- **Notas** (`05_Notas/`): cohortes y desgaste, distribución del precio,
+  desgaste según el alza (con la revisión de P1.6).
+- **Decisiones:** `registro_decisiones.md`, al día con lo de H1. Pre-registro en
+  `10_Propuesta/07_preregistro_heterogeneidad.md`.
 
 ## Registro de sesiones
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-20 (5): revisión de la base antes de H2 (P1.6)
+
+- Santiago Muñoz (`SantiagoMunozM`).
+  - Hay menos HAZ de 1997 en el cuartil de mayor alza porque faltan
+    evaluaciones de salud, y la brecha es sobre todo entre provincias: con
+    efectos fijos de provincia, la pendiente pasa de −0,090 a −0,045 (EE 0,033).
+  - La composición de los medidos no cambia con el alza.
+  - La cola del ΔHAZ (110 niños) se mantiene, con robustez sin |ΔHAZ| > 3 en
+    P2.3, decidido antes de ver el ATE. **Cierra P1.6.**
+- Bitácora: [2026-11-20_revision-base-p1-6_5.md](06_Bitacoras/2026-11-20_revision-base-p1-6_5.md)
+- **Siguientes objetivos:** (1) P2.1: ATE con `feols`; (2) P2.2: forma con
+  cuartiles; (3) P2.3: validación (placebo y robustez).
+
+### 2026-11-20 (4): las bases del hito H1
+
+- Santiago Muñoz (`SantiagoMunozM`).
+  - Se escribieron y corrieron `01_tracks`, `02_precio_arroz`, `03_x_1997`,
+    `04_haz` y `05_base`. **Cierra H1 (P1.1-P1.5).**
+  - La base lista tiene 2.421 niños en 294 comunidades.
+  - Decisiones: litros a kg, 38 comunidades de 1998, terciles dentro de
+    provincia, línea de Widyanti et al. (2009) verificada en el PDF y la base
+    fuera de GitHub (repositorio público).
+  - El seguimiento 1997-2000 no depende del alza, pero la cobertura del HAZ de
+    1997 sí (P1.6).
+- Bitácora: [2026-11-20_bases-h1_4.md](06_Bitacoras/2026-11-20_bases-h1_4.md)
+- **Siguientes objetivos:** (1) P1.6: revisar la base (HAZ de 1997 faltante y
+  cola del ΔHAZ); (2) P2.1: ATE con `feols`; (3) P2.2: forma con cuartiles.
+
+### 2026-11-20 (3): registro de decisiones, pre-registro y plan nuevo
+
+- Santiago Muñoz (`SantiagoMunozM`).
+  - Se revisó volver a incluir 2014 y el logro educativo (escolaridad y pruebas
+    EK de 2000) con conteos exploratorios. Santiago lo descartó: la prueba de
+    2000 no es comparable con la de 1997. Se mantiene solo estatura.
+  - Pre-registro de las cinco interacciones de E-Q, seis GATE, Holm (F1-F3) y
+    AUTOC. R para todo. T1 descartada.
+  - Nuevo `registro_decisiones.md` (solo lo confirmado, manda), `PLAN.md`
+    rehecho desde cero y `10_Propuesta/` histórica. Ninguna estimación.
+- Bitácora: [2026-11-20_registro-decisiones-y-plan_3.md](06_Bitacoras/2026-11-20_registro-decisiones-y-plan_3.md)
+- **Siguientes objetivos:** (1) P0.1-P0.3: equipo en el repositorio y
+  conocimiento del registro; (2) P1.1: `01_tracks.R`; (3) P1.2:
+  `02_precio_arroz.R` con la decisión de los terciles.
+
+### 2026-11-20 (2): el precio de 2000 y el suplemento de E-Q
+
+- Santiago Muñoz (`SantiagoMunozM`).
+  - Se diagnosticó el problema del precio de 2000: el libro PKK no trae precios,
+    así que promediar todas las fuentes de cada año mezcla el alza con el
+    cambio de fuentes.
+  - Se leyó completo el suplemento de E-Q (cierra PL.2). No dice qué fuente usan
+    en 2000, y sus errores son robustos sin agrupar por comunidad.
+  - Santiago decidió el precio principal: fuentes comunes (posyandu +
+    `bk2_hpj`) y cambio proporcional nominal; T1 queda como réplica aproximada.
+  - Se corrigió `CLAUDE.md` §5.6 con el cuadro A4. Ninguna estimación.
+- Bitácora: [2026-11-20_precio-2000-y-suplemento-eq_2.md](06_Bitacoras/2026-11-20_precio-2000-y-suplemento-eq_2.md)
+- **Siguientes objetivos:** (1) P0.3 y P1.1, P1.3-P1.5: equipo en el
+  repositorio y confirmación de las decisiones, incluido el precio; (2) P2.1:
+  `01_tracks.R`; (3) P2.2: `02_precio_arroz.R` con T1-T4, la prueba 1 y el
+  diagnóstico PKK frente a posyandu.
+
+### 2026-11-20: identificación del tratamiento y alcance
+
+- Santiago Muñoz (`SantiagoMunozM`).
+  - Se revisó contra el PDF cómo asignan E-Q el tratamiento: dosis continua y
+    cambio proporcional, sin grupo de control.
+  - Se discutieron las alternativas (continuo, terciles, otros cortes,
+    cuartiles) y se verificaron en `grf` 2.6.1 el bosque continuo, RATE y
+    `lm_forest`.
+  - El equipo dejó solo estatura. La propuesta se evaluó con un consejo de cinco
+    asesores, y la recomendación quedó en `PLAN.md`, `CLAUDE.md` y el resumen
+    v5: réplica y no linealidad con `feols`, el bosque para los GATE y RATE.
+  - Cierra P1.2. Ninguna estimación.
+- Bitácora: [2026-11-20_identificacion-tratamiento-y-alcance.md](06_Bitacoras/2026-11-20_identificacion-tratamiento-y-alcance.md)
+- **Siguientes objetivos:** (1) P0.3 y P1.1, P1.3-P1.5: equipo en el
+  repositorio y confirmación de las decisiones; (2) P2.1: `01_tracks.R`; (3)
+  P2.2: `02_precio_arroz.R` con T1-T4 y la prueba 1.
 
 ### 2026-11-18: configuración del repositorio
 

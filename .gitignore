@@ -39,7 +39,11 @@ __pycache__/
 # Los PDF de los artículos y las presentaciones de referencia se guardan
 # localmente; el README de cada carpeta dice cómo conseguirlos
 07_Recursos/Articulos/*.pdf
+07_Recursos/Articulos/*.docx
 07_Recursos/Insumos/*.pdf
 
 # --- Registro crudo (.jsonl) de las conversaciones con los agentes ------------
 09_Conversaciones/
+
+# --- Salidas sueltas de Claude (local) ---------------------------------------
+Claude outputs/

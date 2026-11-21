@@ -83,7 +83,7 @@ recomendaciones de uso están en `10_Propuesta/02_datos_ifls_acceso_y_manejo.md`
 
 | Problema | Dónde | Qué hacer |
 |---|---|---|
-| Faltantes leídos como 1,75e+100 con `pyreadstat` | 68 de 69 comunitarios de IFLS2 (formato 104) | Convertir a NA antes de calcular. No comprobado con `haven::read_dta()`: verificarlo la primera vez |
+| Faltantes leídos como 1,75e+100 con `pyreadstat` | 68 de 69 comunitarios de IFLS2 (formato 104) | Convertir a NA antes de calcular. **`haven::read_dta()` también los deja como 1,75e+100** (verificado en `pos_h`, `bk2_hpj`, `bk2` y `pos` el 20-nov) |
 | Enteros con faltantes leídos como texto | 201 de 230 archivos de IFLS3 (4.102 columnas); también `bek` de 1997 | `pd.to_numeric`; en R, revisar el tipo de cada columna tras leer |
 | `VAR` frente a `VAR_` | IFLS1 (versión RR) | Usar `VAR`; `VAR_` es el valor original sin corregir |
 | Etiquetas de valores casi ausentes | Todas | Codificar con el codebook o el cuestionario |
@@ -113,6 +113,9 @@ recomendaciones de uso están en `10_Propuesta/02_datos_ifls_acceso_y_manejo.md`
   3 dígitos 995-999; talla 999,5-999,9; peso `ca13` 9996-9999. **Limpiar
   variable por variable con el codebook**: en variables de 1 dígito, 5 puede ser
   válido (`kk05_*`: 1 a menudo, 3 a veces, 5 nunca).
+- **Método de medición de la talla, invertido entre olas:** 1993 `ca11` 1 =
+  acostado, 3 = de pie (codebook DRU1195.4); 1997 y 2000 `us05` 1 = de pie,
+  3 = acostado (cuestionario y codebook BUS).
 - Sí/no = 1/3. Sexo = 1 hombre / 3 mujer. Años con dos dígitos. Talla y peso
   = 0 significa no medido.
 - Precios con 99998/99999 o 999998 son códigos, no precios (2000 `pos_h`,
@@ -193,12 +196,15 @@ S §11), ninguna es definitiva. Cuando se aprueben, se registran aquí y en
 
 | Fecha | Pregunta (S §11) | Decisión | Razón |
 |---|---|---|---|
-| — | — | Ninguna aprobada todavía | — |
+| 2026-11-20 | 1-6, 10-13, 15, 17 | Aprobadas, con ajustes, en `registro_decisiones.md` §4-5 (raíz): precio con mediana de todas las calidades y cambio proporcional; comprador neto binario | Decisión de Santiago; el registro manda sobre las recomendaciones de abajo |
+| 2026-11-20 | 3, 4, 5, 6, 10, 17 | Al construir H1 (`02_Scripts/01-05`): litros del posyandu a kg con factor de los datos (0,833); comunidades con precio de 1998 = unión de libro 2 y posyandu (38); fecha de nacimiento del `ptrack` de 2000 para el HAZ; código del método invertido entre 1993 y 1997-2000; comprador neto y productor desde `b1_ks1` ítem A; gasto propio con vivienda. Detalle en `registro_decisiones.md` §4-5 | Decisión de Santiago, sesión del 20-nov (4) |
 
 Recomendaciones vigentes (pendientes de aprobación): unidad `commid97` (312);
 tratamiento por residencia en 1997 (fuera los 894 hogares sin `commid97`); dos
 construcciones del precio (principal: mediana de fuentes comunes 1997-2000,
-calidad media, kg, Δlog winsorizado p1/p99; réplica E-Q); indicador de
+posyandu + `bk2_hpj`, calidad media, kg, cambio proporcional nominal
+winsorizado p1/p99, no Δlog; réplica E-Q aproximada con todas las fuentes de
+cada año; registrado el 20-nov en `CLAUDE.md` §11 y `PLAN.md` H1); indicador de
 entrevista en 1998; sin pesos en lo principal; posición neta en arroz desde
 `b1_ks1` 1997; agregado de gasto propio de 1997; cohorte no expuesta de 22-30
 años en 1997.
@@ -208,9 +214,15 @@ años en 1997.
 | Archivo | Script | Contenido | Estado |
 |---|---|---|---|
 | `02_Procesados/salud_mental_1993.{csv,dta}` | `02_Scripts/_exploratorio/01_salud_mental_1993.py` (Python + `pyreadstat`) | `sm3_93`, `sm6_93`, `triste_93`, `ansioso_93`; 12.985 personas, una fila por `pidlink` | Exploratorio; uso no decidido (salud mental es extensión opcional) |
+| `02_Procesados/tracks.rds` | `02_Scripts/01_tracks.R` | Cohortes 0-5 de 1997 y 1993 (marcas `cohorte_97`, `cohorte_93`), ids de hogar y persona 1993-2000, `commid93`, `commid97`, `prov97`, `urbano97`, membresía y evaluación de salud por ola; 6.846 filas, una por `pidlink` (1.273 en ambas cohortes) | Vigente (P1.1) |
+| `02_Procesados/precio_arroz.rds` | `02_Scripts/02_precio_arroz.R` | Una fila por `commid97` (297): precio mediano en Rp/kg en 1997 y 2000 con su número de reportes, `dosis_cruda`, `dosis` (winsorizada), `dosis_kg` (solo kg), `cuartil`, `tercil_prov` (principal), `tercil_nac`, `precio_1998` | Vigente (P1.2) |
+| `02_Procesados/x_1997.rds` | `02_Scripts/03_x_1997.R` | X de 1997 de los 3.369 niños de la cohorte principal con `commid97`: padres (educación, religión, tabaco, ausencia), tamaño del hogar, gasto per cápita y quintil, `pobre`, `pobre_q1`, comprador neto, productor de arroz, entrevista en 1998, urbano y controles de comunidad | Vigente (P1.3) |
+| `02_Procesados/haz.rds` | `02_Scripts/04_haz.R` | Una fila por `pidlink` de las dos cohortes (6.846): HAZ, talla y edad en meses de 1993, 1997 y 2000; `medido_1998` | Vigente (P1.4) |
+| `03_Listos/base_estimacion.rds` | `02_Scripts/05_base.R` | Base lista para estimar: 2.421 niños en 294 comunidades, con ΔHAZ, tratamiento, X de 1997 (controles completados con indicadores `falta_*`), `commid97` y provincia. No se comparte por GitHub: cada integrante la regenera con `00_main.R` | Vigente (P1.5) |
 
 ## Qué no está verificado
 
-- Que `haven::read_dta()` lea bien los comunitarios de 1997 (formato 104) y los
-  enteros con faltantes de 2000.
+- Que `haven::read_dta()` lea bien el resto de los comunitarios de 1997 (formato 104) y los
+  enteros con faltantes de los demás archivos de 2000 (en `ptrack` y `htrack`
+  de 2000 sí: `age_93`/`age_97` llegan como número; P1.1, 20-nov).
 - Lo que cada guía marca como no verificado (sección final de cada una y S §12).

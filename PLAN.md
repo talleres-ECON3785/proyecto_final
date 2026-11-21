@@ -1,138 +1,138 @@
-# PLAN: plan de implementación del proyecto final
+# PLAN: lo que falta por ejecutar
 
-Hoja de ruta desde la infraestructura hasta la entrega. Cada tarea es una
-casilla `Pk.n`: se marca `[x]` en la misma sesión en que se termina.
-`HANDOFF.md` deriva sus "Siguientes objetivos" de las primeras casillas sin
-marcar y las cita por número. El cómo de cada paso está en `10_Propuesta/`
-(sobre todo `02` §5-6, `03` y `04`) y en `01_Datos/CLAUDE.md`; este plan los cita,
-no los repite. Armado el 18-nov-2026 con los pendientes del `CLAUDE.md` del 17-nov.
+Rehecho el 20-nov-2026 a partir de `registro_decisiones.md`. Cada tarea es una
+casilla `Pk.n` que se marca `[x]` en la sesión en que se termina. Cuando una
+tarea fija algo (una definición, un corte, una variable), eso pasa a
+`registro_decisiones.md` **al completarse**, no antes. `HANDOFF.md` toma sus
+"Siguientes objetivos" de las primeras casillas sin marcar. `10_Propuesta/` es
+histórica y ya no se consulta.
 
-**Fechas:** asesoría en la semana 15 (agendar; documento por correo la noche
-anterior) y presentación y entrega en la semana 16 (miércoles, 11:59 pm).
-Fechas exactas por confirmar.
+**Fechas:** asesoría en la semana 15 (documento por correo la noche anterior);
+presentación y entrega en la semana 16 (miércoles, 11:59 pm). Por confirmar.
 
-**Responsables:** el equipo llena la columna "Resp." de cada hito.
+## Lo hecho hasta el 20-nov
 
-| Hito | Contenido | Resp. |
-|---|---|---|
-| H0 | Infraestructura del repositorio | Santiago |
-| H1 | Decisiones del equipo antes de construir | Equipo |
-| H2 | Construcción de las bases (scripts 01-05) | |
-| H3 | Asesoría de la semana 15 | |
-| H4 | ATE y validación (etapas 1-3) | |
-| H5 | Heterogeneidad y focalización (etapas 4-6) | |
-| H6 | Presentación | |
-| H7 | Entrega reproducible | |
-| HL | Literatura y verificación (en paralelo) | |
+- **Repositorio** con la estructura de los talleres, `00_main.R`, skills y una
+  rama por integrante (18-nov).
+- **Datos:** las cinco olas de la IFLS revisadas, con una guía por ola y una
+  síntesis (`01_Datos/`).
+- **Artículo de referencia:** Elmira y Qaim (2026) y su suplemento, cotejados
+  con el PDF: la ecuación, los controles del cuadro A1, las cinco interacciones
+  (cuadros A4-A5) y errores sin agrupar.
+- **Decisiones** en `registro_decisiones.md`: lenguaje, tres preguntas,
+  identificación, precio, muestra, controles, modificadores, Holm y AUTOC.
+- **Pre-registro** de subgrupos y familias de Holm en
+  `10_Propuesta/07_preregistro_heterogeneidad.md` (fijado antes de construir
+  nada).
+- **Conteo exploratorio** (fuera del pipeline): 2.668 niños de 0-5 años en 1997
+  con `commid97` y talla en 1997 y 2000, en 307 comunidades.
+- **Aún no se ha construido el precio ni se ha corrido ninguna estimación.**
 
----
+## H0. Equipo
 
-## H0. Infraestructura
+- [X] **P0.1** Cada integrante clona el repositorio, pone los datos de RAND en
+  `01_Datos/01_Crudos/`, crea su rama y confirma que `00_main.R` pasa la
+  verificación de datos.
+- [X] **P0.2** Confirmar que quien toque los datos esté registrado en RAND.
+- [X] **P0.3** Contar al equipo lo registrado el 20-nov y recoger objeciones
+  antes de H2.
 
-- [x] **P0.1** Estructura de carpetas de los talleres, `CLAUDE.md` raíz,
-  `01_Datos/CLAUDE.md`, `HANDOFF.md`, `PLAN.md`, README, `.gitignore` que excluye
-  los datos, `00_main.R` y skills (18-nov).
-- [x] **P0.2** Commit inicial en `main` y push a GitHub (18-nov).
-- [ ] **P0.3** Cada integrante clona el repositorio, copia o descarga los datos de
-  RAND en `01_Datos/01_Crudos/` (`01_Datos/README.md`), crea su rama y confirma
-  que `00_main.R` pasa la verificación de datos. Confirmar el equipo y las ramas
-  de `CLAUDE.md` §4.2 y §10.
-- [ ] **P0.4** Verificar que cada integrante que toque los datos esté registrado
-  en RAND.
+## H1. Bases
 
-## H1. Decisiones del equipo (antes de construir)
+Cada script deja su base en `01_Datos/02_Procesados/` o `03_Listos/`, imprime las
+observaciones que pierde y se agrega a `00_main.R` y al README.
 
-- [ ] **P1.1** Confirmar el cliente (recomendación: agencia tipo PMA).
-- [ ] **P1.2** Declarar el resultado primario antes de ver resultados
-  (recomendación: escolaridad 2014; ancla ΔHAZ 1997-2000).
-- [ ] **P1.3** Confirmar que salud mental es extensión, el alcance mínimo y el
-  orden de recorte.
-- [ ] **P1.4** Decidir el lenguaje del pipeline (R para todo con `haven`, o
-  Python solo para construir bases) y registrar `haven` como ampliación.
-- [ ] **P1.5** Aprobar las recomendaciones de datos de `10_Propuesta/02` §5
-  (unidad `commid97`, dos construcciones del precio, sin pesos, posición neta
-  desde `b1_ks1`, cohorte no expuesta 22-30) y registrarlas en
-  `01_Datos/CLAUDE.md` §9.
-- [ ] **P1.6** Pre-registrar por escrito las hipótesis H1-H9
-  (`10_Propuesta/04` §4) con fecha, antes de correr el bosque.
+- [x] **P1.1** `01_tracks`: seguimiento 1993-2000 desde `htrack`/`ptrack`,
+  `commid97`, cohorte de 0-5 años en 1997 y cohorte de 0-5 en 1993 (placebo).
+  Desgaste por ola.
+- [x] **P1.2** `02_precio_arroz`: precio por comunidad en 1997 y 2000 con el
+  registro §4. Dosis, cuartiles y terciles. Marcar las 38 comunidades con precio
+  levantado en 1998. Figura de la distribución del alza.
+  - **Decidir con los datos:** terciles nacionales o dentro de provincia, según
+    cuánta variación del alza hay dentro de provincia. Luego, al registro.
+- [x] **P1.3** `03_x_1997`: controles de E-Q sin los programas, comprador neto,
+  gasto per cápita y pobreza, educación de la madre, urbano, sexo, edad e
+  indicador de entrevista en 1998.
+  - **Decidir:** el valor de la línea de Widyanti et al. (2009) o, si no se
+    consigue, el cuartil inferior. Luego, al registro.
+- [x] **P1.4** `04_haz`: HAZ de 1997 y 2000 (cohorte principal) y de 1993 y 1997
+  (placebo) con el registro §5. Registrar `anthro`/`anthroplus` como
+  ampliaciones al crear el script.
+- [x] **P1.5** Base lista para estimar (un niño por fila: ΔHAZ, tratamiento, X de
+  1997, `commid97`, provincia) y tabla de desgaste según el alza.
+- [x] **P1.6** Antes de H2, revisar la base (de la sesión del 20-nov (4)):
+  (a) por qué falta más el HAZ de 1997 en el cuartil de mayor alza (no medido,
+  sin fecha de nacimiento o fuera de ±6; relación con las comunidades con campo
+  en 1998; X de 1997 de los niños con y sin HAZ, según el alza), con una tabla en
+  `03_Resultados/Tablas/05_base/`; (b) la cola del ΔHAZ (110 niños con
+  |ΔHAZ| > 3), para que el equipo decida si se deja o se recorta, y registrarlo.
 
-## H2. Construcción de las bases
+**En paralelo a P1.2:** escribir los scripts de H2-H4 sobre datos simulados, para
+que solo haya que cambiar la base.
 
-Orden de `10_Propuesta/02` §6. Cada script deja su base en `01_Datos/02_Procesados/`
-o `03_Listos/`, reporta observaciones perdidas y se agrega a `00_main.R`.
+## H2. Pregunta 1: ¿dolió?
 
-- [ ] **P2.1** `01_tracks`: `htrack`/`ptrack` 1997-2014, `commid97`, cohortes
-  (0-5 y 5-21 en 1997; no expuesta 22-30) y desgaste por ola.
-- [ ] **P2.2** `02_precio_arroz`: precios de 1993, 1997 y 2000 por comunidad
-  (PKK, mercado, posyandu), unidades y calidades, las dos construcciones, Δlog y
-  terciles; marcar las comunidades levantadas en 1998. Figura de la distribución
-  del tratamiento.
-- [ ] **P2.3** `03_x_1997`: roster, educación de los padres, posición neta en
-  arroz (`b1_ks1`), gasto per cápita de 1997, oro y tierra, composición del hogar,
-  choques; indicadores de humo y sequía de 1997.
-- [ ] **P2.4** `04_haz_9700`: antropometría y HAZ OMS 1997 y 2000 (cohorte 0-5).
-- [ ] **P2.5** `05_escolaridad_2014`: años completados en 2014 (tabla nivel →
-  años) y media de la cohorte no expuesta por comunidad y sexo.
-- [ ] **P2.6** (Si hay tiempo) `06_cognicion`: confirmar en el libro EK qué
-  pruebas tomó cada edad en 2007 y 2014 y construir el puntaje EK2 de 2014.
+- [ ] **P2.1** ATE con `feols`, dosis, primeras diferencias y
+  `cluster = ~commid97`. Tabla de especificaciones:
 
-## H3. Asesoría de la semana 15
+  1. sin controles;
+  2. con los controles del registro;
+  3. más EF de provincia;
+  4. más el log del precio de 1997.
 
-- [ ] **P3.1** Agendar el turno de la asesoría.
-- [ ] **P3.2** Pruebas 1-5 de `10_Propuesta/03`: varianza del precio dentro de
-  provincia, balance por tercil, traslape, tendencias previas 1993-97,
-  Yamauchi-Larson.
-- [ ] **P3.3** Documento o presentación preliminar (pregunta y cliente; datos;
-  avances; dudas) en `04_Presentaciones/`, enviado por correo la noche anterior.
+  Al lado, errores robustos sin agrupar (los de E-Q) y la pendiente promedio del
+  bosque causal como fila de robustez. β en HAZ por +100 % y en cm, con n de
+  niños y de comunidades.
+- [ ] **P2.2** Forma: `feols` con cuartiles (Q2-Q4 frente a Q1). Figura de los
+  coeficientes con la recta de E-Q encima.
+- [ ] **P2.3** Validación: placebo (ΔHAZ 1993→1997 de la cohorte de 1993 sobre el
+  alza 1997→2000, debe dar ≈ 0), desgaste según el alza, sin las comunidades de
+  1998, con pesos, sin winsorizar y sin los niños con |ΔHAZ| > 3 (`dhaz_mayor_3`).
 
-## H4. ATE y validación (etapas 1-3)
+## H3. Pregunta 2: ¿a quién?
 
-- [ ] **P4.1** Replicación: ΔHAZ 1997-2000 con EF individuales, cluster
-  `commid97`, Lasso de doble selección; comparar con β ≈ −0,135 de E-Q.
-- [ ] **P4.2** Resultado primario: escolaridad 2014, diseño C (cohorte expuesta
-  vs. no expuesta × intensidad), con terciles y Δlog continuo.
-- [ ] **P4.3** Validación: placebos (cohortes > 25 años; 12-17), hermanos (EF de
-  hogar), desgaste por tratamiento, robustez sin Sumatra y Kalimantan.
+- [ ] **P3.1** Réplica de las cinco interacciones de E-Q con `feols` y la dosis,
+  una a la vez, con errores robustos y agrupados; p sin ajustar y Holm (F2).
+- [ ] **P3.2** Bosque principal con terciles: `clusters = commid97`,
+  `seed = 2026`, `num.threads` fijo. Revisar el traslape (`W.hat`) y el ATE.
+- [ ] **P3.3** Seis GATE con `get_scores`; contrastes con
+  `feols(Γ ~ X, cluster = ~commid97)` y Holm (F1). BLP descriptiva con las seis
+  variables.
 
-## H5. Heterogeneidad y focalización (etapas 4-6)
+## H4. Pregunta 3: ¿el bosque supera a las reglas simples?
 
-- [ ] **P5.1** Verificar en la versión instalada de `grf`: RATE con dos
-  prioridades, `get_scores` con W continuo, honestidad por conglomerado. Registrar
-  las ampliaciones.
-- [ ] **P5.2** Bosque causal principal (escolaridad, terciles): traslape, ATE,
-  `test_calibration`, BLP, GATE de H1-H8 con Holm.
-- [ ] **P5.3** Prueba de recuperación de la celda de F-T y bosque placebo en la
-  cohorte no expuesta.
-- [ ] **P5.4** Focalización: dos mitades de comunidades, RATE/TOC del bosque
-  frente a pobre, urbano y comprador neto; perfil de los hogares priorizados.
-- [ ] **P5.5** (Secundario) Mismo flujo para ΔHAZ, estatura adulta y cognición.
+- [ ] **P4.1** `test_calibration` del bosque.
+- [ ] **P4.2** RATE con AUTOC en dos mitades de comunidades: bosque (−τ̂) frente a
+  pobre, urbano y comprador neto; diferencias con Holm (F3).
+- [ ] **P4.3** Perfil de los niños que prioriza el bosque (X de 1997 por cuartil
+  de τ̂). Si el bosque no supera a las reglas, preparar la lámina del nulo.
 
-## H6. Presentación
+## H5. Asesoría (semana 15)
 
-- [ ] **P6.1** Guion "conclusión primero, una idea por lámina" en
-  `04_Presentaciones/guion.md`, con la figura o tabla de `03_Resultados/` de cada
-  lámina y quién la expone (20 min + 5 de preguntas).
-- [ ] **P6.2** Láminas con los archivos exportados, sin retoques; preparación de
-  preguntas sobre identificación, `clusters` y limitaciones.
+- [ ] **P5.1** Agendar el turno.
+- [ ] **P5.2** Documento preliminar en `04_Presentaciones/`: pregunta y cliente,
+  datos, avances (idealmente H2) y dudas. Enviarlo la noche anterior.
 
-## H7. Entrega reproducible
+## H6. Presentación (semana 16)
 
-- [ ] **P7.1** Corrida completa de `00_main.R` desde cero (borrando
-  `03_Resultados/` y `01_Datos/02_Procesados/`, `03_Listos/`) sin errores.
-- [ ] **P7.2** README con el mapa completo script → tablas/figuras e
-  instrucciones de descarga; registro de ampliaciones.
-- [ ] **P7.3** `.zip` sin datos (código, README, instrucciones) y presentación en
-  `08_Entregables/`; conversaciones unidas por aparte.
+- [ ] **P6.1** Guion en `04_Presentaciones/guion.md` con el arco de las tres
+  preguntas (20 min + 5 de preguntas) y quién expone cada parte.
+- [ ] **P6.2** Láminas con las figuras y tablas exportadas, sin retoques.
+  Preparar preguntas: por qué `feols` y no el bosque para el ATE, contraste
+  frente a crisis, errores agrupados, desgaste, diferencia con Frankenberg y
+  Thomas (2017).
 
-## HL. Literatura y verificación (en paralelo)
+## H7. Entrega
 
-- [ ] **PL.1** Buscar en Google Scholar si ya existe un ATE del precio del arroz
-  sobre escolaridad o cognición, o CATEs con bosques causales para este choque.
-- [ ] **PL.2** Revisar el apéndice en línea de Elmira y Qaim (cuadros A1-A7).
-- [ ] **PL.3** Leer el texto completo de Tsaneva (2017), Irhamni (2017),
-  Wediawaty (2014) y Menéndez y Gignoux (2012).
-- [ ] **PL.4** Confirmar los códigos 51 y 52 de `ar10`/`ar11` (IFLS1, Libro K).
-- [ ] **PL.5** Insertar en `01_Datos/01_Crudos/IFLS5/00_guia_IFLS5.md` §5 el
-  catálogo de `IFLS5/_revision/_cat.md` (marcador `<<CATALOGO>>`).
-- [ ] **PL.6** Completar en `01_Datos/README.md` las citas de los informes de
-  campo de IFLS2, IFLS3 e IFLS4.
+- [ ] **P7.1** `00_main.R` corre desde cero (borrando `03_Resultados/`,
+  `02_Procesados/` y `03_Listos/`) sin errores.
+- [ ] **P7.2** README con el mapa script → resultados, instrucciones de descarga,
+  citas de los informes de campo de la IFLS y ampliaciones.
+- [ ] **P7.3** `.zip` sin datos y presentación en `08_Entregables/`.
+
+## Por verificar antes de usar
+
+- Cómo trata `rank_average_treatment_effect` los empates de una regla binaria y
+  si da la diferencia entre dos prioridades con EE emparejado (P4.2).
+- Que la "edad crítica" de E-Q sea 0-2 años (se infiere de su fig. 5).
+- La página de Yadlowsky et al. (2025) sobre AUTOC frente a QINI.

@@ -1,0 +1,20 @@
+indicador,valor
+Comunidades IFLS de 1997,312
+Sin precio en 1997 (sí en 2000),6
+Sin precio en 2000 (sí en 1997),6
+Sin precio en ninguno de los dos años,3
+Con precio en 1997 y 2000,297
+"  de ellas, solo con reportes en kg en los dos años",254
+"  de ellas, con precio de 1997 levantado en 1998",34
+Factor litro a kg (precio por litro / precio por kg),0.833
+Comunidades-año usadas para el factor,142
+"Mediana del precio en 1997 (Rp/kg, nominal)",1200
+"Mediana del precio en 2000 (Rp/kg, nominal)",2100
+Mediana del alza (cambio proporcional),0.7
+Corte p1 de la winsorización,0.198
+Corte p99 de la winsorización,1.53
+Máximo del alza sin winsorizar,3.125
+Correlación entre la dosis y la dosis solo kg,0.835
+R² de la dosis sobre la provincia,0.146
+Comunidades en los terciles alto o bajo (dentro de provincia),197
+Comunidades con tercil distinto (nacional frente a provincia),88
