@@ -11,8 +11,9 @@
 #
 # Entradas: 01_Datos/02_Procesados/{tracks,precio_arroz,x_1997,haz}.rds
 # Salidas:  01_Datos/03_Listos/base_estimacion.rds
-#           03_Resultados/Tablas/05_base/ninos_desgaste_alza.{png,csv} y
-#           ninos_desgaste_alza_pendientes.csv
+#           03_Resultados/Tablas/05_base/ninos_desgaste_alza.{png,csv},
+#           ninos_desgaste_alza_pendientes.csv, ninos_haz1997_motivos,
+#           ninos_haz1997_balance y ninos_dhaz_cola (.png y .csv; P1.6)
 # =============================================================================
 
 # los paquetes los carga 00_main.R con pacman
@@ -33,9 +34,9 @@ stopifnot(!anyDuplicated(precio$commid97), !anyDuplicated(x_1997$pidlink),
 
 partida <- tracks |>
   filter(cohorte_97, !is.na(commid97)) |>
-  select(pidlink) |>
+  select(pidlink, res97us) |>
   inner_join(x_1997, by = "pidlink") |>
-  left_join(select(haz, pidlink, haz97, haz00, edad_meses97, medido_1998),
+  left_join(select(haz, pidlink, haz97, haz00, talla97, edad_meses97, medido_1998),
             by = "pidlink") |>
   left_join(select(precio, commid97, provincia, p97, dosis, dosis_cruda,
                    dosis_kg, cuartil, tercil_prov, tercil_nac, precio_1998),
@@ -70,13 +71,15 @@ controles_logicos <- c("fumador_padre", "musulman_padre", "musulman_madre",
 base <- partida |>
   filter(retenido) |>
   mutate(dhaz = haz00 - haz97,
+         # para la robustez de P2.3 sin la cola (decision del 20-nov)
+         dhaz_mayor_3 = abs(dhaz) > 3,
          across(all_of(controles_logicos), is.na, .names = "falta_{.col}"),
          across(all_of(controles_logicos), \(v) coalesce(v, FALSE)),
          falta_tam_hogar = is.na(tam_hogar),
          tam_hogar = coalesce(tam_hogar, median(tam_hogar, na.rm = TRUE)),
          across(c(educ_madre, educ_padre), \(v) coalesce(v, "falta")),
          quintil_gasto = coalesce(as.character(quintil_gasto), "falta")) |>
-  select(-retenido, -con_precio, -fumador_madre) |>
+  select(-retenido, -con_precio, -fumador_madre, -res97us, -talla97) |>
   # los indicadores sin ningun faltante no aportan nada
   select(-(starts_with("falta_") & where(\(v) is.logical(v) && !any(v, na.rm = TRUE))))
 
@@ -95,20 +98,27 @@ saveRDS(base, "01_Datos/03_Listos/base_estimacion.rds")
 # -----------------------------------------------------------------------------
 
 con_precio <- filter(partida, con_precio) |>
-  mutate(haz_1997 = !is.na(haz97), haz_2000 = retenido)
+  mutate(evaluado_1997 = res97us %in% 1, haz_1997 = !is.na(haz97),
+         haz_2000 = retenido)
 medidos_97 <- filter(con_precio, haz_1997)
 
-pendientes <- list(
-  "Retenido (HAZ en 1997 y 2000)" = feols(as.numeric(retenido) ~ dosis,
-                                          con_precio, cluster = ~commid97),
-  "HAZ en 1997" = feols(as.numeric(haz_1997) ~ dosis, con_precio,
-                        cluster = ~commid97),
-  "HAZ en 2000, de los medidos en 1997" = feols(as.numeric(haz_2000) ~ dosis,
-                                                medidos_97, cluster = ~commid97)
-) |>
-  imap_dfr(\(m, paso) tibble(paso, pendiente = coef(m)[["dosis"]],
-                             ee_agrupado = se(m)[["dosis"]],
-                             p_valor = pvalue(m)[["dosis"]]))
+# cada paso, sin y con efectos fijos de provincia (P1.6: la brecha es sobre
+# todo entre provincias)
+pasos <- tribble(
+  ~paso, ~variable, ~datos,
+  "Retenido (HAZ en 1997 y 2000)", "retenido", list(con_precio),
+  "Evaluación de salud en 1997", "evaluado_1997", list(con_precio),
+  "HAZ en 1997", "haz_1997", list(con_precio),
+  "HAZ en 2000, de los medidos en 1997", "haz_2000", list(medidos_97)
+)
+pendientes <- expand_grid(pasos, efectos_provincia = c(FALSE, TRUE)) |>
+  pmap_dfr(\(paso, variable, datos, efectos_provincia) {
+    formula <- paste0("as.numeric(", variable, ") ~ dosis",
+                      if (efectos_provincia) " | provincia" else "")
+    m <- feols(as.formula(formula), datos[[1]], cluster = ~commid97)
+    tibble(paso, efectos_provincia, pendiente = coef(m)[["dosis"]],
+           ee_agrupado = se(m)[["dosis"]], p_valor = pvalue(m)[["dosis"]])
+  })
 print(pendientes)
 
 por_cuartil <- function(d) {
@@ -126,8 +136,9 @@ desgaste <- bind_rows(
 print(desgaste, width = Inf)
 
 texto_pendientes <- pendientes |>
-  mutate(texto = sprintf("%s: %.3f (EE %.3f; p = %.3f)", paso, pendiente,
-                         ee_agrupado, p_valor)) |>
+  mutate(texto = sprintf("%s%s: %.3f (EE %.3f; p = %.3f)", paso,
+                         if_else(efectos_provincia, ", con EF de provincia", ""),
+                         pendiente, ee_agrupado, p_valor)) |>
   pull(texto)
 
 tabla <- desgaste |>
@@ -148,3 +159,111 @@ tabla <- desgaste |>
 guardar_tabla("ninos_desgaste_alza", tabla, desgaste, carpeta_salida)
 write_csv(pendientes, file.path("03_Resultados/Tablas", carpeta_salida,
                                 "ninos_desgaste_alza_pendientes.csv"))
+
+# -----------------------------------------------------------------------------
+# 4. P1.6: por que falta el HAZ de 1997, balance de los que faltan y cola del
+#    cambio en el HAZ
+# -----------------------------------------------------------------------------
+
+# motivo excluyente, en el orden en que se pierde al nino
+motivos <- con_precio |>
+  mutate(motivo = case_when(haz_1997 ~ "con_haz",
+                            !evaluado_1997 ~ "sin_evaluacion",
+                            is.na(talla97) ~ "evaluado_sin_talla",
+                            is.na(edad_meses97) ~ "sin_fecha",
+                            TRUE ~ "fuera_de_6"))
+tabla_motivos <- bind_rows(motivos, mutate(motivos, cuartil = 5)) |>
+  mutate(cuartil = if_else(cuartil == 5, "Todos", paste("Cuartil", cuartil))) |>
+  count(cuartil, motivo) |>
+  group_by(cuartil) |>
+  mutate(ninos = sum(n), pct = round(100 * n / ninos, 1)) |>
+  select(-n) |>
+  pivot_wider(names_from = motivo, values_from = pct, values_fill = 0) |>
+  ungroup() |>
+  select(cuartil, ninos, con_haz, sin_evaluacion, evaluado_sin_talla, sin_fecha,
+         fuera_de_6)
+print(tabla_motivos)
+
+tabla <- tabla_motivos |>
+  gt() |>
+  cols_label(cuartil = "Alza del precio", ninos = "Niños", con_haz = "Con HAZ",
+             sin_evaluacion = "Sin evaluación de salud",
+             evaluado_sin_talla = "Evaluado sin talla",
+             sin_fecha = "Sin fecha de nacimiento o de medición",
+             fuera_de_6 = "HAZ fuera de ±6") |>
+  fmt_number(ninos, decimals = decimales$conteo) |>
+  fmt_number(-c(cuartil, ninos), decimals = decimales$porcentaje) |>
+  estilo_tabla(
+    titulo = "Por qué falta el HAZ de 1997, según el alza",
+    subtitulo = "Porcentaje de niños por motivo excluyente, en el orden en que se pierden",
+    nota = nota_tabla(muestra = "cohorte principal con precio en su comunidad",
+                      alcance = "descriptivo"))
+guardar_tabla("ninos_haz1997_motivos", tabla, tabla_motivos, carpeta_salida)
+
+# las X de 1997 de quienes tienen y no tienen HAZ en 1997: si su diferencia
+# cambia con el alza (interaccion), la seleccion depende del tratamiento
+balance <- c(pobre = "Pobre", urbano97 = "Urbano",
+             madre_mas_primaria = "Madre con más que primaria",
+             comprador_neto = "Comprador neto de arroz", mujer = "Mujer") |>
+  imap_dfr(\(etiqueta, v) {
+    m <- feols(as.formula(paste0("as.numeric(", v, ") ~ haz_1997 * dosis | provincia")),
+               con_precio, cluster = ~commid97)
+    tibble(variable = etiqueta,
+           con_haz = mean(con_precio[[v]][con_precio$haz_1997], na.rm = TRUE),
+           sin_haz = mean(con_precio[[v]][!con_precio$haz_1997], na.rm = TRUE),
+           interaccion = coef(m)[["haz_1997TRUE:dosis"]],
+           ee_agrupado = se(m)[["haz_1997TRUE:dosis"]],
+           p_valor = pvalue(m)[["haz_1997TRUE:dosis"]])
+  })
+print(balance)
+
+tabla <- balance |>
+  gt() |>
+  cols_label(variable = "", con_haz = "Con HAZ en 1997", sin_haz = "Sin HAZ en 1997",
+             interaccion = "Con HAZ × dosis", ee_agrupado = "EE agrupado",
+             p_valor = "p") |>
+  fmt_percent(c(con_haz, sin_haz), decimals = decimales$porcentaje) |>
+  fmt_number(c(interaccion, ee_agrupado, p_valor), decimals = decimales$estadistico) |>
+  estilo_tabla(
+    titulo = "Características de 1997 de los niños con y sin HAZ en 1997",
+    subtitulo = "¿La diferencia cambia con el alza del precio?",
+    nota = nota_tabla(
+      muestra = "cohorte principal con precio en su comunidad",
+      alcance = "descriptivo",
+      extra = paste("Interacción: MCO de la característica sobre «con HAZ en",
+                    "1997» × dosis, con efectos fijos de provincia y EE",
+                    "agrupado por comunidad.")))
+guardar_tabla("ninos_haz1997_balance", tabla, balance, carpeta_salida)
+
+# cola del cambio en el HAZ, por cuartil, y perfil de quienes caen en ella
+cola <- bind_rows(base, mutate(base, cuartil = 5)) |>
+  group_by(cuartil = if_else(cuartil == 5, "Todos", paste("Cuartil", cuartil))) |>
+  summarise(ninos = n(), mayor_2 = sum(abs(dhaz) > 2),
+            mayor_2_pct = round(100 * mean(abs(dhaz) > 2), 1),
+            mayor_3 = sum(dhaz_mayor_3), mayor_3_pct = round(100 * mean(dhaz_mayor_3), 1))
+perfil_cola <- base |>
+  group_by(grupo = if_else(dhaz_mayor_3, "|ΔHAZ| > 3", "|ΔHAZ| ≤ 3")) |>
+  summarise(ninos = n(), edad_meses_1997 = round(mean(edad_meses97), 1),
+            haz_1997 = round(mean(haz97), 3), haz_2000 = round(mean(haz00), 3))
+print(cola)
+print(perfil_cola)
+
+texto_perfil <- with(perfil_cola, sprintf(
+  "%s: %d niños, edad media en 1997 de %.1f meses, HAZ medio de %.3f en 1997 y %.3f en 2000.",
+  grupo, ninos, edad_meses_1997, haz_1997, haz_2000))
+tabla <- cola |>
+  gt() |>
+  cols_label(cuartil = "Alza del precio", ninos = "Niños en la base",
+             mayor_2 = "|ΔHAZ| > 2", mayor_2_pct = "(%)",
+             mayor_3 = "|ΔHAZ| > 3", mayor_3_pct = "(%)") |>
+  fmt_number(c(ninos, mayor_2, mayor_3), decimals = decimales$conteo) |>
+  fmt_number(ends_with("_pct"), decimals = decimales$porcentaje) |>
+  estilo_tabla(
+    titulo = "La cola del cambio en el HAZ, 1997-2000",
+    subtitulo = "Niños con cambios grandes en la talla para la edad, según el alza",
+    nota = nota_tabla(muestra = "base lista", alcance = "descriptivo",
+                      extra = c(texto_perfil,
+                                "Decisión del 20-nov: se mantienen en la estimación principal; robustez sin |ΔHAZ| > 3.")))
+guardar_tabla("ninos_dhaz_cola", tabla, cola, carpeta_salida)
+write_csv(perfil_cola, file.path("03_Resultados/Tablas", carpeta_salida,
+                                 "ninos_dhaz_cola_perfil.csv"))

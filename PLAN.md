@@ -60,7 +60,7 @@ observaciones que pierde y se agrega a `00_main.R` y al README.
   ampliaciones al crear el script.
 - [x] **P1.5** Base lista para estimar (un niño por fila: ΔHAZ, tratamiento, X de
   1997, `commid97`, provincia) y tabla de desgaste según el alza.
-- [ ] **P1.6** Antes de H2, revisar la base (de la sesión del 20-nov (4)):
+- [x] **P1.6** Antes de H2, revisar la base (de la sesión del 20-nov (4)):
   (a) por qué falta más el HAZ de 1997 en el cuartil de mayor alza (no medido,
   sin fecha de nacimiento o fuera de ±6; relación con las comunidades con campo
   en 1998; X de 1997 de los niños con y sin HAZ, según el alza), con una tabla en
@@ -87,7 +87,7 @@ que solo haya que cambiar la base.
   coeficientes con la recta de E-Q encima.
 - [ ] **P2.3** Validación: placebo (ΔHAZ 1993→1997 de la cohorte de 1993 sobre el
   alza 1997→2000, debe dar ≈ 0), desgaste según el alza, sin las comunidades de
-  1998, con pesos y sin winsorizar.
+  1998, con pesos, sin winsorizar y sin los niños con |ΔHAZ| > 3 (`dhaz_mayor_3`).
 
 ## H3. Pregunta 2: ¿a quién?
 

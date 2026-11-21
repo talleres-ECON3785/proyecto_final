@@ -19,22 +19,21 @@ Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
 [`registro_decisiones.md`](registro_decisiones.md). H1 (bases) quedó completo
 el 20-nov (4).
 
-1. **P1.6: revisar la base antes de H2** (Santiago o quien tome H2).
-   - (a) Por qué falta más el HAZ de 1997 en el cuartil de mayor alza
-     (76 % frente a 82-84 %; nota `05_Notas/05_base/D_desgaste_segun_alza.md`).
-     (b) La cola del ΔHAZ (110 niños con |ΔHAZ| > 3).
-   - *Terminado cuando:* hay una tabla en `03_Resultados/Tablas/05_base/` con
-     los motivos por cuartil y las X de 1997 con y sin HAZ, la nota está
-     actualizada y la decisión sobre la cola está en el registro.
-2. **P2.1: ATE con `feols`** (`02_Scripts/10_ate.R` o el nombre que se acuerde).
+1. **P2.1: ATE con `feols`** (`02_Scripts/10_ate.R` o el nombre que se acuerde).
    - Dosis, primeras diferencias, `cluster = ~commid97`. Tabla de
      especificaciones (1-4) con errores robustos al lado y β en HAZ por +100 %.
    - *Terminado cuando:* la tabla está en `03_Resultados/Tablas/<script>/` con el
      n de niños y de comunidades, y su nota en `05_Notas/` está contrastada con
-     el −0,135 de E-Q.
-3. **P2.2: forma con cuartiles** (Q2-Q4 frente a Q1).
+     el −0,135 de E-Q. Leer la especificación 3 (efectos fijos de provincia)
+     junto con la nota de desgaste.
+2. **P2.2: forma con cuartiles** (Q2-Q4 frente a Q1).
    - *Terminado cuando:* la figura de los coeficientes, con la recta de E-Q
      encima, está exportada y tiene nota.
+3. **P2.3: validación.**
+   - Placebo 1993→1997 (decidir antes si se asigna por `commid93` o `commid97`),
+     desgaste según el alza, sin las comunidades de 1998, con pesos, sin
+     winsorizar y sin |ΔHAZ| > 3.
+   - *Terminado cuando:* la tabla de robustez está exportada y tiene nota.
 
 **Bloqueos / preguntas abiertas:**
 
@@ -63,10 +62,11 @@ el 20-nov (4).
     por fila, con ΔHAZ, dosis, cuartiles, terciles y X de 1997;
   - no se comparten por GitHub: se regeneran con `00_main.R`.
 - **Resultados** (`03_Resultados/`): desgaste por ola, distribución del alza y
-  resumen del precio, resumen del HAZ, desgaste según el alza. Todos
+  resumen del precio, resumen del HAZ, desgaste según el alza y la revisión de
+  P1.6 (motivos del HAZ faltante en 1997, balance y cola del ΔHAZ). Todos
   descriptivos; **ninguna estimación del ATE todavía**.
 - **Notas** (`05_Notas/`): cohortes y desgaste, distribución del precio,
-  desgaste según el alza.
+  desgaste según el alza (con la revisión de P1.6).
 - **Decisiones:** `registro_decisiones.md`, al día con lo de H1. Pre-registro en
   `10_Propuesta/07_preregistro_heterogeneidad.md`.
 
@@ -74,6 +74,19 @@ el 20-nov (4).
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-20 (5): revisión de la base antes de H2 (P1.6)
+
+- Santiago Muñoz (`SantiagoMunozM`).
+  - Hay menos HAZ de 1997 en el cuartil de mayor alza porque faltan
+    evaluaciones de salud, y la brecha es sobre todo entre provincias: con
+    efectos fijos de provincia, la pendiente pasa de −0,090 a −0,045 (EE 0,033).
+  - La composición de los medidos no cambia con el alza.
+  - La cola del ΔHAZ (110 niños) se mantiene, con robustez sin |ΔHAZ| > 3 en
+    P2.3, decidido antes de ver el ATE. **Cierra P1.6.**
+- Bitácora: [2026-11-20_revision-base-p1-6_5.md](06_Bitacoras/2026-11-20_revision-base-p1-6_5.md)
+- **Siguientes objetivos:** (1) P2.1: ATE con `feols`; (2) P2.2: forma con
+  cuartiles; (3) P2.3: validación (placebo y robustez).
 
 ### 2026-11-20 (4): las bases del hito H1
 

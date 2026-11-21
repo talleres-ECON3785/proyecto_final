@@ -96,6 +96,12 @@ distintas en cada año (en 1997 incluyen el PKK, que en 2000 no trae precios).
   con un indicador `falta_<variable>`; en el tamaño del hogar, a la mediana con
   indicador; en la educación de los padres y el quintil de gasto, a la categoría
   «falta». Los moderadores pre-registrados conservan sus NA.
+- **Cola del ΔHAZ** (P1.6): los 110 niños con |ΔHAZ| > 3 (4,5 % de la base)
+  **se mantienen** en la estimación principal; en P2.3 va una columna de
+  robustez sin ellos (`dhaz_mayor_3`). Su perfil apunta a error de medición
+  (bebés con HAZ casi normal en 1997) y su proporción no cambia con el alza
+  (`03_Resultados/Tablas/05_base/ninos_dhaz_cola.csv`). Decidido antes de ver el
+  ATE.
 - **Entrevistas de 1997 hechas en 1998:** entran con un indicador en X; una
   robustez excluye las 38 comunidades con precio levantado en 1998 (libro 2 o
   algún posyandu entrevistado en 1998; 34 de ellas tienen precio en los dos años) y a los niños
@@ -148,6 +154,8 @@ Fecha: 20-nov. Quién: Santiago.
 
 - 20-nov-2026: creación (Santiago).
 - 20-nov-2026: §5, definición de las cohortes al completar P1.1 (Santiago).
+- 20-nov-2026: §5, al completar P1.6: la cola del ΔHAZ se mantiene, con
+  robustez sin |ΔHAZ| > 3 (Santiago).
 - 20-nov-2026: §5, al completar P1.5: muestra analítica, faltantes de los
   controles y la base fuera de GitHub (Santiago).
 - 20-nov-2026: §1 y §5, al completar P1.4: `anthro` y `anthroplus` como
