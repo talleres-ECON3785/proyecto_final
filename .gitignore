@@ -44,3 +44,6 @@ __pycache__/
 
 # --- Registro crudo (.jsonl) de las conversaciones con los agentes ------------
 09_Conversaciones/
+
+# --- Salidas sueltas de Claude (local) ---------------------------------------
+Claude outputs/
