@@ -183,3 +183,80 @@ tabla_blp <- blp_df |>
                     "variables a la vez. Descriptiva: fuera de las familias de",
                     "Holm; no se usa para afirmar diferencias entre grupos.")))
 guardar_tabla("ninos_blp", tabla_blp, blp_df, carpeta_salida)
+
+# -----------------------------------------------------------------------------
+# 5. EXPLORATORIO (fuera de PLAN.md y de las familias de Holm): edad sin la
+#    cola del cambio en el HAZ (|dHAZ| > 3, dhaz_mayor_3)
+# -----------------------------------------------------------------------------
+
+# G1 con el mismo bosque (sus puntajes AIPW, sin reentrenar) y E1 con la misma
+# especificacion (4) de 09_interacciones_eq, con y sin los ninos de la cola.
+# p sin ajustar: no se corre Holm de nuevo
+base_e1 <- readRDS("01_Datos/03_Listos/base_estimacion.rds") |>
+  mutate(edad_meses97_3 = edad_meses97^3, log_p97 = log(p97),
+         x = as.numeric(edad_meses97 < 36), dosis_x = dosis * x)
+controles_e1 <- c("mujer", "edad_meses97", "edad_meses97_3", "educ_padre",
+                  "educ_madre", "fumador_padre", "musulman_padre",
+                  "musulman_madre", "urbano97", "productor_arroz", "tam_hogar",
+                  "quintil_gasto", "centro_salud", "agua_entubada",
+                  "via_vehiculos", "via_asfaltada", "parada_bus",
+                  "sequia_incendio_97", "mercado", "telefono", "correo",
+                  "banco", "entrevista_1998",
+                  grep("^falta_", names(base_e1), value = TRUE))
+
+edad_cola <- map_dfr(c(FALSE, TRUE), \(sin_cola) {
+  dg <- if (sin_cola) filter(d, !dhaz_mayor_3) else d
+  de <- if (sin_cola) filter(base_e1, !dhaz_mayor_3) else base_e1
+  keep <- if (sin_cola) !d$dhaz_mayor_3 else rep(TRUE, nrow(d))
+  g1 <- average_treatment_effect(bosque, subset = keep & d$edad_3_5)
+  g0 <- average_treatment_effect(bosque, subset = keep & !d$edad_3_5)
+  mg <- feols(gamma ~ x_1, mutate(dg, x_1 = as.numeric(edad_3_5)),
+              cluster = ~commid97)
+  me <- feols(dhaz ~ dosis + dosis_x + x + log_p97 + .[controles_e1] |
+                provincia, de, cluster = ~commid97)
+  tibble(muestra = if (sin_cola) "Sin |ΔHAZ| > 3" else "Con la cola (principal)",
+         g1_gate_3_5 = g1[["estimate"]], g1_ee_3_5 = g1[["std.err"]],
+         g1_gate_0_2 = g0[["estimate"]], g1_ee_0_2 = g0[["std.err"]],
+         g1_delta = coef(mg)[["x_1"]], g1_ee_delta = se(mg)[["x_1"]],
+         g1_p = pvalue(mg)[["x_1"]], g1_ninos = nrow(dg),
+         g1_comunidades = n_distinct(dg$commid97),
+         e1_b2 = coef(me)[["dosis_x"]], e1_ee_b2 = se(me)[["dosis_x"]],
+         e1_p = pvalue(me)[["dosis_x"]], e1_ninos = nobs(me),
+         e1_comunidades = n_distinct(de$commid97[obs(me)]))
+})
+print(edad_cola, width = Inf)
+
+tabla_cola <- edad_cola |>
+  transmute(muestra,
+            g1_0_2 = con_ee(g1_gate_0_2, g1_ee_0_2),
+            g1_3_5 = con_ee(g1_gate_3_5, g1_ee_3_5),
+            g1_delta = con_ee(g1_delta, g1_ee_delta),
+            g1_p = num(g1_p, decimales$estadistico),
+            g1_n = paste0(num(g1_ninos, 0), " / ", num(g1_comunidades, 0)),
+            e1_b2 = con_ee(e1_b2, e1_ee_b2),
+            e1_p = num(e1_p, decimales$estadistico),
+            e1_n = paste0(num(e1_ninos, 0), " / ", num(e1_comunidades, 0))) |>
+  gt(rowname_col = "muestra") |>
+  tab_spanner("G1: bosque, tercil alto frente a bajo", starts_with("g1_")) |>
+  tab_spanner("E1: dosis, +100 % del precio", starts_with("e1_")) |>
+  cols_label(g1_0_2 = "GATE 0-2 años", g1_3_5 = "GATE 3-5 años",
+             g1_delta = "Δ (3-5 − 0-2)", g1_p = "p",
+             g1_n = "Niños / comunidades", e1_b2 = "β2 (0-2 − 3-5)",
+             e1_p = "p", e1_n = "Niños / comunidades") |>
+  estilo_tabla(
+    titulo = "Exploratorio: la edad, con y sin la cola del cambio en el HAZ",
+    subtitulo = "Cambio en el HAZ 1997-2000; GATE de edad (G1) e interacción de edad (E1)",
+    nota = nota_tabla(
+      muestra = "base lista", alcance = "contraste",
+      extra = c(
+        paste("EXPLORATORIO: fuera de PLAN.md y del pre-registro. p sin",
+              "ajustar; no se recalcula Holm. Sin la cola: sin los niños con",
+              "|ΔHAZ| > 3 (decisión previa de P1.6: la cola se mantiene en lo",
+              "principal)."),
+        paste("G1: mismos puntajes AIPW del bosque de 10_bosque, sin",
+              "reentrenarlo; X = 1 = 3-5 años. E1: especificación (4) de",
+              "09_interacciones_eq; X = 1 = 0-2 años, por eso los signos de Δ",
+              "y β2 van al revés. EE agrupados por comunidad.")
+      )))
+guardar_tabla("ninos_edad_sin_cola_exploratorio", tabla_cola, edad_cola,
+              carpeta_salida)

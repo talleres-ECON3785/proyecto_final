@@ -229,3 +229,16 @@ traslape y el perfil (descriptivos).
   `03_Resultados/` y regenerar todo).
 - Antes del commit se restauraron con `git restore` los `.gitkeep` y los
   resultados de 01-08 que solo cambian por fin de línea o ruido numérico.
+
+## Tarea exploratoria posterior (pedida por Samuel; no está en PLAN.md)
+
+- **Plan:** repetir G1 y E1 sin los niños con |ΔHAZ| > 3, con el mismo bosque
+  (sus puntajes AIPW, sin reentrenar) y la misma especificación (4); una tabla
+  de dos filas en `03_Resultados/Tablas/11_gate/`, sin recalcular Holm. Se
+  agregó como sección 5 de `02_Scripts/11_gate.R`.
+- **Resultado:** G1 Δ (3-5 − 0-2) 0,229 (EE 0,150; p 0,127) con la cola y
+  0,283 (0,119; p 0,018 sin ajustar) sin ella (1.532 niños, 195 comunidades);
+  E1 β2 (0-2 − 3-5) −0,096 (0,207; p 0,644) y −0,213 (0,146; p 0,146) (2.311
+  niños, 294 comunidades). La fila «con la cola» reproduce las cifras
+  principales. Es exploratorio: la cola se mantiene en lo principal (P1.6) y
+  F1 no cambia.

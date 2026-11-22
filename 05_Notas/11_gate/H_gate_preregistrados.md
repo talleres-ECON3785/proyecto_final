@@ -30,6 +30,8 @@ sobre el indicador, EE agrupado por comunidad. Escala: HAZ entre terciles. Δ < 
 - **BLP conjunta** (1.538 niños sin faltantes, 195 comunidades; descriptiva,
   fuera de Holm): coeficientes entre −0,168 (comprador neto, EE 0,171) y
   +0,211 (3-5 años, EE 0,166); ninguno mayor que 1,3 veces su EE.
+- **Exploratorio (fuera de PLAN.md y de Holm), edad sin los 70 niños del bosque con |ΔHAZ| > 3:**
+  G1 Δ pasa de 0,229 (EE 0,150; p 0,127) a 0,283 (0,119; p 0,018 sin ajustar) y E1 β2 de −0,096 (0,207) a −0,213 (0,146; p 0,146); `03_Resultados/Tablas/11_gate/ninos_edad_sin_cola_exploratorio.{png,csv}`. La cola se mantiene en lo principal (decisión previa de P1.6).
 
 ## Qué dice, en lenguaje intuitivo
 
@@ -83,3 +85,4 @@ sobre el indicador, EE agrupado por comunidad. Escala: HAZ entre terciles. Δ < 
 ## Historial
 
 - 2026-11-22: creación (P3.3).
+- 2026-11-22: línea exploratoria de la edad sin la cola del ΔHAZ (pedida por Samuel; no cambia el estado).
