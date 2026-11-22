@@ -152,6 +152,16 @@ Fecha: 20-nov. Quién: Santiago.
 
 Fecha: 20-nov. Quién: Santiago.
 
+- **Heterogeneidad, operativo** (al completar P3.1-P3.3 y P4.1):
+  - Réplica de E-Q (F2): especificación (4) de la pregunta 1 más dosis × X y X;
+    en E1, X = 1 = 0-2 años (inferencia sobre la fig. 5 de E-Q).
+  - Bosque: `tercil_prov` alto = 1, bajo = 0; 1.602 niños en 195 comunidades;
+    X = controles de la pregunta 1 (sin el cubo de la edad), log del precio de
+    1997, provincia, madre con más que primaria, pobre y comprador neto (con
+    NA); sin HAZ de 1997; 4.000 árboles, `seed = 2026`, `num.threads = 1`.
+  - GATE (F1): en G1, X = 1 = 3-5 años.
+  Fecha: 22-nov. Quién: Samuel (sesión autónoma; confirmar con el equipo).
+
 ## Historial
 
 - 20-nov-2026: creación (Santiago).
@@ -171,3 +181,5 @@ Fecha: 20-nov. Quién: Santiago.
 - 22-nov-2026: §5, al completar P2.3: los pesos de la robustez pasan del
   longitudinal de persona (cubre 932 niños) al de la evaluación de salud de 2000
   (cubre los 2.421) (Mateo).
+- 22-nov-2026: §6, definiciones operativas de la réplica de E-Q, el bosque
+  y los GATE al completar P3.1-P3.3 (Samuel).

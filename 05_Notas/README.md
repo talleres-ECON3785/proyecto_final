@@ -31,3 +31,8 @@ aquí y con la literatura de referencia (Elmira y Qaim 2026; Frankenberg y Thoma
 | [`06_ate/A_ate_promedio.md`](06_ate/A_ate_promedio.md) | matizado | A; contraste | ¿Dolió? Efecto promedio del alza del arroz en la talla y comparación con E-Q |
 | [`07_cuartiles/A_forma_cuartiles.md`](07_cuartiles/A_forma_cuartiles.md) | vigente | A; contraste | ¿El daño crece de forma pareja con el alza? Efecto por cuartiles frente a la recta |
 | [`08_validacion/A_validacion_placebo_robustez.md`](08_validacion/A_validacion_placebo_robustez.md) | vigente | A; placebo y contraste | ¿El efecto promedio resiste el placebo 1993-1997 y cambios de muestra, medida del precio y pesos? |
+| [`09_interacciones_eq/H_interacciones_eq.md`](09_interacciones_eq/H_interacciones_eq.md) | vigente | H; contraste | ¿A quién? ¿Se replican las cinco interacciones de E-Q con la dosis y EE agrupados? (Holm F2) |
+| [`10_bosque/H_bosque_ate_traslape.md`](10_bosque/H_bosque_ate_traslape.md) | vigente | H; contraste (traslape descriptivo) | ¿Qué efecto promedio da el bosque con terciles y hay traslape suficiente? |
+| [`11_gate/H_gate_preregistrados.md`](11_gate/H_gate_preregistrados.md) | vigente | H; contraste | ¿A quién? ¿Difiere el efecto entre los seis grupos pre-declarados? (Holm F1) |
+| [`12_calibracion/H_calibracion_nulo.md`](12_calibracion/H_calibracion_nulo.md) | vigente | H; contraste | ¿Capta el bosque heterogeneidad más allá de los GATE pre-declarados? |
+| [`13_perfil/H_perfil_priorizados.md`](13_perfil/H_perfil_priorizados.md) | vigente | H; descriptivo | ¿A quién ordenaría primero el bosque, con variables que el cliente observa? |

@@ -73,8 +73,13 @@ carpetas_salida <- c(
   "03_Resultados/Tablas/04_haz",
   "03_Resultados/Tablas/05_base",
   "03_Resultados/Tablas/06_ate",
-  "03_Resultados/Figuras/07_cuartiles",
-  "03_Resultados/Tablas/08_validacion"
+  "03_Resultados/Tablas/07_cuartiles", "03_Resultados/Figuras/07_cuartiles",
+  "03_Resultados/Tablas/08_validacion",
+  "03_Resultados/Tablas/09_interacciones_eq",
+  "03_Resultados/Tablas/10_bosque", "03_Resultados/Figuras/10_bosque",
+  "03_Resultados/Tablas/11_gate", "03_Resultados/Figuras/11_gate",
+  "03_Resultados/Tablas/12_calibracion",
+  "03_Resultados/Tablas/13_perfil"
   # una subcarpeta por script que genera tablas o figuras (nombre del script),
   # p. ej. "03_Resultados/Tablas/02_precio_arroz"
 )
@@ -86,8 +91,8 @@ for (carpeta in carpetas_salida) {
 # 5. Orden de ejecucion de los scripts (segun su numeracion)
 # -----------------------------------------------------------------------------
 
-# cada script nuevo se agrega aqui en la misma sesion en que se crea; faltan
-# los de H2-H4 de PLAN.md
+# cada script nuevo se agrega aqui en la misma sesion en que se crea; falta
+# el RATE de P4.2 (PLAN.md)
 scripts <- c(
   "02_Scripts/01_tracks.R",      # cohortes 0-5 de 1997 y 1993, commid97 y desgaste
   "02_Scripts/02_precio_arroz.R", # precio por comunidad 1997 y 2000; dosis, cuartiles, terciles
@@ -96,7 +101,12 @@ scripts <- c(
   "02_Scripts/05_base.R",          # base lista para estimar y desgaste segun el alza
   "02_Scripts/06_ate.R",           # P2.1: efecto promedio con feols y fila del bosque
   "02_Scripts/07_cuartiles.R",     # P2.2: forma del efecto por cuartiles del alza
-  "02_Scripts/08_validacion.R"     # P2.3: placebo 1993-1997 y robustez
+  "02_Scripts/08_validacion.R",    # P2.3: placebo 1993-1997 y robustez
+  "02_Scripts/09_interacciones_eq.R", # P3.1: replica de las cinco interacciones de E-Q (Holm F2)
+  "02_Scripts/10_bosque.R",          # P3.2: bosque causal con terciles, traslape y ATE
+  "02_Scripts/11_gate.R",            # P3.3: seis GATE con puntajes AIPW (Holm F1) y BLP
+  "02_Scripts/12_calibracion.R",     # P4.1: test_calibration del bosque
+  "02_Scripts/13_perfil.R"           # P4.3: perfil de los ninos por cuartil del efecto predicho
 )
 
 # nota: los '00_formato_*.R' no aparecen en esta lista porque no producen

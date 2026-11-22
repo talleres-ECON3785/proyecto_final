@@ -91,20 +91,20 @@ que solo haya que cambiar la base.
 
 ## H3. Pregunta 2: ¿a quién?
 
-- [ ] **P3.1** Réplica de las cinco interacciones de E-Q con `feols` y la dosis,
+- [x] **P3.1** Réplica de las cinco interacciones de E-Q con `feols` y la dosis,
   una a la vez, con errores robustos y agrupados; p sin ajustar y Holm (F2).
-- [ ] **P3.2** Bosque principal con terciles: `clusters = commid97`,
+- [x] **P3.2** Bosque principal con terciles: `clusters = commid97`,
   `seed = 2026`, `num.threads` fijo. Revisar el traslape (`W.hat`) y el ATE.
-- [ ] **P3.3** Seis GATE con `get_scores`; contrastes con
+- [x] **P3.3** Seis GATE con `get_scores`; contrastes con
   `feols(Γ ~ X, cluster = ~commid97)` y Holm (F1). BLP descriptiva con las seis
   variables.
 
 ## H4. Pregunta 3: ¿el bosque supera a las reglas simples?
 
-- [ ] **P4.1** `test_calibration` del bosque.
+- [x] **P4.1** `test_calibration` del bosque.
 - [ ] **P4.2** RATE con AUTOC en dos mitades de comunidades: bosque (−τ̂) frente a
   pobre, urbano y comprador neto; diferencias con Holm (F3).
-- [ ] **P4.3** Perfil de los niños que prioriza el bosque (X de 1997 por cuartil
+- [x] **P4.3** Perfil de los niños que prioriza el bosque (X de 1997 por cuartil
   de τ̂). Si el bosque no supera a las reglas, preparar la lámina del nulo.
 
 ## H5. Asesoría (semana 15)
