@@ -88,11 +88,12 @@ sale idéntica en la máquina de cada integrante.
 | `02_Scripts/11_gate.R` | P3.3: seis GATE pre-declarados (edad 3-5, urbano, madre con más que primaria, mujer, comprador neto, pobre) con los puntajes AIPW del bosque de `10_bosque`; contrastes con `feols` agrupado y Holm (F1); BLP conjunta descriptiva | `03_Resultados/Tablas/11_gate/ninos_gate.{png,csv}`, `ninos_blp.{png,csv}` y, exploratorio, `ninos_edad_sin_cola_exploratorio.{png,csv}`; `03_Resultados/Figuras/11_gate/ninos_gate.png` |
 | `02_Scripts/12_calibracion.R` | P4.1: `test_calibration` del bosque de `10_bosque` (predicción media y diferencial) | `03_Resultados/Tablas/12_calibracion/ninos_calibracion.{png,csv}` |
 | `02_Scripts/13_perfil.R` | P4.3: perfil de los niños por cuartil del efecto predicho por el bosque (X de 1997 que el cliente observa); descriptivo | `03_Resultados/Tablas/13_perfil/ninos_perfil_cuartil_tau.{png,csv}` |
+| `02_Scripts/14_rate.R` | P4.2: RATE con AUTOC en dos mitades de comunidades (escala de daño): bosque (−τ̂) frente a pobre, urbano y comprador neto; diferencias con bootstrap emparejado y Holm (F3); mitades invertidas como robustez; curvas TOC | `03_Resultados/Tablas/14_rate/ninos_rate.{png,csv}`; `03_Resultados/Figuras/14_rate/ninos_rate_toc.png` |
 | `02_Scripts/_exploratorio/01_salud_mental_1993.py` | Índice de síntomas de 1993 (Python, fuera del pipeline) | `01_Datos/02_Procesados/salud_mental_1993.*` (local) |
 
 ### Scripts previstos (por llenar)
 
-El RATE con AUTOC de P4.2 (`PLAN.md`).
+Ninguno: H2-H4 de `PLAN.md` están completos.
 
 ## Paquetes
 

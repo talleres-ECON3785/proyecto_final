@@ -16,22 +16,28 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
 Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
-[`registro_decisiones.md`](registro_decisiones.md). **H2 y H3 quedaron
-completos el 22-nov**, y también P4.1 (calibración) y P4.3 (perfil).
-Resumen para las láminas: `04_Presentaciones/resumen_H3_para_laminas.md`.
+[`registro_decisiones.md`](registro_decisiones.md). **H2, H3 y H4 están
+completos** (22-nov). Insumos de la presentación:
+`04_Presentaciones/hallazgos_principales.txt` (todo el proyecto, con rutas) y
+`04_Presentaciones/estructura_presentacion.md` (15 láminas, apéndice y
+preguntas).
 
-1. **P6.1-P6.2: guion y láminas** con el arco de las tres preguntas; la
-   pregunta 2 y la 3 se presentan como nulo (ninguna diferencia pasa Holm y la
-   calibración no rechaza).
-   - *Terminado cuando:* `04_Presentaciones/guion.md` y las láminas usan las
-     figuras y tablas exportadas.
-2. **P4.2: RATE con AUTOC** frente a pobre, urbano y comprador neto (Holm F3),
-   si da el tiempo; si no, queda como exploratorio y se dice en la lámina.
-   - *Terminado cuando:* la tabla de RATE está exportada y tiene nota.
-3. **Revisar lo marcado [REVISIÓN HUMANA]** en el resumen de H3.
+1. **P6.1-P6.2: guion y láminas** a partir de `estructura_presentacion.md`:
+   poner los nombres de los presentadores 1-4 y armar las láminas con los
+   `.png` exportados.
+   - *Terminado cuando:* `04_Presentaciones/guion.md` y las láminas existen y
+     cada lámina usa la ruta indicada.
+2. **Decidir lo marcado [REVISIÓN HUMANA]** (urbano frente a E-Q) y, si se
+   quiere, producir la figura de la lámina 11 (potencia).
+3. **P7.1-P7.3: entrega** (`00_main.R` desde cero ya corre con 14 scripts;
+   falta README final y `.zip`).
 
 **Bloqueos / preguntas abiertas:**
 
+- **Contar al equipo el resultado de H4:** el bosque no prioriza mejor que
+  pobre, urbano ni comprador neto (AUTOC del bosque 0,116, EE 0,116; menor p
+  Holm de las diferencias 0,492). Con la calibración nula y los GATE, la
+  pregunta 3 es un nulo.
 - **Contar al equipo el resultado de H3** (`05_Notas/09_*` a `13_*`): ninguna
   de las cinco interacciones de E-Q ni de los seis GATE pasa Holm (menores p
   Holm 1,000 y 0,764); la calibración del bosque no rechaza (p 0,438). El
@@ -70,7 +76,7 @@ Resumen para las láminas: `04_Presentaciones/resumen_H3_para_laminas.md`.
 - **Pipeline:** `00_main.R` corre de principio a fin ocho scripts:
   `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz`, `05_base`, `06_ate`,
   `07_cuartiles` y `08_validacion`, y desde el 22-nov (4) `09_interacciones_eq`,
-  `10_bosque`, `11_gate`, `12_calibracion` y `13_perfil`. Las ampliaciones `anthro` y `anthroplus` están registradas.
+  `10_bosque`, `11_gate`, `12_calibracion`, `13_perfil` y `14_rate` (14 scripts). Las ampliaciones `anthro` y `anthroplus` están registradas.
 - **Bases** (locales, ignoradas por git):
   - `02_Procesados/`: `tracks`, `precio_arroz` (297 comunidades), `x_1997` y
     `haz`;
@@ -85,7 +91,7 @@ Resumen para las láminas: `04_Presentaciones/resumen_H3_para_laminas.md`.
   tabla y figura de `07_cuartiles`. **Validación (P2.3):** placebo y robustez
   de `08_validacion`. **H3:** interacciones de E-Q (`09`), bosque con
   terciles y traslape (`10`), GATE y BLP (`11`); **P4.1/P4.3:** calibración
-  (`12`) y perfil por cuartil de τ̂ (`13`).
+  (`12`) y perfil por cuartil de τ̂ (`13`); **P4.2:** RATE con AUTOC (`14`).
 - **Notas** (`05_Notas/`): cohortes y desgaste, distribución del precio,
   desgaste según el alza (con la revisión de P1.6), el efecto promedio (P2.1,
   matizado), la forma por cuartiles (P2.2), la validación (P2.3), y de H3 en
@@ -97,6 +103,18 @@ Resumen para las láminas: `04_Presentaciones/resumen_H3_para_laminas.md`.
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-22 (5): RATE (P4.2) e insumos de la presentación
+
+- Samuel Escandón (worktree, empujado a `SamuelEscandonC`), sesión autónoma.
+  - `14_rate.R`: AUTOC en escala de daño, 834 niños en 98 comunidades; bosque
+    0,116 (EE 0,116); diferencias bosque − regla de 0,070 a 0,208, ninguna pasa
+    Holm (F3). **Cierra P4.2 y H4.**
+  - `hallazgos_principales.txt` y `estructura_presentacion.md` (15 láminas,
+    apéndice, 10 preguntas). `00_main.R` corre desde cero con 14 scripts.
+- Bitácora: [2026-11-22_rate-y-presentacion_5.md](06_Bitacoras/2026-11-22_rate-y-presentacion_5.md)
+- **Siguientes objetivos:** (1) P6.1-P6.2: guion y láminas; (2) decidir lo
+  marcado [REVISIÓN HUMANA]; (3) P7: entrega.
 
 ### 2026-11-22 (4): ¿a quién? (H3), calibración y perfil
 

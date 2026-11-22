@@ -36,3 +36,4 @@ aquí y con la literatura de referencia (Elmira y Qaim 2026; Frankenberg y Thoma
 | [`11_gate/H_gate_preregistrados.md`](11_gate/H_gate_preregistrados.md) | vigente | H; contraste | ¿A quién? ¿Difiere el efecto entre los seis grupos pre-declarados? (Holm F1) |
 | [`12_calibracion/H_calibracion_nulo.md`](12_calibracion/H_calibracion_nulo.md) | vigente | H; contraste | ¿Capta el bosque heterogeneidad más allá de los GATE pre-declarados? |
 | [`13_perfil/H_perfil_priorizados.md`](13_perfil/H_perfil_priorizados.md) | vigente | H; descriptivo | ¿A quién ordenaría primero el bosque, con variables que el cliente observa? |
+| [`14_rate/H_rate_reglas.md`](14_rate/H_rate_reglas.md) | vigente | H; contraste | ¿El bosque prioriza mejor que pobre, urbano o comprador neto? (Holm F3) |

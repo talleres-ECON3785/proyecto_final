@@ -52,13 +52,14 @@ dentro de provincia; 1.602 niños en 195 comunidades):
 
 - No rechazar no prueba que el efecto sea igual para todos: con 195
   comunidades, la prueba solo detectaría heterogeneidad grande.
-- **[REVISIÓN HUMANA]** La salida de `grf` 2.6.1 dice «HC3»; no se verificó en
-  la documentación si, con un bosque agrupado, `test_calibration` usa errores
-  agrupados por comunidad. Si no los usa, el EE estaría subestimado y la
-  conclusión (no rechaza) no cambiaría.
+- EE agrupado por comunidad: según el código de `grf` 2.6.1 (verificado por
+  Samuel el 22-nov), `test_calibration` usa `sandwich::vcovCL` con los clusters
+  del bosque, tipo HC3; el p es **unilateral**. (Antes marcado [REVISIÓN
+  HUMANA]; resuelto.)
 - Hereda los límites del bosque y del ATE (traslape con `W.hat` muy
   predecible; placebo inconcluso).
 
 ## Historial
 
 - 2026-11-22: creación (P4.1).
+- 2026-11-22: se resuelve cómo agrupa los EE `test_calibration` (vcovCL con los clusters del bosque, HC3); la conclusión no cambia.

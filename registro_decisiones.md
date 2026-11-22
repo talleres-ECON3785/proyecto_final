@@ -160,6 +160,11 @@ Fecha: 20-nov. Quién: Santiago.
     1997, provincia, madre con más que primaria, pobre y comprador neto (con
     NA); sin HAZ de 1997; 4.000 árboles, `seed = 2026`, `num.threads = 1`.
   - GATE (F1): en G1, X = 1 = 3-5 años.
+  - RATE (F3, al completar P4.2): partición al azar de las 195 comunidades con
+    `set.seed(2026)`; bosque de la mitad 1 → τ̂ en la mitad 2; bosque de
+    evaluación en la mitad 2 con Y = −ΔHAZ (escala de daño: AUTOC > 0 = la
+    regla encuentra a los más dañados); R = 500; muestra común sin NA en las
+    tres reglas; las mitades invertidas, solo como robustez.
   Fecha: 22-nov. Quién: Samuel (sesión autónoma; confirmar con el equipo).
 
 ## Historial
@@ -183,3 +188,4 @@ Fecha: 20-nov. Quién: Santiago.
   (cubre los 2.421) (Mateo).
 - 22-nov-2026: §6, definiciones operativas de la réplica de E-Q, el bosque
   y los GATE al completar P3.1-P3.3 (Samuel).
+- 22-nov-2026: §6, definiciones operativas del RATE al completar P4.2 (Samuel).
