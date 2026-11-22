@@ -28,3 +28,6 @@ aquí y con la literatura de referencia (Elmira y Qaim 2026; Frankenberg y Thoma
 | [`01_tracks/D_cohortes_desgaste.md`](01_tracks/D_cohortes_desgaste.md) | vigente | D; descriptivo | ¿Cuántos niños y comunidades quedan tras el seguimiento 1993-2000 y con HAZ válido? |
 | [`02_precio_arroz/D_distribucion_precio_arroz.md`](02_precio_arroz/D_distribucion_precio_arroz.md) | vigente | D; descriptivo | ¿Cuánto subió el arroz y cuánto varía el alza entre comunidades y dentro de provincia? |
 | [`05_base/D_desgaste_segun_alza.md`](05_base/D_desgaste_segun_alza.md) | vigente | D; descriptivo | ¿El desgaste depende del alza del precio? ¿Qué hacer con la cola del ΔHAZ? |
+| [`06_ate/A_ate_promedio.md`](06_ate/A_ate_promedio.md) | matizado | A; contraste | ¿Dolió? Efecto promedio del alza del arroz en la talla y comparación con E-Q |
+| [`07_cuartiles/A_forma_cuartiles.md`](07_cuartiles/A_forma_cuartiles.md) | vigente | A; contraste | ¿El daño crece de forma pareja con el alza? Efecto por cuartiles frente a la recta |
+| [`08_validacion/A_validacion_placebo_robustez.md`](08_validacion/A_validacion_placebo_robustez.md) | vigente | A; placebo y contraste | ¿El efecto promedio resiste el placebo 1993-1997 y cambios de muestra, medida del precio y pesos? |

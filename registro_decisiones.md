@@ -106,8 +106,10 @@ distintas en cada año (en 1997 incluyen el PKK, que en 2000 no trae precios).
   robustez excluye las 38 comunidades con precio levantado en 1998 (libro 2 o
   algún posyandu entrevistado en 1998; 34 de ellas tienen precio en los dos años) y a los niños
   medidos en 1998.
-- **Sin pesos muestrales** en lo principal; versión con pesos longitudinales de
-  la IFLS como robustez.
+- **Sin pesos muestrales** en lo principal; versión con pesos como robustez:
+  los transversales de la evaluación de salud de 2000 (`pw00usxa`, versión a).
+  El longitudinal de persona (`pwt00la`) solo es positivo para 932 de los 2.421
+  niños de la base (P2.3).
 - **Controles de la pregunta 1** (todos de 1997): la lista del cuadro A1 de E-Q medida en 1997,
   sin los cinco programas de la red de seguridad social (tarjeta de salud, arroz
   gratis, arroz subsidiado, programa de empleo, transferencia a la aldea).
@@ -166,3 +168,6 @@ Fecha: 20-nov. Quién: Santiago.
 - 20-nov-2026: §3-4, al completar P1.2: litros pasados a kg, cortes entre
   comunidades y terciles dentro de provincia; §5, las comunidades con precio de
   1998 pasan de 27 a 38, porque también cuenta el posyandu (Santiago).
+- 22-nov-2026: §5, al completar P2.3: los pesos de la robustez pasan del
+  longitudinal de persona (cubre 932 niños) al de la evaluación de salud de 2000
+  (cubre los 2.421) (Mateo).

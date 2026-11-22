@@ -16,27 +16,35 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
 Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
-[`registro_decisiones.md`](registro_decisiones.md). H1 (bases) quedó completo
-el 20-nov (4).
+[`registro_decisiones.md`](registro_decisiones.md). **H2 (pregunta 1) quedó
+completo el 22-nov** (P2.1-P2.3).
 
-1. **P2.1: ATE con `feols`** (`02_Scripts/10_ate.R` o el nombre que se acuerde).
-   - Dosis, primeras diferencias, `cluster = ~commid97`. Tabla de
-     especificaciones (1-4) con errores robustos al lado y β en HAZ por +100 %.
-   - *Terminado cuando:* la tabla está en `03_Resultados/Tablas/<script>/` con el
-     n de niños y de comunidades, y su nota en `05_Notas/` está contrastada con
-     el −0,135 de E-Q. Leer la especificación 3 (efectos fijos de provincia)
-     junto con la nota de desgaste.
-2. **P2.2: forma con cuartiles** (Q2-Q4 frente a Q1).
-   - *Terminado cuando:* la figura de los coeficientes, con la recta de E-Q
-     encima, está exportada y tiene nota.
-3. **P2.3: validación.**
-   - Placebo 1993→1997 (decidir antes si se asigna por `commid93` o `commid97`),
-     desgaste según el alza, sin las comunidades de 1998, con pesos, sin
-     winsorizar y sin |ΔHAZ| > 3.
-   - *Terminado cuando:* la tabla de robustez está exportada y tiene nota.
+1. **P3.1: réplica de las cinco interacciones de E-Q** con `feols` y la dosis,
+   una a la vez, con errores robustos y agrupados; p sin ajustar y Holm (F2).
+   - *Terminado cuando:* la tabla está exportada y tiene nota.
+2. **P3.2: bosque principal con terciles** (`clusters = commid97`,
+   `seed = 2026`, `num.threads` fijo); revisar el traslape (`W.hat`) y el ATE.
+   - *Terminado cuando:* el bosque está guardado, con la figura del traslape y
+     su nota.
+3. **P3.3: seis GATE** con `get_scores`; contrastes con
+   `feols(Γ ~ X, cluster = ~commid97)` y Holm (F1); BLP descriptiva.
+   - *Terminado cuando:* la tabla de GATE está exportada y tiene nota.
 
 **Bloqueos / preguntas abiertas:**
 
+- **Contar al equipo el resultado de H2** antes de armar la lámina de la
+  pregunta 1 (`05_Notas/06_ate/`, `07_cuartiles/` y `08_validacion/`):
+  - el efecto es negativo en todas las variantes, pero su tamaño va de −0,20 a
+    −0,50 HAZ por +100 % (principal −0,329, 1,6 a 2,5 veces el −0,135 de E-Q);
+  - el placebo 1993-1997 no es significativo, pero con controles es −0,19
+    (p = 0,10), cerca del 60 % del efecto: **inconcluso**, no se puede descartar
+    una tendencia previa;
+  - sin los 110 niños con |ΔHAZ| > 3 el efecto baja a −0,197 (p = 0,064); se
+    mantienen en lo principal por la decisión previa de P1.6.
+  Mensaje propuesto: la dirección es robusta, el tamaño no.
+- **Acceso de Mateo al repositorio:** la cuenta `Mateo10o` no tiene permiso de
+  escritura; los commits de H2 están en su rama local `MateoOlmosB` hasta que
+  se le dé acceso (o se suban por un fork).
 - **Contar al equipo** las decisiones del 20-nov (4): litros a kg, 38
   comunidades de 1998, terciles dentro de provincia, línea de Widyanti et al.
   (2009) y la base fuera de GitHub (cada uno la regenera con `00_main.R`).
@@ -49,12 +57,12 @@ el 20-nov (4).
 ## Estado actual
 
 - **Repositorio:** `talleres-ECON3785/proyecto_final` (público). Santiago
-  trabaja en `SantiagoMunozM`.
+  trabaja en `SantiagoMunozM` y Mateo en `MateoOlmosB`.
 - **Datos:** las cinco olas de la IFLS en local (`01_Datos/01_Crudos/`, sin
   versionar). Reglas en `01_Datos/CLAUDE.md`.
-- **Pipeline:** `00_main.R` corre de principio a fin cinco scripts:
-  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz` y `05_base`. Las
-  ampliaciones `anthro` y `anthroplus` están registradas.
+- **Pipeline:** `00_main.R` corre de principio a fin ocho scripts:
+  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz`, `05_base`, `06_ate`,
+  `07_cuartiles` y `08_validacion`. Las ampliaciones `anthro` y `anthroplus` están registradas.
 - **Bases** (locales, ignoradas por git):
   - `02_Procesados/`: `tracks`, `precio_arroz` (297 comunidades), `x_1997` y
     `haz`;
@@ -63,10 +71,14 @@ el 20-nov (4).
   - no se comparten por GitHub: se regeneran con `00_main.R`.
 - **Resultados** (`03_Resultados/`): desgaste por ola, distribución del alza y
   resumen del precio, resumen del HAZ, desgaste según el alza y la revisión de
-  P1.6 (motivos del HAZ faltante en 1997, balance y cola del ΔHAZ). Todos
-  descriptivos; **ninguna estimación del ATE todavía**.
+  P1.6 (motivos del HAZ faltante en 1997, balance y cola del ΔHAZ), todos
+  descriptivos. **ATE (P2.1):** `06_ate/ninos_ate_especificaciones`, cuatro
+  especificaciones con `feols` y la pendiente del bosque. **Forma (P2.2):**
+  tabla y figura de `07_cuartiles`. **Validación (P2.3):** placebo y robustez
+  de `08_validacion`.
 - **Notas** (`05_Notas/`): cohortes y desgaste, distribución del precio,
-  desgaste según el alza (con la revisión de P1.6).
+  desgaste según el alza (con la revisión de P1.6), el efecto promedio (P2.1,
+  matizado), la forma por cuartiles (P2.2) y la validación (P2.3).
 - **Decisiones:** `registro_decisiones.md`, al día con lo de H1. Pre-registro en
   `10_Propuesta/07_preregistro_heterogeneidad.md`.
 
@@ -74,6 +86,45 @@ el 20-nov (4).
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-22 (3): placebo y robustez (P2.3)
+
+- Mateo Olmos (`MateoOlmosB`).
+  - `08_validacion.R`: placebo 1993-1997 entre −0,097 y −0,194 (p de 0,10 a
+    0,43), inconcluso; robustez de −0,197 (sin |ΔHAZ| > 3) a −0,504 (con pesos
+    de la evaluación de salud de 2000). La dirección se sostiene, el tamaño no.
+    **Cierra P2.3 y H2.**
+  - Pesos de la robustez: del longitudinal (932 niños) al de la evaluación de
+    salud de 2000 (2.421), registrado en §5. La nota de P2.1 pasa a matizada.
+- Bitácora: [2026-11-22_validacion-p2-3_3.md](06_Bitacoras/2026-11-22_validacion-p2-3_3.md)
+- **Siguientes objetivos:** (1) P3.1: interacciones de E-Q; (2) P3.2: bosque
+  principal; (3) P3.3: GATE.
+
+### 2026-11-22 (2): forma del efecto por cuartiles (P2.2)
+
+- Mateo Olmos (`MateoOlmosB`).
+  - `07_cuartiles.R`: frente al cuartil 1 (+42 %), especificación 4: cuartil 2
+    −0,189 (EE 0,093), cuartil 3 −0,116 (0,094), cuartil 4 −0,295 (0,104). Los
+    puntos quedan dentro de su incertidumbre alrededor de la recta de P2.1.
+    **Cierra P2.2.**
+  - El proyecto local se movió de iCloud a `~/proyecto_final` (iCloud lleno no
+    dejaba guardar).
+- Bitácora: [2026-11-22_forma-cuartiles-p2-2_2.md](06_Bitacoras/2026-11-22_forma-cuartiles-p2-2_2.md)
+- **Siguientes objetivos:** (1) P2.3: validación; (2) P3.1: réplica de las
+  interacciones de E-Q; (3) P3.2: bosque principal.
+
+### 2026-11-22: efecto promedio del alza del arroz en la talla (P2.1)
+
+- Mateo Olmos (`MateoOlmosB`), primera sesión.
+  - Clonó el repositorio, ubicó los datos y reprodujo la base: 2.421 niños en
+    294 comunidades.
+  - `06_ate.R`: β entre −0,217 y −0,339 HAZ por +100 % (EE agrupado 0,109 a
+    0,139), −1,1 a −1,7 cm aproximados; pendiente del bosque −0,260 (0,132).
+    Mayor que el −0,135 de E-Q, con intervalos que se traslapan. **Cierra
+    P2.1.**
+- Bitácora: [2026-11-22_ate-promedio-p2-1.md](06_Bitacoras/2026-11-22_ate-promedio-p2-1.md)
+- **Siguientes objetivos:** (1) P2.2: forma con cuartiles; (2) P2.3:
+  validación; (3) P3.1: réplica de las interacciones de E-Q.
 
 ### 2026-11-20 (5): revisión de la base antes de H2 (P1.6)
 
