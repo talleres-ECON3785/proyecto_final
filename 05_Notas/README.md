@@ -28,3 +28,4 @@ aquí y con la literatura de referencia (Elmira y Qaim 2026; Frankenberg y Thoma
 | [`01_tracks/D_cohortes_desgaste.md`](01_tracks/D_cohortes_desgaste.md) | vigente | D; descriptivo | ¿Cuántos niños y comunidades quedan tras el seguimiento 1993-2000 y con HAZ válido? |
 | [`02_precio_arroz/D_distribucion_precio_arroz.md`](02_precio_arroz/D_distribucion_precio_arroz.md) | vigente | D; descriptivo | ¿Cuánto subió el arroz y cuánto varía el alza entre comunidades y dentro de provincia? |
 | [`05_base/D_desgaste_segun_alza.md`](05_base/D_desgaste_segun_alza.md) | vigente | D; descriptivo | ¿El desgaste depende del alza del precio? ¿Qué hacer con la cola del ΔHAZ? |
+| [`06_ate/A_ate_promedio.md`](06_ate/A_ate_promedio.md) | vigente | A; contraste | ¿Dolió? Efecto promedio del alza del arroz en la talla y comparación con E-Q |

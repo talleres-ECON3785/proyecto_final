@@ -72,7 +72,7 @@ que solo haya que cambiar la base.
 
 ## H2. Pregunta 1: ¿dolió?
 
-- [ ] **P2.1** ATE con `feols`, dosis, primeras diferencias y
+- [x] **P2.1** ATE con `feols`, dosis, primeras diferencias y
   `cluster = ~commid97`. Tabla de especificaciones:
 
   1. sin controles;

@@ -16,27 +16,29 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
 Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
-[`registro_decisiones.md`](registro_decisiones.md). H1 (bases) quedó completo
-el 20-nov (4).
+[`registro_decisiones.md`](registro_decisiones.md). P2.1 (ATE) quedó el 22-nov.
 
-1. **P2.1: ATE con `feols`** (`02_Scripts/10_ate.R` o el nombre que se acuerde).
-   - Dosis, primeras diferencias, `cluster = ~commid97`. Tabla de
-     especificaciones (1-4) con errores robustos al lado y β en HAZ por +100 %.
-   - *Terminado cuando:* la tabla está en `03_Resultados/Tablas/<script>/` con el
-     n de niños y de comunidades, y su nota en `05_Notas/` está contrastada con
-     el −0,135 de E-Q. Leer la especificación 3 (efectos fijos de provincia)
-     junto con la nota de desgaste.
-2. **P2.2: forma con cuartiles** (Q2-Q4 frente a Q1).
+1. **P2.2: forma con cuartiles** (Q2-Q4 frente a Q1), con `feols`, las mismas
+   especificaciones y errores de `06_ate.R`.
    - *Terminado cuando:* la figura de los coeficientes, con la recta de E-Q
-     encima, está exportada y tiene nota.
-3. **P2.3: validación.**
+     encima, está exportada en `03_Resultados/Figuras/<script>/` y tiene nota.
+2. **P2.3: validación.**
    - Placebo 1993→1997 (decidir antes si se asigna por `commid93` o `commid97`),
      desgaste según el alza, sin las comunidades de 1998, con pesos, sin
-     winsorizar y sin |ΔHAZ| > 3.
-   - *Terminado cuando:* la tabla de robustez está exportada y tiene nota.
+     winsorizar, con la dosis solo en kg y sin |ΔHAZ| > 3.
+   - *Terminado cuando:* la tabla de robustez está exportada y tiene nota. Usar
+     la robustez sin winsorizar y solo en kg para probar si la diferencia con
+     E-Q viene de la medida del precio.
+3. **P3.1: réplica de las cinco interacciones de E-Q** con `feols` y la dosis,
+   una a la vez, con errores robustos y agrupados; p sin ajustar y Holm (F2).
+   - *Terminado cuando:* la tabla está exportada y tiene nota.
 
 **Bloqueos / preguntas abiertas:**
 
+- **Contar al equipo el resultado de P2.1:** β entre −0,22 y −0,34 HAZ por
+  +100 %, 1,6 a 2,5 veces el −0,135 de E-Q (intervalos que se traslapan), y el
+  salto de −0,24 a −0,34 al agregar efectos fijos de provincia. Ver
+  `05_Notas/06_ate/A_ate_promedio.md`.
 - **Contar al equipo** las decisiones del 20-nov (4): litros a kg, 38
   comunidades de 1998, terciles dentro de provincia, línea de Widyanti et al.
   (2009) y la base fuera de GitHub (cada uno la regenera con `00_main.R`).
@@ -49,11 +51,11 @@ el 20-nov (4).
 ## Estado actual
 
 - **Repositorio:** `talleres-ECON3785/proyecto_final` (público). Santiago
-  trabaja en `SantiagoMunozM`.
+  trabaja en `SantiagoMunozM` y Mateo en `MateoOlmosB`.
 - **Datos:** las cinco olas de la IFLS en local (`01_Datos/01_Crudos/`, sin
   versionar). Reglas en `01_Datos/CLAUDE.md`.
-- **Pipeline:** `00_main.R` corre de principio a fin cinco scripts:
-  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz` y `05_base`. Las
+- **Pipeline:** `00_main.R` corre de principio a fin seis scripts:
+  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz`, `05_base` y `06_ate`. Las
   ampliaciones `anthro` y `anthroplus` están registradas.
 - **Bases** (locales, ignoradas por git):
   - `02_Procesados/`: `tracks`, `precio_arroz` (297 comunidades), `x_1997` y
@@ -63,10 +65,11 @@ el 20-nov (4).
   - no se comparten por GitHub: se regeneran con `00_main.R`.
 - **Resultados** (`03_Resultados/`): desgaste por ola, distribución del alza y
   resumen del precio, resumen del HAZ, desgaste según el alza y la revisión de
-  P1.6 (motivos del HAZ faltante en 1997, balance y cola del ΔHAZ). Todos
-  descriptivos; **ninguna estimación del ATE todavía**.
+  P1.6 (motivos del HAZ faltante en 1997, balance y cola del ΔHAZ), todos
+  descriptivos. **ATE (P2.1):** `06_ate/ninos_ate_especificaciones`, cuatro
+  especificaciones con `feols` y la pendiente del bosque.
 - **Notas** (`05_Notas/`): cohortes y desgaste, distribución del precio,
-  desgaste según el alza (con la revisión de P1.6).
+  desgaste según el alza (con la revisión de P1.6) y el efecto promedio (P2.1).
 - **Decisiones:** `registro_decisiones.md`, al día con lo de H1. Pre-registro en
   `10_Propuesta/07_preregistro_heterogeneidad.md`.
 
@@ -74,6 +77,19 @@ el 20-nov (4).
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-22: efecto promedio del alza del arroz en la talla (P2.1)
+
+- Mateo Olmos (`MateoOlmosB`), primera sesión.
+  - Clonó el repositorio, ubicó los datos y reprodujo la base: 2.421 niños en
+    294 comunidades.
+  - `06_ate.R`: β entre −0,217 y −0,339 HAZ por +100 % (EE agrupado 0,109 a
+    0,139), −1,1 a −1,7 cm aproximados; pendiente del bosque −0,260 (0,132).
+    Mayor que el −0,135 de E-Q, con intervalos que se traslapan. **Cierra
+    P2.1.**
+- Bitácora: [2026-11-22_ate-promedio-p2-1.md](06_Bitacoras/2026-11-22_ate-promedio-p2-1.md)
+- **Siguientes objetivos:** (1) P2.2: forma con cuartiles; (2) P2.3:
+  validación; (3) P3.1: réplica de las interacciones de E-Q.
 
 ### 2026-11-20 (5): revisión de la base antes de H2 (P1.6)
 

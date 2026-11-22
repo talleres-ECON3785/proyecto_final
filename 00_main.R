@@ -71,7 +71,8 @@ carpetas_salida <- c(
   "03_Resultados/Figuras/02_precio_arroz",
   "03_Resultados/Tablas/02_precio_arroz",
   "03_Resultados/Tablas/04_haz",
-  "03_Resultados/Tablas/05_base"
+  "03_Resultados/Tablas/05_base",
+  "03_Resultados/Tablas/06_ate"
   # una subcarpeta por script que genera tablas o figuras (nombre del script),
   # p. ej. "03_Resultados/Tablas/02_precio_arroz"
 )
@@ -90,7 +91,8 @@ scripts <- c(
   "02_Scripts/02_precio_arroz.R", # precio por comunidad 1997 y 2000; dosis, cuartiles, terciles
   "02_Scripts/03_x_1997.R",       # X de 1997: controles de E-Q, moderadores, entrevista en 1998
   "02_Scripts/04_haz.R",          # HAZ OMS de 1993, 1997 y 2000 de las dos cohortes
-  "02_Scripts/05_base.R"          # base lista para estimar y desgaste segun el alza
+  "02_Scripts/05_base.R",          # base lista para estimar y desgaste segun el alza
+  "02_Scripts/06_ate.R"           # P2.1: efecto promedio con feols y fila del bosque
 )
 
 # nota: los '00_formato_*.R' no aparecen en esta lista porque no producen
