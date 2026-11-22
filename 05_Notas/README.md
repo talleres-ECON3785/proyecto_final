@@ -29,3 +29,4 @@ aquí y con la literatura de referencia (Elmira y Qaim 2026; Frankenberg y Thoma
 | [`02_precio_arroz/D_distribucion_precio_arroz.md`](02_precio_arroz/D_distribucion_precio_arroz.md) | vigente | D; descriptivo | ¿Cuánto subió el arroz y cuánto varía el alza entre comunidades y dentro de provincia? |
 | [`05_base/D_desgaste_segun_alza.md`](05_base/D_desgaste_segun_alza.md) | vigente | D; descriptivo | ¿El desgaste depende del alza del precio? ¿Qué hacer con la cola del ΔHAZ? |
 | [`06_ate/A_ate_promedio.md`](06_ate/A_ate_promedio.md) | vigente | A; contraste | ¿Dolió? Efecto promedio del alza del arroz en la talla y comparación con E-Q |
+| [`07_cuartiles/A_forma_cuartiles.md`](07_cuartiles/A_forma_cuartiles.md) | vigente | A; contraste | ¿El daño crece de forma pareja con el alza? Efecto por cuartiles frente a la recta |

@@ -83,7 +83,7 @@ que solo haya que cambiar la base.
   Al lado, errores robustos sin agrupar (los de E-Q) y la pendiente promedio del
   bosque causal como fila de robustez. β en HAZ por +100 % y en cm, con n de
   niños y de comunidades.
-- [ ] **P2.2** Forma: `feols` con cuartiles (Q2-Q4 frente a Q1). Figura de los
+- [x] **P2.2** Forma: `feols` con cuartiles (Q2-Q4 frente a Q1). Figura de los
   coeficientes con la recta de E-Q encima.
 - [ ] **P2.3** Validación: placebo (ΔHAZ 1993→1997 de la cohorte de 1993 sobre el
   alza 1997→2000, debe dar ≈ 0), desgaste según el alza, sin las comunidades de

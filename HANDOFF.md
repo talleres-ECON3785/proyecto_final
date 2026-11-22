@@ -16,29 +16,35 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
 Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
-[`registro_decisiones.md`](registro_decisiones.md). P2.1 (ATE) quedó el 22-nov.
+[`registro_decisiones.md`](registro_decisiones.md). P2.1 (ATE) y P2.2
+(cuartiles) quedaron el 22-nov.
 
-1. **P2.2: forma con cuartiles** (Q2-Q4 frente a Q1), con `feols`, las mismas
-   especificaciones y errores de `06_ate.R`.
-   - *Terminado cuando:* la figura de los coeficientes, con la recta de E-Q
-     encima, está exportada en `03_Resultados/Figuras/<script>/` y tiene nota.
-2. **P2.3: validación.**
+1. **P2.3: validación.**
    - Placebo 1993→1997 (decidir antes si se asigna por `commid93` o `commid97`),
      desgaste según el alza, sin las comunidades de 1998, con pesos, sin
      winsorizar, con la dosis solo en kg y sin |ΔHAZ| > 3.
    - *Terminado cuando:* la tabla de robustez está exportada y tiene nota. Usar
      la robustez sin winsorizar y solo en kg para probar si la diferencia con
      E-Q viene de la medida del precio.
-3. **P3.1: réplica de las cinco interacciones de E-Q** con `feols` y la dosis,
+2. **P3.1: réplica de las cinco interacciones de E-Q** con `feols` y la dosis,
    una a la vez, con errores robustos y agrupados; p sin ajustar y Holm (F2).
    - *Terminado cuando:* la tabla está exportada y tiene nota.
+3. **P3.2: bosque principal con terciles** (`clusters = commid97`,
+   `seed = 2026`, `num.threads` fijo); revisar el traslape (`W.hat`) y el ATE.
+   - *Terminado cuando:* el bosque está guardado, con la figura del traslape y
+     su nota.
 
 **Bloqueos / preguntas abiertas:**
 
 - **Contar al equipo el resultado de P2.1:** β entre −0,22 y −0,34 HAZ por
   +100 %, 1,6 a 2,5 veces el −0,135 de E-Q (intervalos que se traslapan), y el
   salto de −0,24 a −0,34 al agregar efectos fijos de provincia. Ver
-  `05_Notas/06_ate/A_ate_promedio.md`.
+  `05_Notas/06_ate/A_ate_promedio.md`. Y el de P2.2: el daño está en los tres
+  cuartiles de arriba, sobre todo en el 4 (−0,295), con el cuartil 2 por
+  debajo del 3 en las cuatro especificaciones (`05_Notas/07_cuartiles/`).
+- **Acceso de Mateo al repositorio:** la cuenta `Mateo10o` no tiene permiso de
+  escritura; los commits de P2.1 y P2.2 están en su rama local `MateoOlmosB`
+  hasta que se le dé acceso (o se suban por un fork).
 - **Contar al equipo** las decisiones del 20-nov (4): litros a kg, 38
   comunidades de 1998, terciles dentro de provincia, línea de Widyanti et al.
   (2009) y la base fuera de GitHub (cada uno la regenera con `00_main.R`).
@@ -54,9 +60,9 @@ Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
   trabaja en `SantiagoMunozM` y Mateo en `MateoOlmosB`.
 - **Datos:** las cinco olas de la IFLS en local (`01_Datos/01_Crudos/`, sin
   versionar). Reglas en `01_Datos/CLAUDE.md`.
-- **Pipeline:** `00_main.R` corre de principio a fin seis scripts:
-  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz`, `05_base` y `06_ate`. Las
-  ampliaciones `anthro` y `anthroplus` están registradas.
+- **Pipeline:** `00_main.R` corre de principio a fin siete scripts:
+  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz`, `05_base`, `06_ate` y
+  `07_cuartiles`. Las ampliaciones `anthro` y `anthroplus` están registradas.
 - **Bases** (locales, ignoradas por git):
   - `02_Procesados/`: `tracks`, `precio_arroz` (297 comunidades), `x_1997` y
     `haz`;
@@ -67,9 +73,11 @@ Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
   resumen del precio, resumen del HAZ, desgaste según el alza y la revisión de
   P1.6 (motivos del HAZ faltante en 1997, balance y cola del ΔHAZ), todos
   descriptivos. **ATE (P2.1):** `06_ate/ninos_ate_especificaciones`, cuatro
-  especificaciones con `feols` y la pendiente del bosque.
+  especificaciones con `feols` y la pendiente del bosque. **Forma (P2.2):**
+  tabla y figura de `07_cuartiles`.
 - **Notas** (`05_Notas/`): cohortes y desgaste, distribución del precio,
-  desgaste según el alza (con la revisión de P1.6) y el efecto promedio (P2.1).
+  desgaste según el alza (con la revisión de P1.6), el efecto promedio (P2.1)
+  y la forma por cuartiles (P2.2).
 - **Decisiones:** `registro_decisiones.md`, al día con lo de H1. Pre-registro en
   `10_Propuesta/07_preregistro_heterogeneidad.md`.
 
@@ -77,6 +85,19 @@ Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-22 (2): forma del efecto por cuartiles (P2.2)
+
+- Mateo Olmos (`MateoOlmosB`).
+  - `07_cuartiles.R`: frente al cuartil 1 (+42 %), especificación 4: cuartil 2
+    −0,189 (EE 0,093), cuartil 3 −0,116 (0,094), cuartil 4 −0,295 (0,104). Los
+    puntos quedan dentro de su incertidumbre alrededor de la recta de P2.1.
+    **Cierra P2.2.**
+  - El proyecto local se movió de iCloud a `~/proyecto_final` (iCloud lleno no
+    dejaba guardar).
+- Bitácora: [2026-11-22_forma-cuartiles-p2-2_2.md](06_Bitacoras/2026-11-22_forma-cuartiles-p2-2_2.md)
+- **Siguientes objetivos:** (1) P2.3: validación; (2) P3.1: réplica de las
+  interacciones de E-Q; (3) P3.2: bosque principal.
 
 ### 2026-11-22: efecto promedio del alza del arroz en la talla (P2.1)
 
