@@ -16,22 +16,29 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
 Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
-[`registro_decisiones.md`](registro_decisiones.md). **H2 (pregunta 1) quedó
-completo el 22-nov** (P2.1-P2.3).
+[`registro_decisiones.md`](registro_decisiones.md). **H2 y H3 quedaron
+completos el 22-nov**, y también P4.1 (calibración) y P4.3 (perfil).
+Resumen para las láminas: `04_Presentaciones/resumen_H3_para_laminas.md`.
 
-1. **P3.1: réplica de las cinco interacciones de E-Q** con `feols` y la dosis,
-   una a la vez, con errores robustos y agrupados; p sin ajustar y Holm (F2).
-   - *Terminado cuando:* la tabla está exportada y tiene nota.
-2. **P3.2: bosque principal con terciles** (`clusters = commid97`,
-   `seed = 2026`, `num.threads` fijo); revisar el traslape (`W.hat`) y el ATE.
-   - *Terminado cuando:* el bosque está guardado, con la figura del traslape y
-     su nota.
-3. **P3.3: seis GATE** con `get_scores`; contrastes con
-   `feols(Γ ~ X, cluster = ~commid97)` y Holm (F1); BLP descriptiva.
-   - *Terminado cuando:* la tabla de GATE está exportada y tiene nota.
+1. **P6.1-P6.2: guion y láminas** con el arco de las tres preguntas; la
+   pregunta 2 y la 3 se presentan como nulo (ninguna diferencia pasa Holm y la
+   calibración no rechaza).
+   - *Terminado cuando:* `04_Presentaciones/guion.md` y las láminas usan las
+     figuras y tablas exportadas.
+2. **P4.2: RATE con AUTOC** frente a pobre, urbano y comprador neto (Holm F3),
+   si da el tiempo; si no, queda como exploratorio y se dice en la lámina.
+   - *Terminado cuando:* la tabla de RATE está exportada y tiene nota.
+3. **Revisar lo marcado [REVISIÓN HUMANA]** en el resumen de H3.
 
 **Bloqueos / preguntas abiertas:**
 
+- **Contar al equipo el resultado de H3** (`05_Notas/09_*` a `13_*`): ninguna
+  de las cinco interacciones de E-Q ni de los seis GATE pasa Holm (menores p
+  Holm 1,000 y 0,764); la calibración del bosque no rechaza (p 0,438). El
+  resultado urbano de E-Q (−0,270) no se replica (−0,009, EE 0,223).
+- **Rama de Samuel:** la sesión del 22-nov (4) trabajó en un worktree y empujó
+  a `origin/SamuelEscandonC`; la rama local `SamuelEscandonC` (otro worktree)
+  necesita `git pull`.
 - **Contar al equipo el resultado de H2** antes de armar la lámina de la
   pregunta 1 (`05_Notas/06_ate/`, `07_cuartiles/` y `08_validacion/`):
   - el efecto es negativo en todas las variantes, pero su tamaño va de −0,20 a
@@ -62,7 +69,8 @@ completo el 22-nov** (P2.1-P2.3).
   versionar). Reglas en `01_Datos/CLAUDE.md`.
 - **Pipeline:** `00_main.R` corre de principio a fin ocho scripts:
   `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz`, `05_base`, `06_ate`,
-  `07_cuartiles` y `08_validacion`. Las ampliaciones `anthro` y `anthroplus` están registradas.
+  `07_cuartiles` y `08_validacion`, y desde el 22-nov (4) `09_interacciones_eq`,
+  `10_bosque`, `11_gate`, `12_calibracion` y `13_perfil`. Las ampliaciones `anthro` y `anthroplus` están registradas.
 - **Bases** (locales, ignoradas por git):
   - `02_Procesados/`: `tracks`, `precio_arroz` (297 comunidades), `x_1997` y
     `haz`;
@@ -75,10 +83,13 @@ completo el 22-nov** (P2.1-P2.3).
   descriptivos. **ATE (P2.1):** `06_ate/ninos_ate_especificaciones`, cuatro
   especificaciones con `feols` y la pendiente del bosque. **Forma (P2.2):**
   tabla y figura de `07_cuartiles`. **Validación (P2.3):** placebo y robustez
-  de `08_validacion`.
+  de `08_validacion`. **H3:** interacciones de E-Q (`09`), bosque con
+  terciles y traslape (`10`), GATE y BLP (`11`); **P4.1/P4.3:** calibración
+  (`12`) y perfil por cuartil de τ̂ (`13`).
 - **Notas** (`05_Notas/`): cohortes y desgaste, distribución del precio,
   desgaste según el alza (con la revisión de P1.6), el efecto promedio (P2.1,
-  matizado), la forma por cuartiles (P2.2) y la validación (P2.3).
+  matizado), la forma por cuartiles (P2.2), la validación (P2.3), y de H3 en
+  adelante: interacciones de E-Q, bosque, GATE, calibración (nulo) y perfil.
 - **Decisiones:** `registro_decisiones.md`, al día con lo de H1. Pre-registro en
   `10_Propuesta/07_preregistro_heterogeneidad.md`.
 
@@ -86,6 +97,19 @@ completo el 22-nov** (P2.1-P2.3).
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-22 (4): ¿a quién? (H3), calibración y perfil
+
+- Samuel Escandón (worktree, empujado a `SamuelEscandonC`), sesión autónoma.
+  - P3.1: ninguna de las cinco interacciones de E-Q pasa Holm (β2 de −0,096 a
+    0,127, EE 0,18-0,26). P3.2: bosque con terciles, ATE −0,184 (EE 0,065),
+    1.602 niños en 195 comunidades, traslape dentro de la regla. P3.3: ningún
+    GATE pasa Holm (edad, el más alejado: 0-2 años −0,313 frente a 3-5 −0,083).
+  - P4.1: la calibración no rechaza (diferencial 0,124, p 0,438). P4.3: el
+    bosque ordena sobre todo por edad. **Cierra H3, P4.1 y P4.3.**
+- Bitácora: [2026-11-22_heterogeneidad-h3_4.md](06_Bitacoras/2026-11-22_heterogeneidad-h3_4.md)
+- **Siguientes objetivos:** (1) P6.1-P6.2: guion y láminas; (2) P4.2: RATE;
+  (3) revisar lo marcado [REVISIÓN HUMANA].
 
 ### 2026-11-22 (3): placebo y robustez (P2.3)
 
