@@ -1,6 +1,6 @@
 # Un alza de +100 % en el precio del arroz se asocia con 0,22 a 0,34 desviaciones estándar menos de talla para la edad entre 1997 y 2000 (1,1 a 1,7 cm), más que el −0,135 de Elmira y Qaim pero con intervalos que se traslapan
 
-- **Estado:** vigente
+- **Estado:** matizado por [`08_validacion/A_validacion_placebo_robustez.md`](../08_validacion/A_validacion_placebo_robustez.md): la dirección se sostiene, el tamaño es incierto (−0,20 a −0,50) y el placebo es inconcluso
 - **Etapa / alcance:** A; contraste entre comunidades con mayor y menor alza
 - **Script de origen:** `02_Scripts/06_ate.R`
 - **Hipótesis relacionada:** ninguna de H1-H8 (es la pregunta 1, el efecto promedio)
@@ -95,3 +95,5 @@ años en 1997, 294 comunidades, en las cuatro columnas.
 ## Historial
 
 - 2026-11-22: creación (P2.1).
+- 2026-11-22: estado a matizado tras la validación de P2.3 (placebo inconcluso,
+  tamaño sensible a la cola del ΔHAZ, a la winsorización y a los pesos).

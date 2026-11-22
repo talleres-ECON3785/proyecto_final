@@ -16,35 +16,35 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
 Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
-[`registro_decisiones.md`](registro_decisiones.md). P2.1 (ATE) y P2.2
-(cuartiles) quedaron el 22-nov.
+[`registro_decisiones.md`](registro_decisiones.md). **H2 (pregunta 1) quedó
+completo el 22-nov** (P2.1-P2.3).
 
-1. **P2.3: validación.**
-   - Placebo 1993→1997 (decidir antes si se asigna por `commid93` o `commid97`),
-     desgaste según el alza, sin las comunidades de 1998, con pesos, sin
-     winsorizar, con la dosis solo en kg y sin |ΔHAZ| > 3.
-   - *Terminado cuando:* la tabla de robustez está exportada y tiene nota. Usar
-     la robustez sin winsorizar y solo en kg para probar si la diferencia con
-     E-Q viene de la medida del precio.
-2. **P3.1: réplica de las cinco interacciones de E-Q** con `feols` y la dosis,
+1. **P3.1: réplica de las cinco interacciones de E-Q** con `feols` y la dosis,
    una a la vez, con errores robustos y agrupados; p sin ajustar y Holm (F2).
    - *Terminado cuando:* la tabla está exportada y tiene nota.
-3. **P3.2: bosque principal con terciles** (`clusters = commid97`,
+2. **P3.2: bosque principal con terciles** (`clusters = commid97`,
    `seed = 2026`, `num.threads` fijo); revisar el traslape (`W.hat`) y el ATE.
    - *Terminado cuando:* el bosque está guardado, con la figura del traslape y
      su nota.
+3. **P3.3: seis GATE** con `get_scores`; contrastes con
+   `feols(Γ ~ X, cluster = ~commid97)` y Holm (F1); BLP descriptiva.
+   - *Terminado cuando:* la tabla de GATE está exportada y tiene nota.
 
 **Bloqueos / preguntas abiertas:**
 
-- **Contar al equipo el resultado de P2.1:** β entre −0,22 y −0,34 HAZ por
-  +100 %, 1,6 a 2,5 veces el −0,135 de E-Q (intervalos que se traslapan), y el
-  salto de −0,24 a −0,34 al agregar efectos fijos de provincia. Ver
-  `05_Notas/06_ate/A_ate_promedio.md`. Y el de P2.2: el daño está en los tres
-  cuartiles de arriba, sobre todo en el 4 (−0,295), con el cuartil 2 por
-  debajo del 3 en las cuatro especificaciones (`05_Notas/07_cuartiles/`).
+- **Contar al equipo el resultado de H2** antes de armar la lámina de la
+  pregunta 1 (`05_Notas/06_ate/`, `07_cuartiles/` y `08_validacion/`):
+  - el efecto es negativo en todas las variantes, pero su tamaño va de −0,20 a
+    −0,50 HAZ por +100 % (principal −0,329, 1,6 a 2,5 veces el −0,135 de E-Q);
+  - el placebo 1993-1997 no es significativo, pero con controles es −0,19
+    (p = 0,10), cerca del 60 % del efecto: **inconcluso**, no se puede descartar
+    una tendencia previa;
+  - sin los 110 niños con |ΔHAZ| > 3 el efecto baja a −0,197 (p = 0,064); se
+    mantienen en lo principal por la decisión previa de P1.6.
+  Mensaje propuesto: la dirección es robusta, el tamaño no.
 - **Acceso de Mateo al repositorio:** la cuenta `Mateo10o` no tiene permiso de
-  escritura; los commits de P2.1 y P2.2 están en su rama local `MateoOlmosB`
-  hasta que se le dé acceso (o se suban por un fork).
+  escritura; los commits de H2 están en su rama local `MateoOlmosB` hasta que
+  se le dé acceso (o se suban por un fork).
 - **Contar al equipo** las decisiones del 20-nov (4): litros a kg, 38
   comunidades de 1998, terciles dentro de provincia, línea de Widyanti et al.
   (2009) y la base fuera de GitHub (cada uno la regenera con `00_main.R`).
@@ -60,9 +60,9 @@ Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
   trabaja en `SantiagoMunozM` y Mateo en `MateoOlmosB`.
 - **Datos:** las cinco olas de la IFLS en local (`01_Datos/01_Crudos/`, sin
   versionar). Reglas en `01_Datos/CLAUDE.md`.
-- **Pipeline:** `00_main.R` corre de principio a fin siete scripts:
-  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz`, `05_base`, `06_ate` y
-  `07_cuartiles`. Las ampliaciones `anthro` y `anthroplus` están registradas.
+- **Pipeline:** `00_main.R` corre de principio a fin ocho scripts:
+  `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz`, `05_base`, `06_ate`,
+  `07_cuartiles` y `08_validacion`. Las ampliaciones `anthro` y `anthroplus` están registradas.
 - **Bases** (locales, ignoradas por git):
   - `02_Procesados/`: `tracks`, `precio_arroz` (297 comunidades), `x_1997` y
     `haz`;
@@ -74,10 +74,11 @@ Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
   P1.6 (motivos del HAZ faltante en 1997, balance y cola del ΔHAZ), todos
   descriptivos. **ATE (P2.1):** `06_ate/ninos_ate_especificaciones`, cuatro
   especificaciones con `feols` y la pendiente del bosque. **Forma (P2.2):**
-  tabla y figura de `07_cuartiles`.
+  tabla y figura de `07_cuartiles`. **Validación (P2.3):** placebo y robustez
+  de `08_validacion`.
 - **Notas** (`05_Notas/`): cohortes y desgaste, distribución del precio,
-  desgaste según el alza (con la revisión de P1.6), el efecto promedio (P2.1)
-  y la forma por cuartiles (P2.2).
+  desgaste según el alza (con la revisión de P1.6), el efecto promedio (P2.1,
+  matizado), la forma por cuartiles (P2.2) y la validación (P2.3).
 - **Decisiones:** `registro_decisiones.md`, al día con lo de H1. Pre-registro en
   `10_Propuesta/07_preregistro_heterogeneidad.md`.
 
@@ -85,6 +86,19 @@ Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-22 (3): placebo y robustez (P2.3)
+
+- Mateo Olmos (`MateoOlmosB`).
+  - `08_validacion.R`: placebo 1993-1997 entre −0,097 y −0,194 (p de 0,10 a
+    0,43), inconcluso; robustez de −0,197 (sin |ΔHAZ| > 3) a −0,504 (con pesos
+    de la evaluación de salud de 2000). La dirección se sostiene, el tamaño no.
+    **Cierra P2.3 y H2.**
+  - Pesos de la robustez: del longitudinal (932 niños) al de la evaluación de
+    salud de 2000 (2.421), registrado en §5. La nota de P2.1 pasa a matizada.
+- Bitácora: [2026-11-22_validacion-p2-3_3.md](06_Bitacoras/2026-11-22_validacion-p2-3_3.md)
+- **Siguientes objetivos:** (1) P3.1: interacciones de E-Q; (2) P3.2: bosque
+  principal; (3) P3.3: GATE.
 
 ### 2026-11-22 (2): forma del efecto por cuartiles (P2.2)
 

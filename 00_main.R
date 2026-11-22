@@ -73,8 +73,8 @@ carpetas_salida <- c(
   "03_Resultados/Tablas/04_haz",
   "03_Resultados/Tablas/05_base",
   "03_Resultados/Tablas/06_ate",
-  "03_Resultados/Tablas/07_cuartiles",
-  "03_Resultados/Figuras/07_cuartiles"
+  "03_Resultados/Figuras/07_cuartiles",
+  "03_Resultados/Tablas/08_validacion"
   # una subcarpeta por script que genera tablas o figuras (nombre del script),
   # p. ej. "03_Resultados/Tablas/02_precio_arroz"
 )
@@ -95,7 +95,8 @@ scripts <- c(
   "02_Scripts/04_haz.R",          # HAZ OMS de 1993, 1997 y 2000 de las dos cohortes
   "02_Scripts/05_base.R",          # base lista para estimar y desgaste segun el alza
   "02_Scripts/06_ate.R",           # P2.1: efecto promedio con feols y fila del bosque
-  "02_Scripts/07_cuartiles.R"      # P2.2: forma del efecto por cuartiles del alza
+  "02_Scripts/07_cuartiles.R",     # P2.2: forma del efecto por cuartiles del alza
+  "02_Scripts/08_validacion.R"     # P2.3: placebo 1993-1997 y robustez
 )
 
 # nota: los '00_formato_*.R' no aparecen en esta lista porque no producen

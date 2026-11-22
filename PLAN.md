@@ -85,7 +85,7 @@ que solo haya que cambiar la base.
   niños y de comunidades.
 - [x] **P2.2** Forma: `feols` con cuartiles (Q2-Q4 frente a Q1). Figura de los
   coeficientes con la recta de E-Q encima.
-- [ ] **P2.3** Validación: placebo (ΔHAZ 1993→1997 de la cohorte de 1993 sobre el
+- [x] **P2.3** Validación: placebo (ΔHAZ 1993→1997 de la cohorte de 1993 sobre el
   alza 1997→2000, debe dar ≈ 0), desgaste según el alza, sin las comunidades de
   1998, con pesos, sin winsorizar y sin los niños con |ΔHAZ| > 3 (`dhaz_mayor_3`).
 
