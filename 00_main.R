@@ -79,7 +79,8 @@ carpetas_salida <- c(
   "03_Resultados/Tablas/10_bosque", "03_Resultados/Figuras/10_bosque",
   "03_Resultados/Tablas/11_gate", "03_Resultados/Figuras/11_gate",
   "03_Resultados/Tablas/12_calibracion",
-  "03_Resultados/Tablas/13_perfil"
+  "03_Resultados/Tablas/13_perfil",
+  "03_Resultados/Tablas/14_rate", "03_Resultados/Figuras/14_rate"
   # una subcarpeta por script que genera tablas o figuras (nombre del script),
   # p. ej. "03_Resultados/Tablas/02_precio_arroz"
 )
@@ -91,8 +92,7 @@ for (carpeta in carpetas_salida) {
 # 5. Orden de ejecucion de los scripts (segun su numeracion)
 # -----------------------------------------------------------------------------
 
-# cada script nuevo se agrega aqui en la misma sesion en que se crea; falta
-# el RATE de P4.2 (PLAN.md)
+# cada script nuevo se agrega aqui en la misma sesion en que se crea
 scripts <- c(
   "02_Scripts/01_tracks.R",      # cohortes 0-5 de 1997 y 1993, commid97 y desgaste
   "02_Scripts/02_precio_arroz.R", # precio por comunidad 1997 y 2000; dosis, cuartiles, terciles
@@ -106,7 +106,8 @@ scripts <- c(
   "02_Scripts/10_bosque.R",          # P3.2: bosque causal con terciles, traslape y ATE
   "02_Scripts/11_gate.R",            # P3.3: seis GATE con puntajes AIPW (Holm F1) y BLP
   "02_Scripts/12_calibracion.R",     # P4.1: test_calibration del bosque
-  "02_Scripts/13_perfil.R"           # P4.3: perfil de los ninos por cuartil del efecto predicho
+  "02_Scripts/13_perfil.R",          # P4.3: perfil de los ninos por cuartil del efecto predicho
+  "02_Scripts/14_rate.R"             # P4.2: RATE (AUTOC) del bosque frente a reglas simples (Holm F3)
 )
 
 # nota: los '00_formato_*.R' no aparecen en esta lista porque no producen

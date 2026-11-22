@@ -1,0 +1,257 @@
+HALLAZGOS PRINCIPALES DEL PROYECTO FINAL (ECON-3785, 2026-2)
+¿A quién afectó más el arroz caro? Talla de los niños en Indonesia, 1997-2000
+Versión del 22-nov-2026 (Samuel Escandón). Toda cifra lleva al lado el archivo
+de 03_Resultados/ que la produce, o el documento del proyecto que la cita con su
+fuente. Rutas relativas a la raíz del repositorio. Escala principal: HAZ =
+talla para la edad en desviaciones estándar de la referencia OMS.
+
+Abreviaturas: E-Q = Elmira y Qaim (2026, Global Food Security 48, 100900);
+F-T = Frankenberg y Thomas (2017, NBER WP 23347); EE = error estándar agrupado
+por comunidad (salvo que se diga otra cosa); IC = intervalo de confianza al 95 %.
+
+
+1. PREGUNTA, CLIENTE Y POR QUÉ IMPORTA
+---------------------------------------
+
+Entre 1997 y 2000, con la crisis asiática, el precio del arroz subió en toda
+Indonesia, pero mucho más en unas comunidades que en otras. Preguntamos tres
+cosas: (1) ¿los niños de comunidades con más alza crecieron menos?, (2) ¿a quién
+le dolió más?, y (3) ¿un bosque causal encuentra mejor a los más afectados que
+una regla simple (pobres, urbanos, compradores netos de arroz)?
+Cliente: una agencia que focaliza ayuda ante choques de precios de alimentos
+(tipo Programa Mundial de Alimentos), que debe decidir a quién proteger primero.
+
+
+2. DATOS Y MUESTRA
+------------------
+
+- Datos: Indonesia Family Life Survey (IFLS, RAND), olas 1993, 1997 y 2000.
+  Los microdatos no se versionan (licencia de RAND); se regeneran con 00_main.R.
+- Cohorte: niños de 0-5 años en 1997 que eran miembros del hogar (3.851 niños,
+  312 comunidades; 03_Resultados/Tablas/01_tracks/cohortes_desgaste.csv).
+- Muestra analítica: con comunidad IFLS, precio del arroz en su comunidad y HAZ
+  válido en 1997 y 2000: 2.421 niños en 294 comunidades
+  (03_Resultados/Tablas/05_base/ninos_desgaste_alza.csv). El N efectivo para la
+  inferencia son las comunidades, no los niños.
+- Resultado: cambio en el HAZ entre 1997 y 2000 (ΔHAZ) del mismo niño.
+- Tratamiento: alza del precio nominal del arroz en la comunidad de residencia
+  de 1997, como cambio proporcional 1997→2000 (1 = +100 %), con las fuentes
+  presentes en los dos años (posyandu y tiendas), winsorizada en p1/p99.
+  Mediana +70 %; entre +20 % y +153 % tras winsorizar; la provincia explica solo
+  el 14,6 % de su varianza: el 85 % de la variación está dentro de provincia
+  (03_Resultados/Tablas/02_precio_arroz/comunidades_resumen_precio.csv;
+  figura 03_Resultados/Figuras/02_precio_arroz/comunidades_distribucion_alza.png).
+  Tres versiones: dosis (principal), cuartiles (forma) y terciles dentro de
+  provincia, alto frente a bajo sin el medio (bosque).
+- Desgaste según el alza (03_Resultados/Tablas/05_base/ninos_desgaste_alza.csv y
+  ninos_desgaste_alza_pendientes.csv):
+  * El seguimiento 1997→2000 no depende del alza: de los medidos en 1997, ~93 %
+    se vuelve a medir en 2000 en todos los cuartiles; pendiente −0,003 (EE
+    0,017) por +100 %.
+  * La medición de 1997 cubrió menos niños en el cuartil de mayor alza (71,2 %
+    llega a la base frente a 77,5 % en el cuartil 1). Pendiente del HAZ válido
+    en 1997: −0,090 (EE 0,038) sin efectos fijos de provincia y −0,045 (EE
+    0,033) con ellos: la brecha es sobre todo entre provincias, y la
+    composición de los medidos no cambia con el alza
+    (03_Resultados/Tablas/05_base/ninos_haz1997_balance.csv).
+  * Cola del ΔHAZ: 110 niños (4,5 %) con |ΔHAZ| > 3, sin orden con el alza;
+    parece error de medición; se mantiene en lo principal (decisión previa,
+    P1.6) (03_Resultados/Tablas/05_base/ninos_dhaz_cola.csv).
+
+
+3. ¿DOLIÓ? (PREGUNTA 1)
+-----------------------
+
+Contraste identificado: comunidades con más alza frente a comunidades con menos
+alza. No es el efecto de la crisis (todas la vivieron).
+
+- ATE con MCO (feols), cambio en HAZ por +100 % de alza, 2.421 niños, 294
+  comunidades (03_Resultados/Tablas/06_ate/ninos_ate_especificaciones.csv):
+    (1) sin controles ................ −0,217 (EE 0,119; p 0,070) ≈ −1,09 cm
+    (2) controles de 1997 ............ −0,238 (EE 0,109; p 0,029) ≈ −1,20 cm
+    (3) + EF de provincia ............ −0,339 (EE 0,112; p 0,003) ≈ −1,71 cm
+    (4) + log del precio de 1997 ..... −0,329 (EE 0,139; p 0,018) ≈ −1,66 cm
+  cm: aproximación (HAZ × 5,03 cm, la DE media de la referencia OMS en 2000).
+  Pendiente promedio del bosque causal con dosis continua: −0,260 (EE 0,132);
+  otro estimando (pondera distinto que MCO).
+- Frente a E-Q: −0,135 (EE robusto 0,041) por +100 % de precio nominal
+  (CLAUDE.md §5; 05_Notas/06_ate/A_ate_promedio.md). Misma dirección; nuestro
+  β es 1,6 a 2,5 veces el suyo y los intervalos se traslapan (IC de (4): −0,601
+  a −0,057; el suyo, −0,216 a −0,054). La comparación es aproximada: ellos
+  combinan fuentes de precio distintas en cada año y no usan EF de provincia.
+- Forma por cuartiles, especificación (4), frente al cuartil 1 (+42 % de alza
+  media) (03_Resultados/Tablas/07_cuartiles/ninos_cuartiles_especificaciones.csv;
+  figura 03_Resultados/Figuras/07_cuartiles/ninos_cuartiles_coeficientes.png):
+  Q2 (+61 %) −0,189 (EE 0,093); Q3 (+82 %) −0,116 (EE 0,094); Q4 (+118 %)
+  −0,295 (EE 0,104). Los puntos caben, con su incertidumbre, en una recta.
+- Placebo: ΔHAZ 1993→1997 (antes del alza) de la cohorte de 0-5 años en 1993
+  sobre el alza 1997→2000 (03_Resultados/Tablas/08_validacion/ninos_placebo.csv):
+  −0,097 (EE 0,123; p 0,432) sin controles y −0,192 (EE 0,117; p 0,102) con
+  edad, sexo y EF de provincia (2.221 niños, 285 comunidades). INCONCLUSO: no se
+  distingue de cero, pero con controles es cerca del 60 % del efecto principal;
+  no se puede descartar una tendencia previa.
+- Robustez de la especificación (4)
+  (03_Resultados/Tablas/08_validacion/ninos_robustez.csv): sin comunidades con
+  precio de 1998 −0,378 (EE 0,156); con pesos −0,504 (EE 0,161); sin
+  winsorizar −0,207 (EE 0,165); precio solo en kg −0,317 (EE 0,127); sin la
+  cola |ΔHAZ| > 3 −0,197 (EE 0,106; p 0,064).
+  => La dirección se sostiene en todas las variantes; el tamaño no (de −0,197 a
+  −0,504).
+- Frankenberg y Thomas (2017) no encuentran daño en talla comparando zonas
+  (urbano frente a rural) (CLAUDE.md §5). Aquí la exposición es el alza del
+  precio, que varía sobre todo dentro de provincia: es otra comparación.
+
+
+4. ¿A QUIÉN? (PREGUNTA 2)
+-------------------------
+
+4.1 Réplica de las cinco interacciones de E-Q (familia de Holm F2, m = 5)
+    Dosis, especificación (4), una interacción a la vez; 2.328 a 2.421 niños,
+    294 comunidades (03_Resultados/Tablas/09_interacciones_eq/ninos_interacciones_eq.csv).
+    β2 = diferencia del efecto por +100 % entre X = 1 y X = 0:
+      E1 0-2 años (frente a 3-5) ...... −0,096 (EE 0,207)   E-Q  0,005 (0,066)
+      E2 mujer ......................... 0,028 (EE 0,183)   E-Q  0,099 (0,073)
+      E3 madre con más que primaria ... 0,109 (EE 0,232)   E-Q  0,129 (0,075)
+      E4 pobre ......................... 0,127 (EE 0,261)   E-Q  0,216 (0,180)
+      E5 urbano ....................... −0,009 (EE 0,223)   E-Q −0,270 (0,153)
+    (E-Q: EE robusto sin agrupar; cuadro A4 de su suplemento, citado en
+    10_Propuesta/07_preregistro_heterogeneidad.md §1.)
+    Ninguna se distingue de cero: p sin ajustar ≥ 0,63 y p Holm = 1,000 en las
+    cinco. El efecto es negativo en todos los grupos (−0,23 a −0,39 por +100 %).
+    Urbano: no lo confirmamos ni lo descartamos; nuestro IC (−0,45 a 0,43)
+    contiene su −0,270. En E1, que "edad crítica" sea 0-2 años es inferencia
+    nuestra (fig. 5 de E-Q).
+
+4.2 Bosque causal (tercil alto frente a bajo del alza dentro de provincia)
+    1.602 niños en 195 comunidades (03_Resultados/Tablas/10_bosque/ninos_bosque_ate.csv):
+    ATE del bosque (AIPW) −0,184 (EE 0,065); MCO con el mismo tratamiento −0,188
+    (EE 0,079). El tercil alto tiene +107 % de alza media y el bajo +48 %; la
+    recta de la pregunta 1 predice 0,59 × −0,329 ≈ −0,19.
+    Traslape: propensión estimada (W.hat) entre 0,101 y 0,933; ningún niño fuera
+    de [0,05; 0,95] (03_Resultados/Figuras/10_bosque/ninos_bosque_traslape.png).
+    Pero las X de 1997 predicen bien el tercil (05_Notas/10_bosque/H_bosque_ate_traslape.md).
+
+4.3 Seis GATE pre-declarados (familia F1, m = 6)
+    (03_Resultados/Tablas/11_gate/ninos_gate.csv;
+     figura 03_Resultados/Figuras/11_gate/ninos_gate.png)
+    Δ = GATE(X = 1) − GATE(X = 0), HAZ entre terciles:
+      G1 3-5 años (frente a 0-2) ..... 0,229 (EE 0,150; p 0,127; Holm 0,764)
+      G2 urbano ...................... −0,003 (EE 0,130; Holm 1,000)
+      G3 madre más que primaria ...... −0,029 (EE 0,138; Holm 1,000)
+      G4 mujer ....................... −0,026 (EE 0,139; Holm 1,000)
+      G5 comprador neto .............. −0,128 (EE 0,158; Holm 1,000)
+      G6 pobre ........................ 0,106 (EE 0,148; Holm 1,000)
+    Ninguno pasa Holm. Los doce GATE son negativos (−0,08 a −0,31).
+    BLP conjunta: solo descriptiva (03_Resultados/Tablas/11_gate/ninos_blp.csv).
+
+4.4 Señal exploratoria de la edad (fuera de PLAN.md y de Holm)
+    (03_Resultados/Tablas/11_gate/ninos_edad_sin_cola_exploratorio.csv)
+    GATE 0-2 años −0,313 (EE 0,136) frente a 3-5 años −0,083 (EE 0,055).
+    Sin los niños con |ΔHAZ| > 3: Δ G1 pasa de 0,229 (EE 0,150; p 0,127) a 0,283
+    (EE 0,119; p 0,018, SIN AJUSTAR); E1 de −0,096 (EE 0,207) a −0,213 (EE 0,146;
+    p 0,146). Más daño en los menores de 3 años, en la misma dirección con dos
+    estimadores, pero EXPLORATORIO: contrario a lo pre-declarado (más daño a los
+    3-5) y no pasa ninguna corrección.
+
+4.5 Potencia (APROXIMADA)
+    Diferencia mínima detectable con prueba bilateral al 5 % y potencia del
+    80 %: MDE ≈ (z_0,975 + z_0,80) × EE = (1,96 + 0,84) × EE ≈ 2,8 × EE
+    (aproximación normal; ignora la incertidumbre del EE y la corrección de
+    Holm, que la haría mayor). Calculada en R con
+    02_Scripts/_exploratorio/mde_potencia.R sobre los EE de los .csv citados:
+      - ATE (4): 0,39 HAZ por +100 %;
+      - interacciones de E-Q: 0,51 a 0,73 por +100 % (más que el propio ATE);
+      - contrastes GATE: 0,36 a 0,44 HAZ entre terciles (el doble del ATE del
+        bosque, −0,184);
+      - diferencias de RATE bosque − regla: 0,33 a 0,42.
+    Solo se detectarían diferencias entre grupos del tamaño del efecto promedio
+    o mayores.
+
+
+5. ¿EL BOSQUE SUPERA A LAS REGLAS SIMPLES? (PREGUNTA 3)
+--------------------------------------------------------
+
+- Calibración (03_Resultados/Tablas/12_calibracion/ninos_calibracion.csv):
+  predicción media 0,974 (EE 0,589; p 0,049); predicción diferencial 0,124 (EE
+  0,799; p 0,438). EE agrupado por comunidad (test_calibration usa
+  sandwich::vcovCL con los clusters del bosque, tipo HC3; verificado en el
+  código de grf 2.6.1); el p es UNILATERAL. No hay evidencia de heterogeneidad
+  más allá de los GATE pre-declarados.
+- RATE con AUTOC, escala de daño (AUTOC > 0 = la prioridad encuentra a los más
+  dañados). τ̂ de un bosque en una mitad de las comunidades, evaluado en la
+  otra: 834 niños en 98 comunidades, bootstrap agrupado R = 500
+  (03_Resultados/Tablas/14_rate/ninos_rate.csv;
+   figura 03_Resultados/Figuras/14_rate/ninos_rate_toc.png):
+    AUTOC bosque (−τ̂) 0,116 (EE 0,116; p 0,313); pobre −0,092 (EE 0,082);
+    urbano 0,039 (EE 0,059); comprador neto 0,046 (EE 0,052).
+    Diferencias (familia F3, m = 3): bosque − pobre 0,208 (EE 0,150; Holm
+    0,492); bosque − urbano 0,077 (EE 0,119; Holm 1,000); bosque − comprador
+    neto 0,070 (EE 0,117; Holm 1,000). Ninguna pasa Holm.
+    Con las mitades invertidas (robustez, no pre-registrada): bosque 0,196 (EE
+    0,100); diferencias de 0,167 a 0,206, ninguna con p < 0,05.
+- Perfil de los que priorizaría el bosque (descriptivo, sin validar)
+  (03_Resultados/Tablas/13_perfil/ninos_perfil_cuartil_tau.csv): ordena sobre
+  todo por edad. Cuartil de más daño predicho: 22,5 meses de edad media en
+  1997 y 25,2 % de 3-5 años; cuartil de menos daño predicho: 51,7 meses y
+  82,0 %. Pobreza y zona urbana casi no cambian entre cuartiles.
+
+
+6. RECOMENDACIÓN AL CLIENTE (LENGUAJE NO TÉCNICO)
+-------------------------------------------------
+
+- Donde el arroz sube más, los niños pequeños crecen menos: el alza importa y
+  vale la pena vigilarla por comunidad.
+- Con estos datos no podemos decir que a un grupo (pobres, urbanos, niñas,
+  hijos de madres con poca educación, compradores de arroz) le haya dolido más
+  que a otro. Por eso no recomendamos usar un algoritmo para escoger a quién
+  ayudar dentro de las comunidades afectadas: no encontró mejor a los más
+  afectados que las reglas simples, y las reglas simples tampoco mostraron
+  ventaja.
+- Qué hacer: focalizar por la intensidad del alza en la comunidad (lo que sí
+  se asocia con menos crecimiento) y cubrir a todos los niños pequeños de esas
+  comunidades. Si se quiere una regla adicional, la edad (menores de 3 años)
+  es la única candidata con alguna señal, y habría que comprobarla con más
+  datos antes de usarla.
+- Qué no hacer: no excluir a nadie por no ser pobre o por vivir en el campo
+  con base en esta evidencia; no tratar el orden del bosque como un mapa de
+  quién sufrió más.
+
+
+7. LIMITACIONES Y AMENAZAS
+--------------------------
+
+- Choques simultáneos: el alza pudo coincidir con la sequía de El Niño, el humo
+  de 1997 o disturbios. Los EF de provincia, los controles de comunidad y los
+  terciles dentro de provincia los mitigan, pero no se descartan choques dentro
+  de provincia correlacionados con el alza.
+- Placebo inconcluso: −0,192 (EE 0,117) con controles, cerca del 60 % del
+  efecto; parte de la asociación podría ser una tendencia previa.
+- Desgaste: menos cobertura del HAZ de 1997 en las comunidades de mayor alza,
+  sobre todo entre provincias; la composición no cambia con el alza, pero las
+  no observadas no se pueden revisar.
+- Cola del ΔHAZ: sin los 110 niños con |ΔHAZ| > 3 el efecto baja a −0,197; y la
+  señal exploratoria de la edad cambia al quitarlos.
+- Potencia: con 195-294 comunidades, solo diferencias entre grupos del tamaño
+  del efecto promedio serían detectables (sección 4.5). "No se distingue de
+  cero" no es "igual para todos".
+- La comparación con E-Q es aproximada: otra medida del precio, sin EF de
+  provincia, EE sin agrupar y otra muestra (2.112 niños en su cuadro 1 frente a
+  nuestros 2.421; 05_Notas/01_tracks/D_cohortes_desgaste.md).
+- Las X de 1997 predicen bien el tercil del alza (traslape delgado en partes
+  de la distribución).
+- El RATE depende de una sola partición en mitades (0,116 frente a 0,196 al
+  invertirlas).
+
+
+8. QUÉ NO ESTÁ VERIFICADO
+-------------------------
+
+- Que la "edad crítica" de E-Q sea 0-2 años (inferido de su fig. 5).
+- La causa de que nuestro efecto sea mayor que el de E-Q (medida del precio, EF
+  de provincia o muestra): son hipótesis, no se probaron.
+- Los filtros de la muestra de E-Q (no los detallan).
+- La MDE de la sección 4.5 es una aproximación normal, no una simulación de
+  potencia.
+- La página de Yadlowsky et al. (2025) sobre AUTOC frente a QINI.
+- La cita de F-T (sin daño en talla) viene de CLAUDE.md §5 (cotejada con el PDF
+  el 17-nov); no se volvió a revisar en esta sesión.

@@ -102,7 +102,7 @@ que solo haya que cambiar la base.
 ## H4. Pregunta 3: ¿el bosque supera a las reglas simples?
 
 - [x] **P4.1** `test_calibration` del bosque.
-- [ ] **P4.2** RATE con AUTOC en dos mitades de comunidades: bosque (−τ̂) frente a
+- [x] **P4.2** RATE con AUTOC en dos mitades de comunidades: bosque (−τ̂) frente a
   pobre, urbano y comprador neto; diferencias con Holm (F3).
 - [x] **P4.3** Perfil de los niños que prioriza el bosque (X de 1997 por cuartil
   de τ̂). Si el bosque no supera a las reglas, preparar la lámina del nulo.
@@ -132,7 +132,11 @@ que solo haya que cambiar la base.
 
 ## Por verificar antes de usar
 
-- Cómo trata `rank_average_treatment_effect` los empates de una regla binaria y
-  si da la diferencia entre dos prioridades con EE emparejado (P4.2).
+- ~~Cómo trata `rank_average_treatment_effect` los empates de una regla binaria y
+  si da la diferencia entre dos prioridades con EE emparejado (P4.2).~~
+  **Resuelto (22-nov, Samuel, en el código de `grf` 2.6.1):** solo acepta W
+  binario; los empates se promedian dentro de cada grupo (las reglas binarias
+  son válidas); con dos prioridades devuelve las dos RATE y su diferencia con
+  bootstrap emparejado y agrupado por los clusters del bosque.
 - Que la "edad crítica" de E-Q sea 0-2 años (se infiere de su fig. 5).
 - La página de Yadlowsky et al. (2025) sobre AUTOC frente a QINI.
