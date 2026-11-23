@@ -466,15 +466,30 @@ Cada barra cuenta niños según el efecto que el bosque predice para ellos. La l
 
 Una advertencia: la dispersión de la distribución mezcla diferencias reales y ruido de estimación. La prueba de calibración, que veremos más adelante, no logra separarlas.""")
 titulo(s, "Un bosque causal logra replicar el ATE de las especificaciones lineales")
-figura_metodo(s, FIG / "15_figuras_presentacion/f7_cate_distribucion.png",
-              "Terciles del alza dentro de cada provincia: tercio alto frente a tercio bajo",
-              "grf con 4.000 árboles, agrupado por comunidad; "
-              f"promedio con puntajes AIPW: {coma(b_bos.estimacion, 3)} "
-              f"(EE {coma(b_bos.ee, 3)}). "
-              f"MCO, especificación (4), mismo contraste: {coma(b_mco.estimacion, 3)} (EE {coma(b_mco.ee, 3)}).",
-              "Cómo leer: cada barra cuenta niños según el efecto que el bosque predice para ellos; la "
-              "línea punteada es el promedio. La dispersión mezcla diferencias reales y ruido de "
-              "estimación: la prueba de calibración no los distingue.")
+subtitulo(s, "Terciles del alza dentro de cada provincia: tercio alto frente a tercio bajo")
+DEF7 = [  # una viñeta por definición: i, c, m, e, W, P en cursiva, τ grande, X en negrilla
+    [("W", "i"), (" - 1 si tercio alto del alza; 0 si tercio bajo", None)],
+    [("X", "b"), (" - controles de 1997, ln ", None), ("P", "i"), (" y provincia", None)],
+    [("m", "i"), ("(", None), ("X", "b"), (") - cambio esperado en el HAZ dados los controles", None)],
+    [("e", "i"), ("(", None), ("X", "b"), (") - probabilidad de tercio alto dados los controles", None)],
+    [("τ", "grande"), ("(", None), ("X", "b"), (") - efecto del tercio alto frente al bajo", None)]]
+eq7, (eq7_w, eq7_h) = ecuacion_png(
+    r"\Delta\mathrm{HAZ}_{ic}-m(\mathbf{X}_{ic})=\tau(\mathbf{X}_{ic})\,\big(W_c-e(\mathbf{X}_{ic})\big)"
+    r"+\varepsilon_{ic}", pt=22)
+y_eq7 = Y_SUB + 0.4 + GAP - 0.04
+s.shapes.add_picture(eq7, Inches((W - eq7_w) / 2), Inches(y_eq7), width=Inches(eq7_w))
+y_fig7 = y_eq7 + eq7_h + GAP - 0.04
+pic7 = figura(s, FIG / "15_figuras_presentacion/f7_cate_distribucion.png", 0.6, y_fig7, 7.3)
+X_P7 = 0.6 + 7.3 + 0.3
+caja_texto(s, X_P7, y_fig7, W - 0.6 - X_P7, pic7.height / 914400, TINTE,
+           [(d, 16, False, TEXTO, None, None, 5, "texto") for d in DEF7],
+           anclaje=MSO_ANCHOR.TOP, margen=0.3)
+como_leer(s, "Cómo leer: cada barra cuenta niños según el efecto que el bosque predice para ellos; la "
+             "línea punteada es el promedio. La dispersión mezcla diferencias reales y ruido de "
+             "estimación: la prueba de calibración no los distingue. "
+             "Método: grf con 4.000 árboles, agrupado por comunidad; "
+             f"promedio con puntajes AIPW: {coma(b_bos.estimacion, 3)} (EE {coma(b_bos.ee, 3)}). "
+             f"MCO, especificación (4), mismo contraste: {coma(b_mco.estimacion, 3)} (EE {coma(b_mco.ee, 3)}).")
 
 # -----------------------------------------------------------------------------
 # 8. Respuesta 2
