@@ -115,9 +115,9 @@ que solo haya que cambiar la base.
 
 ## H6. Presentación (semana 16)
 
-- [ ] **P6.1** Guion en `04_Presentaciones/guion.md` con el arco de las tres
+- [x] **P6.1** Guion en `04_Presentaciones/guion_presentacion.md` (22-nov; faltan los nombres de los presentadores) con el arco de las tres
   preguntas (20 min + 5 de preguntas) y quién expone cada parte.
-- [ ] **P6.2** Láminas con las figuras y tablas exportadas, sin retoques.
+- [x] **P6.2** Láminas con las figuras y tablas exportadas, sin retoques.
   Preparar preguntas: por qué `feols` y no el bosque para el ATE, contraste
   frente a crisis, errores agrupados, desgaste, diferencia con Frankenberg y
   Thomas (2017).

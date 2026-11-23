@@ -80,7 +80,8 @@ carpetas_salida <- c(
   "03_Resultados/Tablas/11_gate", "03_Resultados/Figuras/11_gate",
   "03_Resultados/Tablas/12_calibracion",
   "03_Resultados/Tablas/13_perfil",
-  "03_Resultados/Tablas/14_rate", "03_Resultados/Figuras/14_rate"
+  "03_Resultados/Tablas/14_rate", "03_Resultados/Figuras/14_rate",
+  "03_Resultados/Figuras/15_figuras_presentacion"
   # una subcarpeta por script que genera tablas o figuras (nombre del script),
   # p. ej. "03_Resultados/Tablas/02_precio_arroz"
 )
@@ -107,7 +108,8 @@ scripts <- c(
   "02_Scripts/11_gate.R",            # P3.3: seis GATE con puntajes AIPW (Holm F1) y BLP
   "02_Scripts/12_calibracion.R",     # P4.1: test_calibration del bosque
   "02_Scripts/13_perfil.R",          # P4.3: perfil de los ninos por cuartil del efecto predicho
-  "02_Scripts/14_rate.R"             # P4.2: RATE (AUTOC) del bosque frente a reglas simples (Holm F3)
+  "02_Scripts/14_rate.R",            # P4.2: RATE (AUTOC) del bosque frente a reglas simples (Holm F3)
+  "02_Scripts/15_figuras_presentacion.R" # figuras grandes para proyectar (sin estimaciones nuevas)
 )
 
 # nota: los '00_formato_*.R' no aparecen en esta lista porque no producen
