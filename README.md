@@ -89,6 +89,8 @@ sale idéntica en la máquina de cada integrante.
 | `02_Scripts/12_calibracion.R` | P4.1: `test_calibration` del bosque de `10_bosque` (predicción media y diferencial) | `03_Resultados/Tablas/12_calibracion/ninos_calibracion.{png,csv}` |
 | `02_Scripts/13_perfil.R` | P4.3: perfil de los niños por cuartil del efecto predicho por el bosque (X de 1997 que el cliente observa); descriptivo | `03_Resultados/Tablas/13_perfil/ninos_perfil_cuartil_tau.{png,csv}` |
 | `02_Scripts/14_rate.R` | P4.2: RATE con AUTOC en dos mitades de comunidades (escala de daño): bosque (−τ̂) frente a pobre, urbano y comprador neto; diferencias con bootstrap emparejado y Holm (F3); mitades invertidas como robustez; curvas TOC | `03_Resultados/Tablas/14_rate/ninos_rate.{png,csv}`; `03_Resultados/Figuras/14_rate/ninos_rate_toc.png` |
+| `02_Scripts/15_figuras_presentacion.R` | Seis figuras para proyectar (12 × 5,6 in, sin título): alza por comunidad, efecto principal frente a E-Q, robustez y placebo, efecto por grupo, potencia y focalización. No estima nada nuevo: lee los `.csv` de `03_Resultados/` (y, para la primera, la base de precios) | `03_Resultados/Figuras/15_figuras_presentacion/f1_alza.png` … `f6_focalizacion.png` |
+| `04_Presentaciones/_fuente/construir_presentacion.py` | Construye la presentación final (Python, fuera de `00_main.R`) con las figuras de `15_figuras_presentacion` y tablas nativas desde los `.csv`; exporta el PDF y verifica tamaños de letra, contraste y textos montados | `08_Entregables/presentacion_final.{pptx,pdf}` (local, no se versiona) |
 | `02_Scripts/_exploratorio/01_salud_mental_1993.py` | Índice de síntomas de 1993 (Python, fuera del pipeline) | `01_Datos/02_Procesados/salud_mental_1993.*` (local) |
 
 ### Scripts previstos (por llenar)

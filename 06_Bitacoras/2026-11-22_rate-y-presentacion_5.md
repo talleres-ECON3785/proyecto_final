@@ -218,3 +218,99 @@ estructura de la presentación, pero no hay guion ni láminas.
   la portada de TIME tiene derechos de terceros y el repositorio es público.
   **[REVISIÓN HUMANA]**: para la entrega, subir la presentación a Bloque Neón
   directamente.
+
+## Sesión posterior (2): rediseño desde cero de la presentación (pedido de Samuel)
+
+### Plan (escrito antes de implementar)
+
+- **Preparación.** Rama al día con `origin/main` (sin cambios nuevos). Respaldo
+  de la versión anterior en `08_Entregables/presentacion_final_v1.{pptx,pdf}`.
+  `guion_10_laminas.md` no existe en ninguna rama ni checkout: no hay nada que
+  borrar con `git rm`; se crea `04_Presentaciones/guion_presentacion.md`.
+- **Figuras (`02_Scripts/15_figuras_presentacion.R`).** F1-F6 de 12 × 5,6 in a
+  200 dpi, sin título ni notas, base_size 22. F1 necesita el alza por comunidad,
+  que no está en ningún `.csv`: se lee de `01_Datos/02_Procesados/precio_arroz.rds`
+  (la base solo para esa figura). F2-F6 salen de los `.csv` de `03_Resultados/`;
+  la referencia de E-Q (−0,135; EE 0,041) se escribe a mano con su fuente
+  (`07_Recursos/Articulos/00_hallazgos_articulos.md`, cuadro A1). F5 usa la
+  diferencia mínima detectable ≈ 2,8 × EE de los contrastes de `11_gate`.
+- **Presentación.** Se reescribe `04_Presentaciones/_fuente/construir_presentacion.py`
+  para construir la presentación desde una presentación en blanco (16:9),
+  sin partir de la base: 12 láminas + separador y 8 láminas de respaldo.
+  Autoformas nativas, fuentes Radio Canada / Radio Canada Big. El script
+  falla si un texto es < 12 pt, si un contraste es < 4,5:1 o si no hay 12
+  láminas principales; exporta el PDF con LibreOffice usando un perfil
+  temporal que trae las fuentes de `10_Propuesta/_fuente_pdf/fuentes/` (sin
+  instalar nada en el sistema), y revisa textos montados o fuera de la página.
+- **Decisiones.**
+  - Título de la lámina 2: el pedido dice «En 1998 el arroz casi se duplicó»,
+    pero nuestra medida es el alza 1997→2000 con mediana +70 % (E-Q: media
+    +83 %). Se usa «Entre 1997 y 2000 el arroz subió un 70 %, y en unas
+    comunidades mucho más» para no afirmar algo que los datos no miden.
+  - La portada de TIME (derechos de terceros) sigue sin versionarse; se toma
+    de `04_Presentaciones/_fuente/presentacion_base.pptx` (local).
+- **Riesgos.** PowerPoint tiene abierto el `.pptx` actual (archivo de bloqueo
+  `~$presentacion_final.pptx`): si no deja sobrescribirlo, se guarda con otro
+  nombre y se avisa. Las fuentes no van incrustadas en el `.pptx`: presentar
+  desde el PDF.
+
+### Resultado del rediseño
+
+- **`02_Scripts/15_figuras_presentacion.R`** (en `00_main.R` y el README): F1-F6
+  de 12 × 5,6 in (F5 de 8,4 × 4,8 in, que es su tamaño en la lámina 8), sin
+  título, con rótulos directos dentro de la figura (F1 mediana, F2 comparación
+  con E-Q, F3 placebo, F4 edad, F6 «no mejor que escoger al azar»). Solo F1 lee
+  la base (`precio_arroz.rds`); las demás, los `.csv`. Con `stopifnot` que
+  cruzan las cifras rotuladas con los `.csv` (−0,329; −1,7 cm; 0,36-0,44;
+  0,116; mediana 0,70).
+- **`04_Presentaciones/_fuente/construir_presentacion.py`** reescrito: 12
+  láminas + separador + 8 de respaldo (tablas nativas desde los `.csv`, ≥ 14
+  pt). Falla si hay texto < 12 pt, contraste < 4,5:1, ≠ 12 láminas
+  principales, títulos de más de 15 palabras o textos montados en el PDF.
+  Resultado: 21 láminas, todo OK. Fuentes Radio Canada y Radio Canada Big
+  incrustadas en el PDF: se cargan en la sesión de Windows solo durante la
+  exportación (`AddFontResourceW`) y se descargan al terminar
+  (`RemoveFontResourceW`); no se instala nada.
+- **Figura ≥ 60 % del área útil:** figuras de 10,5 × 4,9 in en un área útil
+  (bajo el título y sobre el pie) de 13,33 × 5,5 in ≈ 70 %. La lámina 8 tiene
+  la figura de 8,2 in de ancho al lado de las dos cifras de la edad (pedido
+  explícito), y muestra 4 cifras (0,18; 0,36 a 0,44; −0,31; −0,08): una más
+  que el máximo de 3. **[REVISIÓN HUMANA]**
+- **Respaldo:** las tres láminas con figuras exportadas de scripts anteriores
+  (traslape, cuartiles, curvas TOC) traen notas internas pequeñas (≈ 11 pt al
+  tamaño de la lámina); son legibles como respaldo, pero no cumplen 14 pt.
+- `guion_10_laminas.md` no existía: no hubo `git rm`. Se creó
+  `04_Presentaciones/guion_presentacion.md`.
+- **Respaldo de la versión anterior:** `08_Entregables/presentacion_final_v1.{pptx,pdf}`
+  (local).
+
+### Prueba de lectura (solo título + figura, sin contexto)
+
+| Lámina | Lo que entendería alguien sin contexto | ¿Coincide? |
+|---|---|---|
+| 1 | Una consultoría sobre a quién afectó más la subida del arroz en Indonesia en 1997-98, para una agencia de ayuda | Sí |
+| 2 | El arroz subió mucho (la mitad de las comunidades, más de 70 %), con alzas muy distintas entre comunidades | Sí |
+| 3 | Hay dos estudios que no coinciden y tres preguntas que vamos a responder | Sí |
+| 4 | Medimos a los mismos niños antes y después del alza, en muchas comunidades | Sí |
+| 5 | Donde el precio se duplicó, los niños quedaron 0,33 desviaciones (≈ 1,7 cm) más bajos; más que otro estudio, con rangos que se traslapan | Sí |
+| 6 | Todas las variantes dan daño (a la izquierda de cero), pero de tamaños distintos; el placebo no es concluyente | Sí |
+| 7 | Todos los grupos muestran daño, con rangos parecidos; la edad se ve algo distinta | Sí |
+| 8 | Los datos solo detectarían diferencias del doble del daño promedio; la edad es una pista sin confirmar | Sí |
+| 9 | Ni el algoritmo ni las reglas simples se distinguen de escoger al azar | Sí |
+| 10 | Recomendación: vigilar por comunidad y cubrir a todos los niños pequeños | Sí |
+| 11 | Aportes y límites del estudio | Sí |
+| 12 | Resumen: sí dolió, todos afectados, el algoritmo no ayuda | Sí |
+
+### Cifras cotejadas
+
+Lámina 2: 70 % y 297 (`precio_arroz.rds`, `02_precio_arroz/comunidades_resumen_precio.csv`).
+Lámina 3: −0,135 (`07_Recursos/Articulos/00_hallazgos_articulos.md`, cuadro A1).
+Lámina 4: 2.421 y 294 (`06_ate/ninos_ate_especificaciones.csv`); 5 cm (5,03 cm,
+DE media de la referencia OMS en 2000, `06_ate` y `hallazgos_principales.txt`).
+Lámina 5: −0,33 y −1,7 cm (`06_ate`, especificación 4). Lámina 6: variantes
+y placebo (`08_validacion/*.csv`). Láminas 7-8: `11_gate/ninos_gate.csv`
+(−0,313; −0,083), 0,18 (`10_bosque/ninos_bosque_ate.csv`), 0,36-0,44 (2,8 ×
+EE de `11_gate`). Lámina 9: `14_rate/ninos_rate.csv`. Lámina 12: 1,7 cm
+(`06_ate`). Título de la lámina 2: se usó «subió un 70 % entre 1997 y 2000»
+en lugar de «en 1998 casi se duplicó», porque nuestra medida es el alza
+1997-2000 (mediana +70 %).

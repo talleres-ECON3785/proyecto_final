@@ -104,6 +104,19 @@ preguntas).
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
 
+### 2026-11-22 (7): presentación rediseñada desde cero
+
+- Samuel Escandón (worktree, empujado a `SamuelEscandonC`), sesión autónoma.
+  - `02_Scripts/15_figuras_presentacion.R` (en `00_main.R`, 15 scripts sin
+    errores): seis figuras grandes para proyectar, desde los `.csv`.
+  - `construir_presentacion.py` reescrito: 12 láminas en lenguaje llano + 8 de
+    respaldo, notas del orador por presentador (1.200 s) y verificaciones
+    automáticas (≥ 12 pt, contraste ≥ 4,5:1, sin solapes). Guion y preguntas en
+    `04_Presentaciones/guion_presentacion.md`. **Cierra P6.1-P6.2.**
+- Bitácora: [2026-11-22_rate-y-presentacion_5.md](06_Bitacoras/2026-11-22_rate-y-presentacion_5.md)
+- **Siguientes objetivos:** (1) poner los nombres de los presentadores y
+  ensayar con el PDF; (2) P7: entrega.
+
 ### 2026-11-22 (6): correcciones de la presentación final
 
 - Samuel Escandón (worktree, empujado a `SamuelEscandonC`), sesión autónoma.

@@ -1,504 +1,661 @@
 # =============================================================================
-# Construye la presentación final a partir de la base editada a mano
+# Construye la presentación final DESDE CERO (16:9, 13,333 × 7,5 in)
 # Proyecto final - ECON-3785 (2026-2)
 #
-# Toma 04_Presentaciones/_fuente/presentacion_base.pptx, aplica las
-# correcciones de formato (sin cambiar cifras ni el número de láminas) y deja:
-#   08_Entregables/presentacion_final.pptx
-#   08_Entregables/presentacion_final.pdf        (LibreOffice, modo headless)
-#   04_Presentaciones/_fuente/_render/laminaNN.png (una imagen por lámina)
-# Al final revisa el PDF: textos montados entre sí, sobre imágenes o fuera de
-# la página. Si encuentra alguno, lo imprime y termina con error.
+# 12 láminas principales + separador «Respaldo» + 8 de respaldo. Figuras de
+# 03_Resultados/Figuras/15_figuras_presentacion/ (script 15 del pipeline) y
+# tablas nativas leídas de los .csv de 03_Resultados/. La única imagen externa
+# es la portada de TIME, que se toma de la base local
+# (04_Presentaciones/_fuente/presentacion_base.pptx; no se versiona).
 #
-# Uso (desde la raíz del repositorio):
-#   python 04_Presentaciones/_fuente/construir_presentacion.py
-# Requiere: python-pptx, pymupdf, pandas y LibreOffice (soffice).
-# La base, el .pptx y el .pdf no se versionan (la portada de TIME tiene
-# derechos de autor y el repositorio es público).
+# Salidas: 08_Entregables/presentacion_final.{pptx,pdf} y un PNG por lámina en
+# 04_Presentaciones/_fuente/_render/. El script FALLA si: algún texto mide
+# menos de 12 pt; algún texto tiene contraste < 4,5:1 con su fondo; no hay 12
+# láminas principales; o el PDF tiene textos montados o fuera de la página.
+#
+# Uso (desde la raíz): python 04_Presentaciones/_fuente/construir_presentacion.py
+# Requiere python-pptx, pandas, pymupdf y LibreOffice. Las fuentes Radio
+# Canada se pasan a LibreOffice con un perfil temporal (no se instala nada).
 # =============================================================================
 
-import copy
+import io
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 
 import pandas as pd
 import pymupdf
 from pptx import Presentation
 from pptx.dml.color import RGBColor
-from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
+from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.oxml.ns import qn
-from pptx.util import Emu, Pt
+from pptx.util import Inches, Pt
 
 RAIZ = Path(__file__).resolve().parents[2]
+FIG = RAIZ / "03_Resultados/Figuras"
+TAB = RAIZ / "03_Resultados/Tablas"
 BASE = RAIZ / "04_Presentaciones/_fuente/presentacion_base.pptx"
+FUENTES = RAIZ / "10_Propuesta/_fuente_pdf/fuentes"
 SALIDA = RAIZ / "08_Entregables/presentacion_final.pptx"
 RENDER = RAIZ / "04_Presentaciones/_fuente/_render"
-CSV_ATE = RAIZ / "03_Resultados/Tablas/06_ate/ninos_ate_especificaciones.csv"
 
-M = 914400  # EMU por pulgada; las posiciones se escriben en millones de EMU
-def e(x):
-    return Emu(int(round(x * 1_000_000)))
+FONDO, VERDE, VERDE_OSC = "F8F9F8", "2E6B4F", "16382B"
+TINTE, TEXTO, GRIS, BLANCO = "E3EDE7", "222222", "5E5E5E", "FFFFFF"
+TITULO_F, CUERPO_F = "Radio Canada Big", "Radio Canada"
+W, H = 13.333, 7.5
 
-VERDE_OSCURO = RGBColor(0x17, 0x3B, 0x2F)
-BLANCO = RGBColor(0xFF, 0xFF, 0xFF)
-GRIS_TEXTO = RGBColor(0x0B, 0x0B, 0x0B)
+prs = Presentation()
+prs.slide_width, prs.slide_height = Inches(W), Inches(H)
+VACIA = prs.slide_layouts[6]
+textos = []  # (lámina, texto, color, fondo) para la prueba de contraste
 
-prs = Presentation(BASE)
-L = list(prs.slides)
+
+def rgb(h):
+    return RGBColor.from_string(h)
+
+def coma(x, d=2):
+    return f"{x:.{d}f}".replace(".", ",").replace("-", "−")
 
 
 # -----------------------------------------------------------------------------
-# Utilidades
+# Piezas
 # -----------------------------------------------------------------------------
 
-def forma(lamina, nombre):
-    for sh in lamina.shapes:
-        if sh.name == nombre:
-            return sh
-    raise KeyError(f"No está la forma {nombre!r}")
+def lamina(seccion=None, notas=""):
+    s = prs.slides.add_slide(VACIA)
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = rgb(FONDO)
+    s.notes_slide.notes_text_frame.text = notas
+    s._seccion = seccion
+    return s
 
-def borrar(sh):
-    sh._element.getparent().remove(sh._element)
-
-def mover(sh, x=None, y=None, w=None, h=None):
-    if x is not None: sh.left = e(x)
-    if y is not None: sh.top = e(y)
-    if w is not None: sh.width = e(w)
-    if h is not None: sh.height = e(h)
-
-def alinear(sh, al=PP_ALIGN.LEFT):
-    for p in sh.text_frame.paragraphs:
-        p.alignment = al
-
-def tamano(sh, pt, solo_parrafo=None):
-    for i, p in enumerate(sh.text_frame.paragraphs):
-        if solo_parrafo is None or i == solo_parrafo:
-            for r in p.runs:
-                r.font.size = Pt(pt)
-
-def color_texto(sh, rgb):
-    for p in sh.text_frame.paragraphs:
-        for r in p.runs:
-            r.font.color.rgb = rgb
-
-def sin_autoajuste(cuerpo_xml):
-    """bodyPr sin autoajuste, con ajuste de línea; el tamaño lo fija el script."""
-    body = cuerpo_xml.find(qn("a:bodyPr"))
-    for hijo in list(body):
-        if hijo.tag in (qn("a:spAutoFit"), qn("a:normAutofit"), qn("a:noAutofit")):
-            body.remove(hijo)
-    body.set("wrap", "square")
-    return body
-
-def relleno_de(sh):
-    """Copia del primer relleno sólido de una forma (para reutilizar su color)."""
-    sf = sh._element.spPr.find(qn("a:solidFill"))
-    return copy.deepcopy(sf)
-
-def caja(lamina, x, y, w, h, cuerpo_origen, relleno, anclaje="ctr", margen=0.18):
-    """Rectángulo sin borde con el texto de otra forma dentro (estilo de la propuesta)."""
-    r = lamina.shapes.add_shape(MSO_SHAPE.RECTANGLE, e(x), e(y), e(w), e(h))
-    sppr = r._element.spPr
-    for viejo in sppr.findall(qn("a:solidFill")):
-        sppr.remove(viejo)
-    sppr.insert(list(sppr).index(sppr.find(qn("a:prstGeom"))) + 1, copy.deepcopy(relleno))
-    r.line.fill.background()
-    r.shadow.inherit = False
-    viejo = r._element.find(qn("p:txBody"))
-    nuevo = copy.deepcopy(cuerpo_origen)
-    r._element.replace(viejo, nuevo)
-    body = sin_autoajuste(nuevo)
-    body.set("anchor", anclaje)
-    for lado in ("lIns", "rIns", "tIns", "bIns"):
-        body.set(lado, str(int(margen * 1_000_000)))
-    # estilo del tema del autoshape: sin él, el texto hereda el blanco del tema
-    st = r._element.find(qn("p:style"))
-    if st is not None:
-        r._element.remove(st)
-    return r
-
-def cuadro_pie(lamina):
-    """Cuadro verde oscuro del pie (como en las láminas 3 y 10)."""
-    for sh in lamina.shapes:
-        if sh.shape_type == 1 and abs(sh.left - e(0.548640)) < 20000 and abs(sh.top - e(6.382512)) < 20000:
-            return sh
-    r = lamina.shapes.add_shape(MSO_SHAPE.RECTANGLE, e(0.548640), e(6.382512),
-                                e(0.310896), e(0.310896))
+def rect(s, x, y, w, h, color, forma=MSO_SHAPE.RECTANGLE):
+    r = s.shapes.add_shape(forma, Inches(x), Inches(y), Inches(w), Inches(h))
     r.fill.solid()
-    r.fill.fore_color.rgb = VERDE_OSCURO
+    r.fill.fore_color.rgb = rgb(color)
     r.line.fill.background()
-    r.shadow.inherit = False
+    estilo = r._element.find("{http://schemas.openxmlformats.org/presentationml/2006/main}style")
+    if estilo is not None:  # sin el estilo del tema: ni sombra ni colores heredados
+        r._element.remove(estilo)
     return r
 
-def titulo(lamina, nombre, pt=26, w=None, x=0.548640, y=0.32):
-    sh = forma(lamina, nombre)
-    alinear(sh)
-    tamano(sh, pt)
-    mover(sh, x=x, y=y, w=w)
-    return sh
+def texto(s, x, y, w, h, parrafos, fondo=FONDO, anclaje=MSO_ANCHOR.TOP, forma=None,
+          margen=0.05):
+    """parrafos: lista de (texto, pt, negrita, color, fuente, alineación, espacio_antes)."""
+    caja = forma if forma is not None else s.shapes.add_textbox(
+        Inches(x), Inches(y), Inches(w), Inches(h))
+    tf = caja.text_frame
+    tf.word_wrap = True
+    tf.auto_size = None
+    tf.vertical_anchor = anclaje
+    for lado in ("margin_left", "margin_right", "margin_top", "margin_bottom"):
+        setattr(tf, lado, Inches(margen))
+    for i, p in enumerate(parrafos):
+        t, pt, neg, col, fuente, al, antes = (list(p) + [None] * 7)[:7]
+        par = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        par.alignment = al or PP_ALIGN.LEFT
+        if antes:
+            par.space_before = Pt(antes)
+        r = par.add_run()
+        r.text = t
+        r.font.size = Pt(pt)
+        r.font.bold = bool(neg)
+        r.font.color.rgb = rgb(col or TEXTO)
+        # Radio Canada no trae negrita: lo negrito va en Radio Canada Big Bold
+        r.font.name = fuente or (TITULO_F if neg else CUERPO_F)
+        textos.append((len(prs.slides), t, col or TEXTO, fondo))
+    return caja
 
-def imagen(lamina, nombre, y, alto):
-    """Reubica una figura sin deformarla (conserva su proporción)."""
-    sh = forma(lamina, nombre)
-    prop = sh.width / sh.height
-    mover(sh, y=y, h=alto, w=alto * prop)
-    return sh
+def caja_texto(s, x, y, w, h, color, parrafos, anclaje=MSO_ANCHOR.TOP, margen=0.2):
+    r = rect(s, x, y, w, h, color)
+    return texto(s, 0, 0, 0, 0, parrafos, fondo=color, anclaje=anclaje, forma=r, margen=margen)
 
-def desagrupar(lamina, grupo):
-    """Saca los hijos de un grupo a la lámina, con sus coordenadas absolutas."""
-    g = grupo._element
-    xfrm = g.grpSpPr.find(qn("a:xfrm"))
-    off, ext = xfrm.find(qn("a:off")), xfrm.find(qn("a:ext"))
-    choff, chext = xfrm.find(qn("a:chOff")), xfrm.find(qn("a:chExt"))
-    ox, oy, ex, ey = (int(off.get("x")), int(off.get("y")), int(ext.get("cx")), int(ext.get("cy")))
-    cx0, cy0, cex, cey = (int(choff.get("x")), int(choff.get("y")), int(chext.get("cx")), int(chext.get("cy")))
-    sx, sy = ex / cex, ey / cey
-    arbol = g.getparent()
-    hijos = [h for h in g if h.tag in (qn("p:sp"), qn("p:pic"), qn("p:grpSp"), qn("p:cxnSp"))]
-    pos = arbol.index(g)
-    for h in hijos:
-        arbol.insert(pos, h)
-        pos += 1
-        hx = h.find(".//" + qn("a:xfrm"))
-        o, x_ = hx.find(qn("a:off")), hx.find(qn("a:ext"))
-        o.set("x", str(int(ox + (int(o.get("x")) - cx0) * sx)))
-        o.set("y", str(int(oy + (int(o.get("y")) - cy0) * sy)))
-        x_.set("cx", str(int(int(x_.get("cx")) * sx)))
-        x_.set("cy", str(int(int(x_.get("cy")) * sy)))
-    arbol.remove(g)
+def titulo(s, t, y=0.32, h=1.15, w=W - 1.2):
+    palabras = [p for p in t.split() if any(c.isalnum() for c in p)]  # «%» no es palabra
+    assert len(palabras) <= 15, f"Título de más de 15 palabras: {t}"
+    return texto(s, 0.6, y, w, h, [(t, 32, True, TEXTO, TITULO_F)], anclaje=MSO_ANCHOR.MIDDLE)
+
+def figura(s, archivo, x, y, w):
+    return s.shapes.add_picture(str(archivo), Inches(x), Inches(y), width=Inches(w))
+
+def como_leer(s, t, y=6.4):
+    return texto(s, 0.6, y, W - 1.2, 0.6, [(t, 14, False, GRIS)])
+
+def tabla(s, x, y, w, encabezado, filas, anchos, pt=16):
+    n, m = len(filas) + 1, len(encabezado)
+    grafo = s.shapes.add_table(n, m, Inches(x), Inches(y), Inches(w), Inches(0.45 * n))
+    t = grafo.table
+    for j, a in enumerate(anchos):
+        t.columns[j].width = Inches(a)
+    for i, fila in enumerate([encabezado] + filas):
+        for j, valor in enumerate(fila):
+            c = t.cell(i, j)
+            c.fill.solid()
+            fondo = VERDE_OSC if i == 0 else (BLANCO if i % 2 else TINTE)
+            c.fill.fore_color.rgb = rgb(fondo)
+            col = BLANCO if i == 0 else TEXTO
+            texto(s, 0, 0, 0, 0, [(str(valor), pt, i == 0, col, CUERPO_F,
+                                   PP_ALIGN.LEFT if j == 0 else PP_ALIGN.RIGHT)],
+                  fondo=fondo, forma=c, margen=0.08)
+    return grafo
+
+SECCIONES = ["Contexto", "Método", "Resultados", "Recomendación"]
+
+def pie(s, numero):
+    texto(s, 0.6, 7.05, 3.2, 0.32, [("Proyecto final · ECON-3785", 12, False, GRIS)])
+    caja = s.shapes.add_textbox(Inches(4.0), Inches(7.05), Inches(5.6), Inches(0.32))
+    tf = caja.text_frame
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = Inches(0.05)
+    par = tf.paragraphs[0]
+    par.alignment = PP_ALIGN.CENTER
+    for k, sec in enumerate(SECCIONES):
+        actual = sec == s._seccion
+        r = par.add_run()
+        r.text = sec + ("   ·   " if k < 3 else "")
+        r.font.size, r.font.name, r.font.bold = Pt(12), TITULO_F if actual else CUERPO_F, actual
+        r.font.color.rgb = rgb(VERDE if actual else GRIS)
+        textos.append((numero, sec, VERDE if actual else GRIS, FONDO))
+    texto(s, W - 1.6, 7.05, 1.0, 0.32, [(str(numero), 12, False, GRIS, None, PP_ALIGN.RIGHT)])
+
+
+# -----------------------------------------------------------------------------
+# Datos (todas las cifras de resultados salen de los .csv)
+# -----------------------------------------------------------------------------
+
+ate = pd.read_csv(TAB / "06_ate/ninos_ate_especificaciones.csv")
+a4 = ate.loc[ate.especificacion == 4].iloc[0]
+edad = pd.read_csv(TAB / "11_gate/ninos_gate.csv").set_index("id").loc["G1"]
+assert coma(a4.beta) == "−0,33" and coma(a4.beta_cm, 1) == "−1,7"
+assert coma(edad.gate_0) == "−0,31" and coma(edad.gate_1) == "−0,08"
+
+def portada_time():
+    """La portada de TIME (derechos de terceros) se toma de la base local."""
+    base = Presentation(BASE)
+    pic = next(sh for sh in base.slides[0].shapes if sh.shape_type == 13)
+    return io.BytesIO(pic.image.blob), pic.image.size
 
 
 # -----------------------------------------------------------------------------
-# Lámina 1: portada
+# 1. Portada
 # -----------------------------------------------------------------------------
 
-s = L[0]
-cab = forma(s, "TextBox 3")  # «Proyecto final» / «ECON-3785» en dos párrafos
-p0, p1 = cab.text_frame.paragraphs[0], cab.text_frame.paragraphs[1]
-r_nuevo = copy.deepcopy(p1.runs[0]._r)
-r_nuevo.find(qn("a:t")).text = " · ECON-3785"
-p0._p.append(r_nuevo)
-p1._p.getparent().remove(p1._p)
-mover(cab, x=0.548640, y=0.24, w=6.5)
+s = lamina(notas="""Presentador 1 · 45 s
 
-tit = forma(s, "TextBox 4")
-alinear(tit)
-mover(tit, x=0.548640, y=0.66, w=7.25)
+Buenos días. Somos consultores de una agencia que reparte ayuda cuando suben los precios de los alimentos, algo como el Programa Mundial de Alimentos.
 
-cli = forma(s, "TextBox 5")
-pregunta = cli.text_frame.paragraphs[1]
-for r in pregunta.runs:  # el texto viene partido en varios runs
-    if "¿a" in r.text:
-        r.text = r.text.replace("¿a", "¿A", 1)
-        break
-assert pregunta.text.startswith("¿A qué niños proteger primero")
-alinear(cli)
-mover(cli, x=0.548640, y=2.42, w=7.25)
+Nuestro caso es Indonesia en 1997 y 1998. Con la crisis asiática, el precio del arroz se disparó; esta es la portada de TIME de enero de 1998.
 
-portada = forma(s, "Picture 2")
-alto_portada = 2.30
-mover(portada, x=0.548640, y=3.95, h=alto_portada, w=alto_portada * portada.width / portada.height)
-credito = s.shapes.add_textbox(e(0.548640), e(3.95 + alto_portada + 0.04), e(4.0), e(0.28))
-credito.text_frame.word_wrap = True
-credito.text_frame.margin_left = credito.text_frame.margin_right = 0
-run = credito.text_frame.paragraphs[0].add_run()
-# fecha leída en la propia portada («JANUARY 19, 1998»)
-run.text = "Portada: TIME, 19 de enero de 1998"
-run.font.size = Pt(10)
-run.font.name = "Radio Canada"
-run.font.color.rgb = RGBColor(0x52, 0x51, 0x4E)
-
-# panel derecho: preguntas más arriba y nombres completos dentro del panel
-x_panel = forma(s, "Rectangle 1").left / 1_000_000
-for nombre, y in [("TextBox 7", 0.42)]:
-    mover(forma(s, nombre), y=y)
-for num, txt, y in [("TextBox 8", "TextBox 9", 1.12), ("TextBox 10", "TextBox 11", 2.12),
-                    ("TextBox 12", "TextBox 13", 3.12)]:
-    mover(forma(s, num), y=y)
-    mover(forma(s, txt), y=y + 0.11)
-nom = forma(s, "TextBox 6")
-mover(nom, x=x_panel + 0.25, y=4.55, w=4.053535 - 0.50)
-tamano(nom, 15, 0)
-tamano(nom, 13, 1)
+La pregunta del cliente es simple: cuando suben los alimentos, ¿a qué niños hay que proteger primero? Para responderla seguimos la estatura de los niños antes y después del alza.""")
+ancho_verde = W * 0.6
+rect(s, 0, 0, ancho_verde, H, VERDE_OSC)
+texto(s, 0.7, 0.45, ancho_verde - 1.3, 2.8,
+      [("¿A quién golpeó más el arroz caro?", 50, True, BLANCO, TITULO_F)], fondo=VERDE_OSC,
+      anclaje=MSO_ANCHOR.BOTTOM)
+texto(s, 0.7, 3.35, ancho_verde - 1.3, 1.3,
+      [("La crisis de 1997-98 en Indonesia, la estatura de los niños y cómo focalizar la ayuda",
+        24, False, BLANCO)], fondo=VERDE_OSC)
+texto(s, 0.7, 4.65, ancho_verde - 1.3, 0.9,
+      [("Para: una agencia que focaliza ayuda ante choques de precios de alimentos",
+        20, True, BLANCO)], fondo=VERDE_OSC)
+texto(s, 0.7, 5.55, ancho_verde - 1.3, 1.25,
+      [("Samuel Escandón · Douglas Plazas · Mateo Olmos · Santiago Muñoz", 20, False, BLANCO),
+       ("Ciencia de Datos y Econometría Aplicada · 23-nov-2026", 16, False, BLANCO, None, None, 4)],
+      fondo=VERDE_OSC)
+texto(s, 0.7, 7.02, ancho_verde - 1.3, 0.35,
+      [("Portada: TIME, 19 de enero de 1998", 12, False, BLANCO)], fondo=VERDE_OSC)
+blob, (px, py) = portada_time()
+ancho_der = W - ancho_verde
+ancho_nat = H * px / py  # ancho que tendría a toda la altura sin deformarse
+pic = s.shapes.add_picture(blob, Inches(ancho_verde), 0, Inches(ancho_der), Inches(H))
+recorte = max(0.0, (ancho_nat - ancho_der) / ancho_nat) / 2
+pic.crop_left = pic.crop_right = recorte  # recorta los bordes laterales, no deforma
+assert abs((px * (1 - 2 * recorte)) / py - ancho_der / H) < 0.01
 
 # -----------------------------------------------------------------------------
-# Lámina 3: barras con bigotes de ±1,96 EE
+# 2. Situación
 # -----------------------------------------------------------------------------
 
-s = L[2]
-borrar(forma(s, "TextBox 3"))  # «Opción B · Barras: nosotros frente a E-Q»
+s = lamina("Contexto", """Presentador 1 · 75 s
 
-ate = pd.read_csv(CSV_ATE)
-fila = ate.loc[ate["especificacion"] == 4].iloc[0]
-b_nos, ee_nos = float(fila["beta"]), float(fila["ee_agrupado"])
-# Elmira y Qaim (2026): -0,135, EE robusto 0,041 (CLAUDE.md §5; nota de 06_ate)
-b_eq, ee_eq = -0.135, 0.041
-assert f"{b_nos:.3f}" == "-0.329", b_nos
+El arroz es el alimento básico en Indonesia. Con la crisis, su precio subió en todo el país, pero no lo mismo en todas partes.
 
-x0 = 3.383280            # inicio de las barras (el cero)
-ancho_max = 6.75         # el extremo del IC más alejado de cero ocupa esto
-escala = ancho_max / max(abs(b_nos) + 1.96 * ee_nos, abs(b_eq) + 1.96 * ee_eq)
+Este gráfico cuenta comunidades. En el eje horizontal está cuánto subió el precio del arroz en cada comunidad entre 1997 y 2000; la altura de cada barra es cuántas comunidades tuvieron esa alza. Son 297 comunidades de la encuesta.
 
-def barra_con_bigote(barra, etiqueta, b, ee, y_centro):
-    mover(barra, x=x0, w=abs(b) * escala)
-    lo, hi = abs(b) - 1.96 * ee, abs(b) + 1.96 * ee
-    xa, xb = x0 + lo * escala, x0 + hi * escala
-    for xi, yi, xf, yf in [(xa, y_centro, xb, y_centro),
-                           (xa, y_centro - 0.16, xa, y_centro + 0.16),
-                           (xb, y_centro - 0.16, xb, y_centro + 0.16)]:
-        c = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, e(xi), e(yi), e(xf), e(yf))
-        c.line.color.rgb = GRIS_TEXTO
-        c.line.width = Pt(2)
-    mover(etiqueta, x=xb + 0.12)
-
-barra_con_bigote(forma(s, "Rectangle 7"), forma(s, "TextBox 8"), b_nos, ee_nos,
-                 (1.920240 + 0.822960 / 2))
-barra_con_bigote(forma(s, "Rectangle 10"), forma(s, "TextBox 11"), b_eq, ee_eq,
-                 (3.520440 + 0.822960 / 2))
-for nombre, txt in [("TextBox 6", "EE 0,139, agrupado por comunidad"),
-                    ("TextBox 9", "EE 0,041, robusto sin agrupar")]:
-    p = forma(s, nombre).text_frame.paragraphs[1]
-    p.runs[0].text = txt
-    for r in p.runs[1:]:
-        r.text = ""
-    tamano(forma(s, nombre), 14, 1)
-mover(forma(s, "TextBox 12"), y=4.62)
-mover(forma(s, "TextBox 13"), y=4.98)
-nota = forma(s, "TextBox 12").text_frame.paragraphs[0]
-nota.runs[-1].text = nota.runs[-1].text.rstrip() + " Bigotes: ±1,96 EE (IC al 95 %)."
-
-s.notes_slide.notes_text_frame.text = (
-    "Presentador 1 · 100 s\n\n"
-    "Primera pregunta: ¿dolió? Para cada niño medimos cuánto cambió su talla para la "
-    "edad entre 1997 y 2000 y lo comparamos con el alza del precio del arroz en su "
-    "comunidad. Los errores se agrupan por comunidad, porque el alza se asigna por "
-    "comunidad: el número efectivo de observaciones son 294 comunidades, no 2.421 niños.\n\n"
-    "El resultado: donde el precio del arroz se dobló, los niños quedaron 0,33 "
-    "desviaciones estándar por debajo de lo esperado para su edad, cerca de 1,7 "
-    "centímetros. Es la especificación con controles de 1997, efectos fijos de provincia "
-    "y el precio inicial. El error estándar es 0,139 y el intervalo al 95 % va de −0,60 "
-    "a −0,06: son los bigotes de la barra verde.\n\n"
-    "Elmira y Qaim estiman −0,135 con un error de 0,041. Ojo con la comparación: su error "
-    "es robusto sin agrupar por comunidad; el nuestro está agrupado por comunidad, y por "
-    "eso es más ancho. La dirección es la misma; nuestro efecto es de 1,6 a 2,5 veces el "
-    "suyo según la especificación, y los intervalos se traslapan. Ellos miden el precio "
-    "con fuentes distintas en cada año y no comparan dentro de provincia.\n\n"
-    "Un matiz que retomamos al final: es un contraste entre comunidades con más y menos "
-    "alza, no el efecto de la crisis, y el tamaño exacto es incierto."
-)
+La línea marca la mitad: en la mitad de las comunidades el precio subió más de 70 %. Pero hay comunidades con alzas de 20 % y otras de más de 150 %. Esa diferencia entre comunidades es la que vamos a aprovechar.""")
+titulo(s, "El arroz subió un 70 % entre 1997 y 2000, y en unas comunidades mucho más")
+figura(s, FIG / "15_figuras_presentacion/f1_alza.png", 1.42, 1.45, 10.5)
+como_leer(s, "Cómo leer: cada barra cuenta comunidades según cuánto subió allí el precio del arroz "
+             "(297 comunidades). El arroz es el alimento básico; la crisis lo encareció de forma desigual.")
 
 # -----------------------------------------------------------------------------
-# Láminas 2, 4, 6 y 8: título, figura de la izquierda y panel derecho
+# 3. Lo que se sabe
 # -----------------------------------------------------------------------------
 
-for i in (1, 3, 5, 7):
-    titulo(L[i], "TextBox 6", pt=24, w=7.70)
-    imagen(L[i], "Picture 7", y=1.36, alto=4.92)
-    forma(L[i], "Picture 7").left = e(0.457200)
+s = lamina("Contexto", """Presentador 1 · 90 s
 
-# lámina 2: grupos de onda -> rectángulos con el texto dentro
-s = L[1]
-grupos = [forma(s, n) for n in ("Grupo 14", "Grupo 15", "Grupo 16")]
-relleno = relleno_de(next(h for h in grupos[0].shapes if h.shape_type == 1))
-cuerpos = [copy.deepcopy(next(h for h in g.shapes if h.shape_type == 17)._element.txBody)
-           for g in grupos]
-for g in grupos:
-    borrar(g)
-for cuerpo, (y, h) in zip(cuerpos, [(0.42, 1.45), (2.02, 1.45), (3.62, 2.55)]):
-    c = caja(s, 8.62, y, 3.40, h, cuerpo, relleno)
-    for p in c.text_frame.paragraphs:
-        for r in p.runs:
-            if r.font.size and r.font.size.pt < 30:
-                r.font.size = Pt(15)
+Dos estudios usaron estos mismos datos y llegaron a conclusiones distintas.
 
-# láminas 6 y 8: ondas sueltas + cuadros de texto -> rectángulos
-def ondas_a_cajas(s, pares, extra=None):
-    relleno = relleno_de(forma(s, pares[0][0]))
-    cajas = []
-    for (onda, texto), (y, h) in zip(pares, [(0.42, 1.80), (2.37, 1.80), (4.32, 1.80)]):
-        cuerpo = copy.deepcopy(forma(s, texto)._element.txBody)
-        borrar(forma(s, onda))
-        borrar(forma(s, texto))
-        cajas.append(caja(s, 8.62, y, 3.40, h, cuerpo, relleno))
-    return cajas
+Elmira y Qaim, en 2026, encuentran que cuando el precio del arroz se duplicaba, la estatura de los niños para su edad bajaba 0,135 desviaciones estándar, y más en las ciudades.
 
-ondas_a_cajas(L[5], [("Doble onda 11", "TextBox 8"), ("Doble onda 12", "TextBox 9"),
-                     ("Doble onda 13", "TextBox 10")])
-cajas8 = ondas_a_cajas(L[7], [("Doble onda 12", "TextBox 8"), ("Doble onda 13", "TextBox 9"),
-                              ("Doble onda 14", "TextBox 10")])
-# «834 niños, 98 comunidades de evaluación» pasa dentro del primer cuadro
-suelto = forma(L[7], "TextBox 11")
-p_nuevo = copy.deepcopy(suelto.text_frame.paragraphs[0]._p)
-cajas8[0].text_frame._txBody.append(p_nuevo)
-cajas8[0].text_frame.paragraphs[-1].alignment = PP_ALIGN.CENTER
-for r in cajas8[0].text_frame.paragraphs[-1].runs:
-    r.font.size = Pt(12)
-    r.font.bold = False
-    r.font.color.rgb = RGBColor(0x52, 0x51, 0x4E)
-borrar(suelto)
-for c in cajas8:
-    for p in c.text_frame.paragraphs:
-        for r in p.runs:
-            if r.font.size and r.font.size.pt < 30 and r.font.size.pt > 12:
-                r.font.size = Pt(15)
+Frankenberg y Thomas, en 2017, comparando zonas urbanas y rurales, no encuentran daño en la estatura.
 
-# lámina 4: tabla y textos del panel sin montarse
-s = L[3]
-tabla = forma(s, "Table 9")
-mover(tabla, x=8.60, y=0.92)
-tabla.table.columns[0].width = e(1.85)
-tabla.table.columns[1].width = e(1.47)
-for fila in tabla.table.rows:
-    fila.height = e(0.36)
-    for celda in fila.cells:
-        for p in celda.text_frame.paragraphs:
-            for r in p.runs:
-                r.font.size = Pt(12)
-mover(forma(s, "TextBox 8"), x=8.60, y=0.38)
-txt4 = forma(s, "TextBox 10")
-mover(txt4, x=8.60, y=3.95, w=3.32)
-tamano(txt4, 15)
-alinear(txt4)
-mover(forma(s, "TextBox 11"), x=8.60, y=5.55, w=3.32)
+Ninguno de los dos pregunta lo que necesita la agencia: a quién proteger primero. Por eso nos hacemos tres preguntas. Uno: ¿los niños de comunidades donde el arroz subió más crecieron menos? Dos: ¿a algunos niños les afectó más, según su edad, sexo, pobreza, zona, la educación de su madre o si compraban arroz? Tres: ¿un algoritmo de aprendizaje automático encuentra a los más afectados mejor que una regla simple?""")
+titulo(s, "Dos estudios con estos datos no coinciden, y nadie ha probado a quién proteger primero")
+caja_texto(s, 0.6, 1.55, 5.9, 2.25, TINTE,
+           [("Elmira y Qaim (2026)", 22, True, TEXTO, TITULO_F),
+            ("El alza redujo la estatura: −0,135 desviaciones estándar por cada duplicación "
+             "del precio, y más en zonas urbanas.", 20, False, TEXTO, None, None, 6)])
+caja_texto(s, 6.83, 1.55, 5.9, 2.25, TINTE,
+           [("Frankenberg y Thomas (2017)", 22, True, TEXTO, TITULO_F),
+            ("Comparando zonas urbanas y rurales: sin daño en la estatura de los niños.",
+             20, False, TEXTO, None, None, 6)])
+caja_texto(s, 0, 3.98, W, 2.85, VERDE,
+           [("Nuestras tres preguntas", 22, True, BLANCO, TITULO_F),
+            ("1. ¿Los niños de las comunidades donde el arroz subió más crecieron menos?",
+             20, False, BLANCO, None, None, 8),
+            ("2. ¿Hubo niños a los que el alza afectó más, según su edad, sexo, pobreza, zona, "
+             "educación de la madre o compra de arroz?", 20, False, BLANCO, None, None, 6),
+            ("3. ¿Un algoritmo de aprendizaje automático encuentra a los niños más afectados "
+             "mejor que una regla simple?", 20, False, BLANCO, None, None, 6)],
+           anclaje=MSO_ANCHOR.MIDDLE, margen=0.6)
 
 # -----------------------------------------------------------------------------
-# Lámina 5: tabla de las interacciones de E-Q
+# 4. Cómo lo medimos
 # -----------------------------------------------------------------------------
 
-s = L[4]
-t5 = titulo(s, "TextBox 5", pt=26, w=11.09)
-t5.text_frame.paragraphs[0].runs[0].text = (
-    "Ninguna de las cinco diferencias que estudian Elmira y Qaim se distingue de cero "
-    "con nuestros datos")
-for r in t5.text_frame.paragraphs[0].runs[1:]:
-    r.text = ""
-tab = forma(s, "Table 6")
-mover(tab, x=0.548640, y=1.50)
-for j, w in enumerate([2.80, 1.95, 0.95, 2.15]):
-    tab.table.columns[j].width = e(w)
-for fila in tab.table.rows:
-    fila.height = e(0.44)
-    for celda in fila.cells:
-        for p in celda.text_frame.paragraphs:
-            for r in p.runs:
-                r.font.size = Pt(14)
-mover(forma(s, "TextBox 7"), x=0.548640, y=4.65, w=7.85)
-for celda in tab.table.rows[0].cells:
-    for p in celda.text_frame.paragraphs:
-        for r in p.runs:
-            r.font.size = Pt(13)
-urb = forma(s, "TextBox 8")
-mover(urb, x=8.70, y=1.50, w=3.00)
-tamano(urb, 24, 1)
+s = lamina("Método", """Presentador 1 · 90 s
+
+¿Cómo lo medimos? Usamos la Encuesta de Vida Familiar de Indonesia. Medimos a los niños de 0 a 5 años en 1997, antes del alza, y los volvimos a medir en 2000. Entre una medición y otra, el arroz subió más en unas comunidades que en otras.
+
+Para cada niño calculamos cuánto cambió su estatura para la edad. Esa medida compara la estatura del niño con la de niños sanos de su misma edad y sexo, según la referencia de la Organización Mundial de la Salud. Menos uno quiere decir una desviación estándar por debajo; en estos niños, una desviación estándar son unos 5 centímetros.
+
+Son 2.421 niños en 294 comunidades. Dos aclaraciones: fijamos los grupos y las pruebas antes de ver los resultados; y medimos el efecto de más alza frente a menos alza, no el de la crisis completa, porque todas las comunidades la vivieron.""")
+titulo(s, "Seguimos a 2.421 niños y comparamos comunidades con más y menos alza")
+pasos = [("1997", "Medimos la estatura de cada niño de 0 a 5 años"),
+         ("1997-2000", "El arroz sube más en unas comunidades que en otras"),
+         ("2000", "Volvemos a medir a los mismos niños")]
+for k, (anio, desc) in enumerate(pasos):
+    x = 0.6 + k * 4.3
+    caja_texto(s, x, 1.55, 3.65, 1.65, VERDE,
+               [(anio, 24, True, BLANCO, TITULO_F, PP_ALIGN.CENTER),
+                (desc, 20, False, BLANCO, None, PP_ALIGN.CENTER, 4)],
+               anclaje=MSO_ANCHOR.MIDDLE, margen=0.15)
+    if k < 2:
+        rect(s, x + 3.72, 2.15, 0.5, 0.44, GRIS, MSO_SHAPE.RIGHT_ARROW)
+texto(s, 0.6, 3.35, W - 1.2, 0.55,
+      [("Cambio en la estatura de cada niño: 2.421 niños en 294 comunidades.",
+        22, True, TEXTO)])
+caja_texto(s, 0.6, 4.0, 6.9, 2.75, TINTE,
+           [("¿Qué es la estatura para la edad?", 22, True, TEXTO, TITULO_F),
+            ("Compara la estatura del niño con la de niños sanos de su misma edad y sexo "
+             "(referencia de la OMS), en desviaciones estándar.", 20, False, TEXTO, None, None, 6),
+            ("Ejemplo: −1 es una desviación estándar por debajo; en estos niños, unos 5 cm.",
+             20, False, TEXTO, None, None, 6)])
+texto(s, 7.85, 4.0, 4.9, 2.75,
+      [("Fijamos los grupos y las pruebas antes de ver los resultados.", 20, True, TEXTO),
+       ("Medimos el efecto de más alza frente a menos alza, no el de la crisis completa.",
+        20, False, TEXTO, None, None, 14)])
 
 # -----------------------------------------------------------------------------
-# Lámina 7: figura de GATE lo más grande posible, panel verde más angosto
+# 5. Respuesta 1
 # -----------------------------------------------------------------------------
 
-s = L[6]
-desagrupar(s, forma(s, "Grupo 11"))
-ancho_panel = 3.15
-mover(forma(s, "Rectangle 1"), w=ancho_panel)
-for nombre, y in [("TextBox 8", 0.95), ("TextBox 9", 3.85)]:
-    mover(forma(s, nombre), x=0.15, y=y, w=ancho_panel - 0.30)
-tamano(forma(s, "TextBox 8"), 30, 1)
-t7 = titulo(s, "TextBox 6", pt=26, x=ancho_panel + 0.30, w=12.192 - ancho_panel - 0.60)
-gate = forma(s, "Picture 7")
-alto = 6.30 - 1.00
-mover(gate, y=1.00, h=alto, w=alto * gate.width / gate.height)
-gate.left = e(ancho_panel + (12.192 - ancho_panel - gate.width / 1_000_000) / 2)
-panel = forma(s, "Rectangle 1")._element
-arbol = panel.getparent()
-arbol.remove(panel)
-arbol.insert(2, panel)  # detrás de todo (después de nvGrpSpPr y grpSpPr)
-color_texto(forma(s, "TextBox 3"), BLANCO)
-color_texto(forma(s, "TextBox 5"), RGBColor(0x89, 0x87, 0x81))
+lo, hi = a4.beta - 1.96 * a4.ee_agrupado, a4.beta + 1.96 * a4.ee_agrupado
+s = lamina("Resultados", f"""Presentador 2 · 150 s
+
+Primera respuesta: sí. Donde el arroz subió más, los niños crecieron menos.
+
+En el eje horizontal está cuánto cambia la estatura para la edad por cada vez que el precio se duplica; más a la izquierda es más daño. El punto verde es nuestra estimación: {coma(a4.beta)} desviaciones estándar, unos {coma(-a4.beta_cm, 1)} centímetros. La línea es el rango plausible: con 95 % de confianza, el efecto está entre {coma(lo)} y {coma(hi)}.
+
+El punto gris es Elmira y Qaim: −0,135. Nuestro efecto es mayor, pero los rangos se traslapan, así que no son incompatibles. Ellos miden el precio con fuentes distintas en cada año y no comparan comunidades dentro de la misma provincia; nosotros sí.
+
+Un detalle técnico: nuestro margen de error tiene en cuenta que los niños de una misma comunidad se parecen entre sí; el de ellos no. Por eso nuestro rango es más ancho.""")
+titulo(s, "Sí: donde el arroz subió más, los niños crecieron menos")
+figura(s, FIG / "15_figuras_presentacion/f2_efecto_principal.png", 1.42, 1.45, 10.5)
+como_leer(s, "Cómo leer: cada punto es el efecto promedio; la línea, su rango plausible al 95 %. "
+             "Más a la izquierda = más daño. 2.421 niños en 294 comunidades.")
 
 # -----------------------------------------------------------------------------
-# Lámina 9: los tres cuadros a la misma altura
+# 6. Qué tan sólido
 # -----------------------------------------------------------------------------
 
-s = L[8]
-titulo(s, "TextBox 5", pt=26, w=11.09)
-for rect, txt in [("Rectangle 6", "TextBox 7"), ("Rectangle 8", "TextBox 9"),
-                  ("Rectangle 10", "TextBox 11")]:
-    mover(forma(s, rect), y=1.70, h=3.60)
-    mover(forma(s, txt), y=1.70 + 0.27)
+s = lamina("Resultados", """Presentador 2 · 150 s
+
+¿Qué tan sólido es este resultado? Repetimos la estimación cambiando una cosa a la vez: sin las comunidades medidas en 1998, con los pesos de la encuesta, sin recortar las alzas extremas, solo con precios por kilo y sin los niños con cambios de estatura extremos, que parecen errores de medición.
+
+Todas las estimaciones quedan a la izquierda del cero: la dirección se sostiene. Pero el tamaño va de −0,20 a −0,50: el número exacto es incierto.
+
+Abajo, en naranja, está el placebo: miramos cómo crecieron niños entre 1993 y 1997, antes del alza. Si las comunidades con más alza no tenían nada especial antes, debería dar cero. No se distingue de cero, pero tampoco lo podemos descartar: podría haber una tendencia previa. Lo decimos tal cual.""")
+titulo(s, "La dirección se sostiene en todas las pruebas; el tamaño exacto no")
+figura(s, FIG / "15_figuras_presentacion/f3_robustez.png", 1.42, 1.45, 10.5)
+como_leer(s, "Cómo leer: cada fila repite el cálculo cambiando una cosa. Todas quedan a la izquierda "
+             "de cero; el placebo (antes del alza) debería estar en cero.")
 
 # -----------------------------------------------------------------------------
-# Lámina 10: los seis límites en una cuadrícula 2 × 3
+# 7. Respuesta 2
 # -----------------------------------------------------------------------------
 
-s = L[9]
-titulo(s, "TextBox 5", pt=26, w=11.09)
-pares = [("Rectangle 6", "TextBox 7"), ("Rectangle 8", "TextBox 9"),
-         ("Rectangle 10", "TextBox 11"), ("Rectangle 12", "TextBox 13"),
-         ("Rectangle 14", "TextBox 15"), ("Rectangle 16", "TextBox 17")]
-columnas = [0.548640, 4.27, 7.99]
-filas = [1.75, 3.95]
-for k, (barra, texto) in enumerate(pares):
-    x, y = columnas[k % 3], filas[k // 3]
-    mover(forma(s, barra), x=x, y=y, h=1.85)
-    mover(forma(s, texto), x=x + 0.27, y=y, w=3.25, h=1.85)
+s = lamina("Resultados", """Presentador 3 · 100 s
+
+Segunda pregunta: ¿a quién le dolió más? Antes de ver los datos fijamos seis comparaciones: edad, zona, educación de la madre, sexo, si la familia compra o produce su arroz, y pobreza.
+
+Cada panel compara dos grupos. El punto es el daño estimado en cada grupo, comparando el tercio de comunidades con más alza contra el tercio con menos; la línea es su rango plausible. En los doce grupos el punto queda a la izquierda del cero: todos se vieron afectados.
+
+Pero los grupos de cada panel se parecen mucho: las diferencias son pequeñas frente a su margen de error. Tras corregir por hacer muchas comparaciones a la vez, ninguna diferencia es clara. Tampoco confirmamos que el daño fuera mayor en las ciudades, como dicen Elmira y Qaim; ni lo descartamos.""")
+titulo(s, "Todos los grupos se vieron afectados; no encontramos uno al que le doliera claramente más")
+figura(s, FIG / "15_figuras_presentacion/f4_grupos.png", 1.42, 1.45, 10.5)
+como_leer(s, "Cómo leer: punto = daño en cada grupo; línea = rango plausible. Tampoco confirmamos que el "
+             "daño fuera mayor en zonas urbanas, como reportan Elmira y Qaim, ni lo descartamos.")
 
 # -----------------------------------------------------------------------------
-# Consistencia: títulos a la izquierda y cuadro verde del pie (salvo portada)
+# 8. La única pista
 # -----------------------------------------------------------------------------
 
-titulo(L[2], "TextBox 5", pt=26, w=11.09)
-for s in L[1:]:
-    cuadro_pie(s)
+s = lamina("Resultados", f"""Presentador 3 · 100 s
+
+La única pista está en la edad. Los niños que tenían 0 a 2 años en 1997 muestran más daño, {coma(edad.gate_0)}, que los de 3 a 5 años, {coma(edad.gate_1)}. Pero ojo: esto es exploratorio.
+
+¿Por qué no lo afirmamos? Por la precisión. En el gráfico, la barra verde es el daño promedio del alza: 0,18 desviaciones estándar, comparando el tercio de comunidades con más alza contra el de menos. La barra naranja es la menor diferencia entre dos grupos que nuestros datos alcanzarían a detectar: entre 0,36 y 0,44, el doble del daño promedio. Es un cálculo aproximado.
+
+Con unos cientos de comunidades, solo veríamos diferencias muy grandes. Así que "no encontramos diferencias" no quiere decir "el daño fue igual para todos".""")
+titulo(s, "Los menores de 3 años quizá sufrieron más, pero los datos no alcanzan para afirmarlo")
+figura(s, FIG / "15_figuras_presentacion/f5_potencia.png", 0.6, 1.55, 8.2)
+caja_texto(s, 9.15, 1.6, 3.6, 0.5, VERDE_OSC,
+           [("Exploratorio", 20, True, BLANCO, TITULO_F, PP_ALIGN.CENTER)],
+           anclaje=MSO_ANCHOR.MIDDLE, margen=0.05)
+texto(s, 9.15, 2.3, 3.6, 3.9,
+      [("0-2 años", 22, True, TEXTO),
+       (coma(edad.gate_0), 54, True, TEXTO, TITULO_F),
+       ("3-5 años", 22, True, TEXTO, None, None, 12),
+       (coma(edad.gate_1), 54, True, TEXTO, TITULO_F),
+       ("desviaciones estándar (más alza frente a menos alza)", 20, False, TEXTO, None, None, 8)])
+como_leer(s, "Cómo leer: la barra naranja es la menor diferencia entre dos grupos que estos datos "
+             "detectarían (aproximada); es el doble del daño promedio.")
 
 # -----------------------------------------------------------------------------
-# Guardar, exportar a PDF y renderizar
+# 9. Respuesta 3
 # -----------------------------------------------------------------------------
+
+s = lamina("Resultados", """Presentador 3 · 100 s
+
+Tercera pregunta: ¿un algoritmo de aprendizaje automático encuentra a los más afectados mejor que una regla simple? Usamos un bosque causal, que busca por su cuenta a quién afectó más.
+
+La prueba simula a la agencia: si atiende primero a los niños que señala cada regla, ¿esos niños sufrieron más que el promedio? Entrenamos el algoritmo en la mitad de las comunidades y lo evaluamos en la otra mitad.
+
+Más a la derecha es mejor. La línea vertical es no hacerlo mejor que escoger al azar. El algoritmo, y también las reglas de pobreza, zona urbana y compra de arroz, tienen rangos que cruzan esa línea: ninguna se distingue de escoger al azar, y ninguna supera a las otras. La prueba de calibración del algoritmo tampoco encuentra diferencias reales entre niños.""")
+titulo(s, "Un algoritmo no encuentra a los más afectados mejor que una regla simple")
+figura(s, FIG / "15_figuras_presentacion/f6_focalizacion.png", 1.42, 1.45, 10.5)
+como_leer(s, "Cómo leer: si la agencia atiende primero a quien señala cada regla, ¿esos niños sufrieron "
+             "más que el promedio? La calibración del algoritmo tampoco encuentra diferencias entre niños.")
+
+# -----------------------------------------------------------------------------
+# 10. Recomendación
+# -----------------------------------------------------------------------------
+
+s = lamina("Recomendación", """Presentador 4 · 110 s
+
+¿Qué le recomendamos a la agencia? Focalizar por comunidad, no por hogar.
+
+Hacer: vigilar el alza del precio del arroz comunidad por comunidad, que es lo que sí se asocia con menos crecimiento, y cubrir a todos los niños pequeños de las comunidades donde más sube.
+
+No hacer: usar un algoritmo para escoger a quién ayudar dentro de la comunidad, ni dejar fuera a los niños no pobres o rurales: con esta evidencia, no sabemos que hayan sufrido menos.
+
+Por confirmar: los menores de 3 años. Es la única pista, pero no alcanza para convertirla en regla; habría que comprobarla con más datos.""")
+titulo(s, "Focalice por comunidad, no por hogar")
+columnas = [("Hacer", VERDE, BLANCO,
+             ["Vigilar el alza del arroz por comunidad.",
+              "Cubrir a todos los niños pequeños donde más sube."]),
+            ("No hacer", VERDE_OSC, BLANCO,
+             ["Escoger con un algoritmo dentro de la comunidad.",
+              "Excluir a los no pobres o a los rurales."]),
+            ("Por confirmar", TINTE, TEXTO,
+             ["Los menores de 3 años: una pista, no una regla."])]
+for k, (enc, fondo, col, items) in enumerate(columnas):
+    caja_texto(s, 0.6 + k * 4.1, 1.7, 3.85, 4.2, fondo,
+               [(enc, 28, True, col, TITULO_F)] +
+               [(it, 22, False, col, None, None, 14) for it in items], margen=0.3)
+
+# -----------------------------------------------------------------------------
+# 11. Aporte y límites
+# -----------------------------------------------------------------------------
+
+s = lamina("Recomendación", """Presentador 4 · 110 s
+
+¿Qué añadimos? Primero, replicamos el resultado de Elmira y Qaim con errores que tienen en cuenta que los niños de una misma comunidad se parecen. Segundo, fijamos los grupos antes de mirar y corregimos por hacer muchas comparaciones a la vez. Tercero, hasta donde revisamos, es la primera prueba de si un algoritmo focaliza mejor que reglas simples ante este choque.
+
+¿Qué no podemos afirmar? Puede haber una tendencia previa, porque el placebo no es concluyente. Puede haber otros choques al mismo tiempo, como la sequía de El Niño o el humo de los incendios. En las comunidades donde más subió el arroz se midió a menos niños en 1997. El tamaño del efecto cambia con los valores extremos. Y tenemos poca precisión para comparar grupos.""")
+titulo(s, "Qué añadimos y qué no podemos afirmar")
+caja_texto(s, 0.6, 1.6, 5.9, 5.1, TINTE,
+           [("Qué añadimos", 26, True, TEXTO, TITULO_F),
+            ("Réplica con errores agrupados por comunidad.", 20, False, TEXTO, None, None, 12),
+            ("Grupos fijados de antemano y corregidos por hacer muchas comparaciones a la vez.",
+             20, False, TEXTO, None, None, 10),
+            ("Primera prueba, hasta donde revisamos, de si un algoritmo focaliza mejor que "
+             "reglas simples ante este choque.", 20, False, TEXTO, None, None, 10)], margen=0.3)
+caja_texto(s, 6.83, 1.6, 5.9, 5.1, VERDE_OSC,
+           [("Qué no podemos afirmar", 26, True, BLANCO, TITULO_F),
+            ("Puede haber una tendencia previa.", 20, False, BLANCO, None, None, 12),
+            ("Otros choques al mismo tiempo (sequía, humo).", 20, False, BLANCO, None, None, 8),
+            ("Menos niños medidos donde más subió el arroz.", 20, False, BLANCO, None, None, 8),
+            ("El tamaño cambia con los valores extremos.", 20, False, BLANCO, None, None, 8),
+            ("Poca precisión para comparar grupos.", 20, False, BLANCO, None, None, 8)], margen=0.3)
+
+# -----------------------------------------------------------------------------
+# 12. Cierre
+# -----------------------------------------------------------------------------
+
+s = lamina("Recomendación", """Presentador 4 · 80 s
+
+Para cerrar, tres preguntas y tres respuestas.
+
+¿Los niños de las comunidades donde el arroz subió más crecieron menos? Sí: cerca de 1,7 centímetros menos por cada vez que el precio se duplicó, aunque el tamaño exacto es incierto.
+
+¿Hubo niños a los que les afectó más? Todos se vieron afectados; la edad es la única pista, y no alcanza para afirmarla.
+
+¿Un algoritmo encuentra mejor a los más afectados? No: una regla simple funciona igual de bien.
+
+Gracias. Quedamos atentos a sus preguntas.""")
+titulo(s, "Tres preguntas, tres respuestas")
+qa = [("¿Los niños de las comunidades donde el arroz subió más crecieron menos?",
+       "Sí, crecieron menos (≈ 1,7 cm por cada duplicación del precio), con incertidumbre sobre el tamaño exacto."),
+      ("¿Hubo niños a los que el alza afectó más?",
+       "Todos se vieron afectados; la edad es la única pista."),
+      ("¿Un algoritmo encuentra a los más afectados mejor que una regla simple?",
+       "No: una regla simple funciona igual de bien.")]
+for k, (q, a) in enumerate(qa):
+    y = 1.55 + k * 1.45
+    caja_texto(s, 0.6, y, 0.75, 1.25, VERDE,
+               [(str(k + 1), 32, True, BLANCO, TITULO_F, PP_ALIGN.CENTER)],
+               anclaje=MSO_ANCHOR.MIDDLE, margen=0.02)
+    texto(s, 1.55, y, W - 2.15, 1.25,
+          [(q, 20, False, TEXTO), (a, 20, True, TEXTO, None, None, 4)], anclaje=MSO_ANCHOR.MIDDLE)
+caja_texto(s, 0, 6.0, W, 0.85, VERDE_OSC,
+           [("Gracias. ¿Preguntas?", 28, True, BLANCO, TITULO_F, PP_ALIGN.CENTER)],
+           anclaje=MSO_ANCHOR.MIDDLE)
+
+N_PRINCIPALES = len(prs.slides)
+
+# -----------------------------------------------------------------------------
+# Respaldo
+# -----------------------------------------------------------------------------
+
+s = lamina(notas="Respaldo: no cuenta en los 20 minutos.")
+rect(s, 0, 0, W, H, VERDE_OSC)
+texto(s, 0.8, 2.9, W - 1.6, 1.5, [("Respaldo", 54, True, BLANCO, TITULO_F)], fondo=VERDE_OSC,
+      anclaje=MSO_ANCHOR.MIDDLE)
+
+def respaldo_figura(t, archivo, notas):
+    s = lamina(notas=notas)
+    titulo(s, t)
+    pic = s.shapes.add_picture(str(archivo), 0, Inches(1.5), height=Inches(5.45))
+    pic.left = int((prs.slide_width - pic.width) / 2)
+    return s
+
+respaldo_figura("Respaldo: el algoritmo compara niños con probabilidades parecidas de estar en cada grupo",
+                FIG / "10_bosque/ninos_bosque_traslape.png",
+                "Traslape del bosque (10_bosque): probabilidad estimada entre 0,10 y 0,93; ningún niño fuera de 0,05-0,95.")
+respaldo_figura("Respaldo: el daño aparece en los tres cuartiles de mayor alza",
+                FIG / "07_cuartiles/ninos_cuartiles_coeficientes.png",
+                "Forma por cuartiles (07_cuartiles): Q2 −0,189, Q3 −0,116, Q4 −0,295 frente al cuartil 1.")
+
+s = lamina(notas="Especificaciones del efecto promedio (06_ate).")
+titulo(s, "Respaldo: el efecto promedio en cuatro especificaciones")
+filas = [["Efecto por duplicación del precio"] + [coma(v, 3) for v in ate.beta],
+         ["Margen de error, agrupado por comunidad"] + [coma(v, 3) for v in ate.ee_agrupado],
+         ["Margen de error, robusto sin agrupar"] + [coma(v, 3) for v in ate.ee_robusto],
+         ["Equivalente en cm (aproximado)"] + [coma(v, 2) for v in ate.beta_cm],
+         ["Controles de 1997", "No", "Sí", "Sí", "Sí"],
+         ["Efectos fijos de provincia", "No", "No", "Sí", "Sí"],
+         ["Precio del arroz de 1997", "No", "No", "No", "Sí"],
+         ["Niños / comunidades"] + [f"{n:,}".replace(",", ".") + f" / {c}"
+                                    for n, c in zip(ate.ninos, ate.comunidades)]]
+tabla(s, 0.6, 1.6, W - 1.2, ["", "(1)", "(2)", "(3)", "(4)"], filas,
+      [5.13, 1.75, 1.75, 1.75, 1.75], pt=16)
+
+inter = pd.read_csv(TAB / "09_interacciones_eq/ninos_interacciones_eq.csv")
+inter = inter[(inter.ee == "agrupado") & (inter.especificacion == 4)]
+s = lamina(notas="Interacciones de Elmira y Qaim (09_interacciones_eq), especificación 4, Holm F2.")
+titulo(s, "Respaldo: ninguna de las cinco diferencias de Elmira y Qaim se distingue de cero")
+filas = [[f"{r.grupo_1} frente a {r.grupo_0.lower()}",
+          f"{coma(r.b2, 3)} ({coma(r.ee_b2, 3)})", coma(r.p_b2_holm, 3),
+          f"{coma(r.eq_b2, 3)} ({coma(r.eq_ee, 3)})"] for r in inter.itertuples()]
+tabla(s, 0.6, 1.6, W - 1.2,
+      ["Diferencia", "Nuestra (margen de error)", "p corregido por múltiples comparaciones",
+       "Elmira y Qaim (margen de error)"], filas, [4.5, 2.6, 2.4, 2.63], pt=16)
+texto(s, 0.6, 5.3, W - 1.2, 0.8,
+      [("Cambio en la estatura para la edad por cada duplicación del precio. Nuestros márgenes "
+        "de error están agrupados por comunidad; los de Elmira y Qaim, no (cuadro A4 de su suplemento).",
+        14, False, GRIS)])
+
+cal = pd.read_csv(TAB / "12_calibracion/ninos_calibracion.csv")
+s = lamina(notas="test_calibration del bosque (12_calibracion); p de una cola; EE agrupado por comunidad.")
+titulo(s, "Respaldo: la prueba de calibración no encuentra diferencias reales entre niños")
+filas = [["Predicción media (≈ 1 si el promedio está bien)", coma(cal.coeficiente[0], 3),
+          coma(cal.ee[0], 3), coma(cal.p_unilateral[0], 3)],
+         ["Predicción diferencial (> 0 si capta diferencias reales)", coma(cal.coeficiente[1], 3),
+          coma(cal.ee[1], 3), coma(cal.p_unilateral[1], 3)]]
+tabla(s, 0.6, 1.8, W - 1.2, ["", "Coeficiente", "Margen de error", "p (una cola)"], filas,
+      [6.53, 1.9, 1.9, 1.8], pt=18)
+
+per = pd.read_csv(TAB / "13_perfil/ninos_perfil_cuartil_tau.csv")
+s = lamina(notas="Perfil por cuartil del efecto predicho (13_perfil). Descriptivo, sin validar.")
+titulo(s, "Respaldo: el algoritmo priorizaría sobre todo a los más pequeños")
+pct = lambda v: f"{100 * v:.1f} %".replace(".", ",")
+filas = [["Efecto predicho medio"] + [coma(v, 3) for v in per.tau_medio],
+         ["Edad en 1997 (meses)"] + [coma(v, 1) for v in per.edad_meses],
+         ["Urbano"] + [pct(v) for v in per.urbano],
+         ["Pobre"] + [pct(v) for v in per.pobre],
+         ["Compra arroz"] + [pct(v) for v in per.comprador_neto],
+         ["Madre con más que primaria"] + [pct(v) for v in per.madre_mas_primaria]]
+tabla(s, 0.6, 1.6, W - 1.2, ["", "Cuartil 1 (más daño predicho)", "Cuartil 2", "Cuartil 3",
+                             "Cuartil 4 (menos)"], filas, [3.93, 2.4, 1.9, 1.9, 2.0], pt=16)
+
+sc = pd.read_csv(TAB / "11_gate/ninos_edad_sin_cola_exploratorio.csv")
+s = lamina(notas="Exploratorio, fuera de Holm (11_gate).")
+titulo(s, "Respaldo: la pista de la edad crece sin los cambios de estatura extremos")
+filas = [[r.muestra, coma(r.g1_gate_0_2, 3), coma(r.g1_gate_3_5, 3),
+          f"{coma(r.g1_delta, 3)} ({coma(r.g1_ee_delta, 3)})", coma(r.g1_p, 3)]
+         for r in sc.itertuples()]
+tabla(s, 0.6, 1.8, W - 1.2, ["Muestra", "0-2 años", "3-5 años", "Diferencia (margen de error)",
+                             "p sin corregir"], filas, [3.73, 1.8, 1.8, 3.0, 1.8], pt=18)
+texto(s, 0.6, 3.7, W - 1.2, 0.8,
+      [("Exploratorio: no estaba en el plan y no se corrige por múltiples comparaciones.",
+        16, False, GRIS)])
+
+respaldo_figura("Respaldo: curvas de priorización del algoritmo y de las reglas simples",
+                FIG / "14_rate/ninos_rate_toc.png",
+                "Curvas TOC (14_rate), escala de daño; 834 niños, 98 comunidades de evaluación.")
+
+# pie en todas menos la portada y el separador
+for k, s in enumerate(prs.slides, 1):
+    if k not in (1, N_PRINCIPALES + 1):
+        pie(s, k)
+
+# -----------------------------------------------------------------------------
+# Verificaciones en el .pptx: 12 principales, ≥ 12 pt, contraste ≥ 4,5
+# -----------------------------------------------------------------------------
+
+assert N_PRINCIPALES == 12, N_PRINCIPALES
+
+def luminancia(h):
+    c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    c = [v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4 for v in c]
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+
+def contraste(a, b):
+    la, lb = sorted([luminancia(a), luminancia(b)], reverse=True)
+    return (la + 0.05) / (lb + 0.05)
+
+fallas = []
+for k, s in enumerate(prs.slides, 1):
+    for sh in s.shapes:
+        marcos = [sh.text_frame] if sh.has_text_frame else []
+        if sh.has_table:
+            marcos += [c.text_frame for f in sh.table.rows for c in f.cells]
+        for tf in marcos:
+            for p in tf.paragraphs:
+                for r in p.runs:
+                    if r.text.strip() and (r.font.size is None or r.font.size.pt < 12):
+                        fallas.append(f"Lámina {k}: texto < 12 pt: {r.text[:40]!r}")
+for k, t, col, fondo in textos:
+    if contraste(col, fondo) < 4.5:
+        fallas.append(f"Lámina {k}: contraste {contraste(col, fondo):.2f} < 4,5: {t[:40]!r}")
+if fallas:
+    raise SystemExit("\n".join(fallas))
 
 SALIDA.parent.mkdir(exist_ok=True)
 prs.save(SALIDA)
-assert len(Presentation(SALIDA).slides) == 10
+
+# -----------------------------------------------------------------------------
+# PDF con las fuentes Radio Canada (perfil temporal de LibreOffice) y PNG
+# -----------------------------------------------------------------------------
 
 soffice = shutil.which("soffice") or r"C:\Program Files\LibreOffice\program\soffice.exe"
-subprocess.run([soffice, "--headless", "--convert-to", "pdf", "--outdir",
-                str(SALIDA.parent), str(SALIDA)], check=True, capture_output=True)
-pdf = SALIDA.with_suffix(".pdf")
+ttf = [str(f) for f in FUENTES.glob("RC*.ttf")]
+gdi = None
+try:
+    import ctypes  # Windows: carga las fuentes solo durante esta sesión, sin instalarlas
+    gdi = ctypes.windll.gdi32
+    for f in ttf:
+        gdi.AddFontResourceW(f)
+except (ImportError, AttributeError):
+    pass  # en otro sistema, instalar las fuentes o aceptar la sustitución
+try:
+    with tempfile.TemporaryDirectory() as perfil:  # perfil limpio: relee la lista de fuentes
+        subprocess.run([soffice, f"-env:UserInstallation={Path(perfil).as_uri()}", "--headless",
+                        "--convert-to", "pdf", "--outdir", str(SALIDA.parent), str(SALIDA)],
+                       check=True, capture_output=True)
+finally:
+    if gdi is not None:
+        for f in ttf:
+            gdi.RemoveFontResourceW(f)
+doc = pymupdf.open(SALIDA.with_suffix(".pdf"))
+print("Fuentes en el PDF:", sorted({f[3] for p in doc for f in p.get_fonts()}))
+shutil.rmtree(RENDER, ignore_errors=True)
+RENDER.mkdir()
+for k, p in enumerate(doc, 1):
+    p.get_pixmap(dpi=100).save(RENDER / f"lamina{k:02d}.png")
 
-RENDER.mkdir(exist_ok=True)
-doc = pymupdf.open(pdf)
-for k, pagina in enumerate(doc, 1):
-    pagina.get_pixmap(dpi=110).save(RENDER / f"lamina{k:02d}.png")
-
-# -----------------------------------------------------------------------------
-# Revisión automática: textos montados, sobre imágenes o fuera de la página
-# -----------------------------------------------------------------------------
-
+# textos montados o fuera de la página (en el PDF)
 def area(r):
     return max(0, r.width) * max(0, r.height)
 
-problemas = []
-for k, pagina in enumerate(doc, 1):
-    borde = pagina.rect
-    lineas, imagenes = [], [pymupdf.Rect(i["bbox"]) for i in pagina.get_image_info()]
-    for b_i, bloque in enumerate(pagina.get_text("dict")["blocks"]):
-        for linea in bloque.get("lines", []):
-            texto = "".join(sp["text"] for sp in linea["spans"]).strip()
-            if texto:
-                lineas.append((b_i, pymupdf.Rect(linea["bbox"]), texto))
+for k, p in enumerate(doc, 1):
+    lineas = []
+    for b_i, b in enumerate(p.get_text("dict")["blocks"]):
+        for ln in b.get("lines", []):
+            t = "".join(sp["text"] for sp in ln["spans"]).strip()
+            if t:
+                lineas.append((b_i, pymupdf.Rect(ln["bbox"]), t))
     for b_i, r, t in lineas:
-        if not borde.contains(r):
-            problemas.append((k, "fuera de la página", t))
-        for im in imagenes:
-            if area(r & im) > 0.25 * area(r):
-                problemas.append((k, "texto sobre imagen", t))
+        if not p.rect.contains(r):
+            fallas.append(f"Lámina {k}: fuera de la página: {t!r}")
     for a in range(len(lineas)):
         for b in range(a + 1, len(lineas)):
             (ba, ra, ta), (bb, rb, tb) = lineas[a], lineas[b]
             if ba != bb and area(ra & rb) > 0.2 * min(area(ra), area(rb)):
-                problemas.append((k, "textos montados", f"{ta!r} / {tb!r}"))
-
-for p in problemas:
-    print(f"Lámina {p[0]}: {p[1]}: {p[2]}")
-print(f"{len(doc)} láminas; {len(problemas)} problemas de texto detectados.")
-if problemas:
-    raise SystemExit(1)
+                fallas.append(f"Lámina {k}: textos montados: {ta!r} / {tb!r}")
+if fallas:
+    raise SystemExit("\n".join(fallas))
+print(f"{len(doc)} láminas ({N_PRINCIPALES} principales); tamaños, contraste y solapes: OK.")
