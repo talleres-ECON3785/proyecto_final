@@ -314,3 +314,10 @@ EE de `11_gate`). Lámina 9: `14_rate/ninos_rate.csv`. Lámina 12: 1,7 cm
 (`06_ate`). Título de la lámina 2: se usó «subió un 70 % entre 1997 y 2000»
 en lugar de «en 1998 casi se duplicó», porque nuestra medida es el alza
 1997-2000 (mediana +70 %).
+
+### 23-nov: el PDF final se sube al repositorio
+
+- A pedido de Samuel, `08_Entregables/presentacion_final.pdf` se versiona tal
+  cual, con la portada de TIME (se le advirtió que el repositorio es público y
+  que la portada tiene derechos de autor; eligió subirlo así). Excepción en
+  `.gitignore`; el `.pptx`, la base y la versión v1 siguen solo en local.
