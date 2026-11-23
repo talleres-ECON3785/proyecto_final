@@ -78,7 +78,7 @@ carpetas_salida <- c(
   "03_Resultados/Tablas/09_interacciones_eq",
   "03_Resultados/Tablas/10_bosque", "03_Resultados/Figuras/10_bosque",
   "03_Resultados/Tablas/11_gate", "03_Resultados/Figuras/11_gate",
-  "03_Resultados/Tablas/12_calibracion",
+  "03_Resultados/Tablas/12_calibracion", "03_Resultados/Figuras/12_calibracion",
   "03_Resultados/Tablas/13_perfil",
   "03_Resultados/Tablas/14_rate", "03_Resultados/Figuras/14_rate",
   "03_Resultados/Figuras/15_figuras_presentacion"

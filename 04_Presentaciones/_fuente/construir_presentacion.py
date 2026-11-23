@@ -2,7 +2,7 @@
 # Construye la presentación final DESDE CERO (16:9, 13,333 × 7,5 in)
 # Proyecto final - ECON-3785 (2026-2)
 #
-# 12 láminas principales + separador «Respaldo» + 8 de respaldo. Figuras de
+# 13 láminas principales + separador «Respaldo» + 8 de respaldo. Figuras de
 # 03_Resultados/Figuras/15_figuras_presentacion/ (script 15 del pipeline) y
 # tablas nativas leídas de los .csv de 03_Resultados/. La única imagen externa
 # es la portada de TIME, que se toma de la base local
@@ -10,7 +10,7 @@
 #
 # Salidas: 08_Entregables/presentacion_final.{pptx,pdf} y un PNG por lámina en
 # 04_Presentaciones/_fuente/_render/. El script FALLA si: algún texto mide
-# menos de 12 pt; algún texto tiene contraste < 4,5:1 con su fondo; no hay 12
+# menos de 12 pt; algún texto tiene contraste < 4,5:1 con su fondo; no hay 13
 # láminas principales; o el PDF tiene textos montados o fuera de la página.
 #
 # Uso (desde la raíz): python 04_Presentaciones/_fuente/construir_presentacion.py
@@ -36,6 +36,7 @@ RAIZ = Path(__file__).resolve().parents[2]
 FIG = RAIZ / "03_Resultados/Figuras"
 TAB = RAIZ / "03_Resultados/Tablas"
 BASE = RAIZ / "04_Presentaciones/_fuente/presentacion_base.pptx"
+PORTADA = RAIZ / "04_Presentaciones/_fuente/portada_time.png"  # local, no se versiona
 FUENTES = RAIZ / "10_Propuesta/_fuente_pdf/fuentes"
 SALIDA = RAIZ / "08_Entregables/presentacion_final.pptx"
 RENDER = RAIZ / "04_Presentaciones/_fuente/_render"
@@ -107,9 +108,17 @@ def texto(s, x, y, w, h, parrafos, fondo=FONDO, anclaje=MSO_ANCHOR.TOP, forma=No
         textos.append((len(prs.slides), t, col or TEXTO, fondo))
     return caja
 
-def caja_texto(s, x, y, w, h, color, parrafos, anclaje=MSO_ANCHOR.TOP, margen=0.2):
+CAJAS = []  # (lámina, x, y, w, h, color, margen) para auditar el relleno en el PDF
+
+def caja_texto(s, x, y, w, h, color, parrafos, anclaje=MSO_ANCHOR.MIDDLE, margen=0.2):
+    """Texto centrado en vertical y con el mismo margen a los cuatro lados; la altura de la
+    caja se ajusta al texto (alto del texto + 2 × margen) para que el relleno sea simétrico."""
+    CAJAS.append((len(prs.slides), x, y, w, h, color, margen))
     r = rect(s, x, y, w, h, color)
-    return texto(s, 0, 0, 0, 0, parrafos, fondo=color, anclaje=anclaje, forma=r, margen=margen)
+    caja = texto(s, 0, 0, 0, 0, parrafos, fondo=color, anclaje=anclaje, forma=r, margen=margen)
+    if anclaje == MSO_ANCHOR.TOP:  # el interlineado ya deja ~0,07 in sobre la tinta
+        caja.text_frame.margin_top = Inches(margen - 0.07)
+    return caja
 
 def titulo(s, t, y=0.32, h=1.15, w=W - 1.2):
     palabras = [p for p in t.split() if any(c.isalnum() for c in p)]  # «%» no es palabra
@@ -119,12 +128,34 @@ def titulo(s, t, y=0.32, h=1.15, w=W - 1.2):
 def figura(s, archivo, x, y, w):
     return s.shapes.add_picture(str(archivo), Inches(x), Inches(y), width=Inches(w))
 
-def como_leer(s, t, y=6.4):
-    return texto(s, 0.6, y, W - 1.2, 0.6, [(t, 14, False, GRIS)])
+COMO_LEER = []  # (lámina, texto): no se proyectan; van a 04_Presentaciones/como_leer_laminas.md
 
-def tabla(s, x, y, w, encabezado, filas, anchos, pt=16):
+def como_leer(s, t, y=6.4):
+    COMO_LEER.append((len(prs.slides), t))
+
+OCRE_T = "8F6219"  # ocre oscuro para texto (el ocre de las figuras no llega a contraste 4,5:1)
+Y_SUB, Y_FIG, GAP = 1.45, 2.01, 0.2  # subtítulo, figura y separación subtítulo-figura = figura-nota
+Y_PIE = 7.05
+
+def subtitulo(s, t):
+    """Estimador y estrategia de identificación, en ocre y negrilla, más pequeño que el título."""
+    return texto(s, 0.6, Y_SUB, W - 1.2, 0.4, [(t, 20, True, OCRE_T, TITULO_F)], anclaje=MSO_ANCHOR.MIDDLE)
+
+def nota_metodo(s, y_figura_fin, t):
+    """Detalles metodológicos bajo la figura, a la misma distancia que el subtítulo de arriba."""
+    return texto(s, 0.6, y_figura_fin + GAP - 0.1, W - 1.2, Y_PIE - y_figura_fin, [("Método: " + t, 14, False, GRIS)])
+
+def figura_metodo(s, archivo, sub, metodo, leer, x=None, w=9.0):
+    """Subtítulo (estimador y estrategia), figura y nota de método; el «cómo leer» va al .md."""
+    subtitulo(s, sub)
+    pic = figura(s, archivo, (W - w) / 2 if x is None else x, Y_FIG, w)
+    nota_metodo(s, Y_FIG + pic.height / 914400, metodo)
+    como_leer(s, leer)
+    return pic
+
+def tabla(s, x, y, w, encabezado, filas, anchos, pt=16, alto_fila=0.45):
     n, m = len(filas) + 1, len(encabezado)
-    grafo = s.shapes.add_table(n, m, Inches(x), Inches(y), Inches(w), Inches(0.45 * n))
+    grafo = s.shapes.add_table(n, m, Inches(x), Inches(y), Inches(w), Inches(alto_fila * n))
     t = grafo.table
     for j, a in enumerate(anchos):
         t.columns[j].width = Inches(a)
@@ -143,19 +174,17 @@ def tabla(s, x, y, w, encabezado, filas, anchos, pt=16):
 SECCIONES = ["Contexto", "Método", "Resultados", "Recomendación"]
 
 def pie(s, numero):
-    texto(s, 0.6, 7.05, 3.2, 0.32, [("Proyecto final · ECON-3785", 12, False, GRIS)])
+    texto(s, 0.6, 7.05, 3.2, 0.32, [("Proyecto Final - ECON-3785", 12, False, GRIS)])
     caja = s.shapes.add_textbox(Inches(4.0), Inches(7.05), Inches(5.6), Inches(0.32))
     tf = caja.text_frame
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = Inches(0.05)
     par = tf.paragraphs[0]
     par.alignment = PP_ALIGN.CENTER
-    for k, sec in enumerate(SECCIONES):
-        actual = sec == s._seccion
-        r = par.add_run()
-        r.text = sec + ("   ·   " if k < 3 else "")
-        r.font.size, r.font.name, r.font.bold = Pt(12), TITULO_F if actual else CUERPO_F, actual
-        r.font.color.rgb = rgb(VERDE if actual else GRIS)
-        textos.append((numero, sec, VERDE if actual else GRIS, FONDO))
+    r = par.add_run()  # solo la sección actual: dice dónde vamos
+    r.text = s._seccion or "Respaldo"
+    r.font.size, r.font.name, r.font.bold = Pt(12), TITULO_F, True
+    r.font.color.rgb = rgb(VERDE)
+    textos.append((numero, r.text, VERDE, FONDO))
     texto(s, W - 1.6, 7.05, 1.0, 0.32, [(str(numero), 12, False, GRIS, None, PP_ALIGN.RIGHT)])
 
 
@@ -169,8 +198,41 @@ edad = pd.read_csv(TAB / "11_gate/ninos_gate.csv").set_index("id").loc["G1"]
 assert coma(a4.beta) == "−0,33" and coma(a4.beta_cm, 1) == "−1,7"
 assert coma(edad.gate_0) == "−0,31" and coma(edad.gate_1) == "−0,08"
 
+def ecuacion_png(tex, pt=22):
+    """Compila una fórmula con pdflatex y la devuelve como PNG recortado (BytesIO) y su tamaño en pulgadas.
+    Sin las clases standalone/preview (no vienen en toda instalación): se recorta por la tinta."""
+    import numpy as np
+    from PIL import Image
+    with tempfile.TemporaryDirectory() as d:
+        fuente = Path(d) / "eq.tex"
+        fuente.write_text(
+            "\\documentclass{article}\n\\usepackage[paperwidth=40cm,paperheight=6cm,margin=1cm]{geometry}\n"
+            "\\usepackage{amsmath,amssymb}\n\\pagestyle{empty}\n"
+            f"\\begin{{document}}\\noindent\\fontsize{{{pt}}}{{{pt + 4}}}\\selectfont\n$\\displaystyle {tex}$\n"
+            "\\end{document}\n", encoding="utf-8")
+        subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error", "-output-directory", d,
+                        str(fuente)], check=True, capture_output=True)
+        pix = pymupdf.open(Path(d) / "eq.pdf")[0].get_pixmap(dpi=300)
+        a = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width, pix.n)[:, :, :3]
+        ys, xs = np.where(a.min(axis=2) < 200)
+        m = 12
+        a = a[max(ys.min() - m, 0):ys.max() + m, max(xs.min() - m, 0):xs.max() + m]
+        rgba = np.zeros(a.shape[:2] + (4,), np.uint8)  # fondo transparente, tinta del color del texto
+        rgba[..., :3] = (0x22, 0x22, 0x22)
+        rgba[..., 3] = 255 - a.min(axis=2)
+        img = Image.fromarray(rgba)
+        buf = io.BytesIO()
+        img.save(buf, "PNG")
+        buf.seek(0)
+        return buf, (img.width / 300, img.height / 300)
+
+
 def portada_time():
     """La portada de TIME (derechos de terceros) se toma de la base local."""
+    if PORTADA.exists():
+        from PIL import Image
+        img = Image.open(PORTADA)
+        return io.BytesIO(PORTADA.read_bytes()), img.size
     base = Presentation(BASE)
     pic = next(sh for sh in base.slides[0].shapes if sh.shape_type == 13)
     return io.BytesIO(pic.image.blob), pic.image.size
@@ -189,18 +251,18 @@ Nuestro caso es Indonesia en 1997 y 1998. Con la crisis asiática, el precio del
 La pregunta del cliente es simple: cuando suben los alimentos, ¿a qué niños hay que proteger primero? Para responderla seguimos la estatura de los niños antes y después del alza.""")
 ancho_verde = W * 0.6
 rect(s, 0, 0, ancho_verde, H, VERDE_OSC)
-texto(s, 0.7, 0.45, ancho_verde - 1.3, 2.8,
+texto(s, 0.7, 0.8, ancho_verde - 1.3, 1.95,
       [("¿A quién golpeó más el arroz caro?", 50, True, BLANCO, TITULO_F)], fondo=VERDE_OSC,
-      anclaje=MSO_ANCHOR.BOTTOM)
-texto(s, 0.7, 3.35, ancho_verde - 1.3, 1.3,
+      anclaje=MSO_ANCHOR.TOP)
+texto(s, 0.7, 2.95, ancho_verde - 1.3, 1.5,
       [("La crisis de 1997-98 en Indonesia, la estatura de los niños y cómo focalizar la ayuda",
         24, False, BLANCO)], fondo=VERDE_OSC)
-texto(s, 0.7, 4.65, ancho_verde - 1.3, 0.9,
+texto(s, 0.7, 4.75, ancho_verde - 1.3, 0.85,
       [("Para: una agencia que focaliza ayuda ante choques de precios de alimentos",
         20, True, BLANCO)], fondo=VERDE_OSC)
-texto(s, 0.7, 5.55, ancho_verde - 1.3, 1.25,
-      [("Samuel Escandón · Douglas Plazas · Mateo Olmos · Santiago Muñoz", 20, False, BLANCO),
-       ("Ciencia de Datos y Econometría Aplicada · 23-nov-2026", 16, False, BLANCO, None, None, 4)],
+texto(s, 0.7, 5.85, ancho_verde - 1.3, 1.05,
+      [("Samuel Escandón, Douglas Plazas, Mateo Olmos, Santiago Muñoz", 20, False, BLANCO),
+       ("Ciencia de Datos y Econometría Aplicada, 23-nov-2026", 16, False, BLANCO, None, None, 4)],
       fondo=VERDE_OSC)
 texto(s, 0.7, 7.02, ancho_verde - 1.3, 0.35,
       [("Portada: TIME, 19 de enero de 1998", 12, False, BLANCO)], fondo=VERDE_OSC)
@@ -224,7 +286,7 @@ Este gráfico cuenta comunidades. En el eje horizontal está cuánto subió el p
 
 La línea marca la mitad: en la mitad de las comunidades el precio subió más de 70 %. Pero hay comunidades con alzas de 20 % y otras de más de 150 %. Esa diferencia entre comunidades es la que vamos a aprovechar.""")
 titulo(s, "El arroz subió un 70 % entre 1997 y 2000, y en unas comunidades mucho más")
-figura(s, FIG / "15_figuras_presentacion/f1_alza.png", 1.42, 1.45, 10.5)
+figura(s, FIG / "15_figuras_presentacion/f1_alza.png", (W - 10.0) / 2, Y_FIG, 10.0)
 como_leer(s, "Cómo leer: cada barra cuenta comunidades según cuánto subió allí el precio del arroz "
              "(297 comunidades). El arroz es el alimento básico; la crisis lo encareció de forma desigual.")
 
@@ -240,23 +302,23 @@ Elmira y Qaim, en 2026, encuentran que cuando el precio del arroz se duplicaba, 
 
 Frankenberg y Thomas, en 2017, comparando zonas urbanas y rurales, no encuentran daño en la estatura.
 
-Ninguno de los dos pregunta lo que necesita la agencia: a quién proteger primero. Por eso nos hacemos tres preguntas. Uno: ¿los niños de comunidades donde el arroz subió más crecieron menos? Dos: ¿a algunos niños les afectó más, según su edad, sexo, pobreza, zona, la educación de su madre o si compraban arroz? Tres: ¿un algoritmo de aprendizaje automático encuentra a los más afectados mejor que una regla simple?""")
+Ninguno de los dos pregunta lo que necesita la agencia: a quién proteger primero. Por eso nos hacemos tres preguntas. Uno: ¿los niños de comunidades donde el arroz subió más crecieron menos? Dos: ¿a algunos niños les afectó más, según su edad, sexo, pobreza, zona, la educación de su madre o si compraban arroz? Tres: ¿un bosque causal, un método de aprendizaje automático, encuentra a los más afectados mejor que una regla simple?""")
 titulo(s, "Dos estudios con estos datos no coinciden, y nadie ha probado a quién proteger primero")
-caja_texto(s, 0.6, 1.55, 5.9, 2.25, TINTE,
+caja_texto(s, 0.6, 1.75, 5.9, 2.3, TINTE,
            [("Elmira y Qaim (2026)", 22, True, TEXTO, TITULO_F),
             ("El alza redujo la estatura: −0,135 desviaciones estándar por cada duplicación "
-             "del precio, y más en zonas urbanas.", 20, False, TEXTO, None, None, 6)])
-caja_texto(s, 6.83, 1.55, 5.9, 2.25, TINTE,
+             "del precio, y más en zonas urbanas.", 20, False, TEXTO, None, None, 6)], anclaje=MSO_ANCHOR.TOP, margen=0.3)
+caja_texto(s, 6.83, 1.75, 5.9, 2.3, TINTE,
            [("Frankenberg y Thomas (2017)", 22, True, TEXTO, TITULO_F),
             ("Comparando zonas urbanas y rurales: sin daño en la estatura de los niños.",
-             20, False, TEXTO, None, None, 6)])
-caja_texto(s, 0, 3.98, W, 2.85, VERDE,
+             20, False, TEXTO, None, None, 6)], anclaje=MSO_ANCHOR.TOP, margen=0.3)
+caja_texto(s, 0, 4.2, W, 2.75, VERDE,
            [("Nuestras tres preguntas", 22, True, BLANCO, TITULO_F),
             ("1. ¿Los niños de las comunidades donde el arroz subió más crecieron menos?",
              20, False, BLANCO, None, None, 8),
             ("2. ¿Hubo niños a los que el alza afectó más, según su edad, sexo, pobreza, zona, "
              "educación de la madre o compra de arroz?", 20, False, BLANCO, None, None, 6),
-            ("3. ¿Un algoritmo de aprendizaje automático encuentra a los niños más afectados "
+            ("3. ¿Un bosque causal (aprendizaje automático) encuentra a los niños más afectados "
              "mejor que una regla simple?", 20, False, BLANCO, None, None, 6)],
            anclaje=MSO_ANCHOR.MIDDLE, margen=0.6)
 
@@ -266,36 +328,38 @@ caja_texto(s, 0, 3.98, W, 2.85, VERDE,
 
 s = lamina("Método", """Presentador 1 · 90 s
 
-¿Cómo lo medimos? Usamos la Encuesta de Vida Familiar de Indonesia. Medimos a los niños de 0 a 5 años en 1997, antes del alza, y los volvimos a medir en 2000. Entre una medición y otra, el arroz subió más en unas comunidades que en otras.
+¿Cómo lo medimos? Usamos la Encuesta de Vida Familiar de Indonesia, la IFLS. Los niños de 0 a 5 años en 1997, antes del alza, fueron medidos de nuevo en 2000. Entre una ola y otra, el arroz subió más en unas comunidades que en otras.
 
-Para cada niño calculamos cuánto cambió su estatura para la edad. Esa medida compara la estatura del niño con la de niños sanos de su misma edad y sexo, según la referencia de la Organización Mundial de la Salud. Menos uno quiere decir una desviación estándar por debajo; en estos niños, una desviación estándar son unos 5 centímetros.
+Con la estatura, la edad y el sexo que trae la encuesta calculamos el HAZ, la estatura para la edad, de cada niño, y luego cuánto cambió entre 1997 y 2000. Esa medida compara la estatura del niño con la de niños sanos de su misma edad y sexo, según la referencia de la Organización Mundial de la Salud. Menos uno quiere decir una desviación estándar por debajo; en estos niños, una desviación estándar son unos 5 centímetros.
 
-Son 2.421 niños en 294 comunidades. Dos aclaraciones: fijamos los grupos y las pruebas antes de ver los resultados; y medimos el efecto de más alza frente a menos alza, no el de la crisis completa, porque todas las comunidades la vivieron.""")
-titulo(s, "Seguimos a 2.421 niños y comparamos comunidades con más y menos alza")
-pasos = [("1997", "Medimos la estatura de cada niño de 0 a 5 años"),
+Son 2.421 niños en 294 comunidades. El método es una regresión del cambio en el HAZ sobre el alza del precio de la comunidad, con errores agrupados por comunidad. Dos aclaraciones: fijamos los grupos y las pruebas antes de ver los resultados; y medimos el efecto de más alza frente a menos alza, no el de la crisis completa, porque todas las comunidades la vivieron.""")
+titulo(s, "Seguimos a 2.421 niños de la IFLS y comparamos comunidades con más y menos alza")
+pasos = [("1997", "Calculamos el HAZ de cada niño de 0 a 5 años"),
          ("1997-2000", "El arroz sube más en unas comunidades que en otras"),
-         ("2000", "Volvemos a medir a los mismos niños")]
+         ("2000", "Volvemos a calcular el HAZ de los mismos niños")]
 for k, (anio, desc) in enumerate(pasos):
     x = 0.6 + k * 4.3
-    caja_texto(s, x, 1.55, 3.65, 1.65, VERDE,
+    caja_texto(s, x, 1.8, 3.65, 1.75, VERDE,
                [(anio, 24, True, BLANCO, TITULO_F, PP_ALIGN.CENTER),
                 (desc, 20, False, BLANCO, None, PP_ALIGN.CENTER, 4)],
                anclaje=MSO_ANCHOR.MIDDLE, margen=0.15)
     if k < 2:
-        rect(s, x + 3.72, 2.15, 0.5, 0.44, GRIS, MSO_SHAPE.RIGHT_ARROW)
-texto(s, 0.6, 3.35, W - 1.2, 0.55,
-      [("Cambio en la estatura de cada niño: 2.421 niños en 294 comunidades.",
-        22, True, TEXTO)])
-caja_texto(s, 0.6, 4.0, 6.9, 2.75, TINTE,
-           [("¿Qué es la estatura para la edad?", 22, True, TEXTO, TITULO_F),
-            ("Compara la estatura del niño con la de niños sanos de su misma edad y sexo "
-             "(referencia de la OMS), en desviaciones estándar.", 20, False, TEXTO, None, None, 6),
+        rect(s, x + 3.72, 2.45, 0.5, 0.44, GRIS, MSO_SHAPE.RIGHT_ARROW)
+texto(s, 0.6, 3.65, W - 1.2, 0.5,
+      [("Fuente: IFLS (Indonesia Family Life Survey), 1997 y 2000: 2.421 niños en 294 comunidades.",
+        20, True, TEXTO)])
+caja_texto(s, 0.6, 4.3, 7.2, 2.65, TINTE,
+           [("¿Qué es el HAZ (estatura para la edad)?", 20, True, TEXTO, TITULO_F),
+            ("Lo calculamos con la referencia de la OMS: compara la estatura del niño con la de "
+             "niños sanos de su misma edad y sexo, en desviaciones estándar.", 18, False, TEXTO, None, None, 6),
             ("Ejemplo: −1 es una desviación estándar por debajo; en estos niños, unos 5 cm.",
-             20, False, TEXTO, None, None, 6)])
-texto(s, 7.85, 4.0, 4.9, 2.75,
-      [("Fijamos los grupos y las pruebas antes de ver los resultados.", 20, True, TEXTO),
+             18, False, TEXTO, None, None, 6)], margen=0.3)
+texto(s, 8.15, 4.3, 4.6, 2.65, anclaje=MSO_ANCHOR.MIDDLE, parrafos=
+      [("Método: regresión del cambio en el HAZ (2000 menos 1997) sobre el alza del precio de "
+        "la comunidad, con errores agrupados por comunidad.", 16, True, TEXTO),
+       ("Fijamos los grupos y las pruebas antes de ver los resultados.", 16, False, TEXTO, None, None, 8),
        ("Medimos el efecto de más alza frente a menos alza, no el de la crisis completa.",
-        20, False, TEXTO, None, None, 14)])
+        16, False, TEXTO, None, None, 8)])
 
 # -----------------------------------------------------------------------------
 # 5. Respuesta 1
@@ -311,10 +375,13 @@ En el eje horizontal está cuánto cambia la estatura para la edad por cada vez 
 El punto gris es Elmira y Qaim: −0,135. Nuestro efecto es mayor, pero los rangos se traslapan, así que no son incompatibles. Ellos miden el precio con fuentes distintas en cada año y no comparan comunidades dentro de la misma provincia; nosotros sí.
 
 Un detalle técnico: nuestro margen de error tiene en cuenta que los niños de una misma comunidad se parecen entre sí; el de ellos no. Por eso nuestro rango es más ancho.""")
-titulo(s, "Sí: donde el arroz subió más, los niños crecieron menos")
-figura(s, FIG / "15_figuras_presentacion/f2_efecto_principal.png", 1.42, 1.45, 10.5)
-como_leer(s, "Cómo leer: cada punto es el efecto promedio; la línea, su rango plausible al 95 %. "
-             "Más a la izquierda = más daño. 2.421 niños en 294 comunidades.")
+titulo(s, "Replicamos a Elmira y Qaim: donde el arroz subió más, los niños crecieron menos")
+figura_metodo(s, FIG / "15_figuras_presentacion/f2_efecto_principal.png",
+              "MCO con el alza del precio como variable continua",
+              "cambio en el HAZ 1997-2000 sobre el cambio proporcional del precio, con controles de "
+              "1997, efectos fijos de provincia y log del precio de 1997; errores agrupados por comunidad.",
+              "Cómo leer: cada punto es el efecto promedio; la línea, su rango plausible al 95 %. "
+              "Más a la izquierda = más daño. 2.421 niños en 294 comunidades.")
 
 # -----------------------------------------------------------------------------
 # 6. Qué tan sólido
@@ -327,13 +394,42 @@ s = lamina("Resultados", """Presentador 2 · 150 s
 Todas las estimaciones quedan a la izquierda del cero: la dirección se sostiene. Pero el tamaño va de −0,20 a −0,50: el número exacto es incierto.
 
 Abajo, en naranja, está el placebo: miramos cómo crecieron niños entre 1993 y 1997, antes del alza. Si las comunidades con más alza no tenían nada especial antes, debería dar cero. No se distingue de cero, pero tampoco lo podemos descartar: podría haber una tendencia previa. Lo decimos tal cual.""")
-titulo(s, "La dirección se sostiene en todas las pruebas; el tamaño exacto no")
-figura(s, FIG / "15_figuras_presentacion/f3_robustez.png", 1.42, 1.45, 10.5)
-como_leer(s, "Cómo leer: cada fila repite el cálculo cambiando una cosa. Todas quedan a la izquierda "
-             "de cero; el placebo (antes del alza) debería estar en cero.")
+titulo(s, "El signo del efecto resiste cinco pruebas de robustez, pero su tamaño cambia")
+figura_metodo(s, FIG / "15_figuras_presentacion/f3_robustez.png",
+              "MCO con el alza del precio como variable continua, cinco variantes y un placebo",
+              "la misma especificación de la lámina anterior, repetida cambiando un supuesto por fila. "
+              "Placebo: el mismo modelo sobre el cambio en el HAZ de 1993 a 1997, antes del alza.",
+              "Cómo leer: todas las estimaciones quedan a la izquierda de cero; "
+              "el placebo debería estar en cero.")
 
 # -----------------------------------------------------------------------------
-# 7. Respuesta 2
+# 7. El bosque reproduce el ATE
+# -----------------------------------------------------------------------------
+
+bos = pd.read_csv(TAB / "10_bosque/ninos_bosque_ate.csv")
+b_bos = bos.loc[bos.estimador == "Bosque causal (AIPW)"].iloc[0]
+b_mco = bos.loc[bos.estimador.str.startswith("MCO")].iloc[0]
+assert coma(b_bos.estimacion) == "−0,18" and coma(b_mco.estimacion) == "−0,19"
+s = lamina("Resultados", f"""Presentador 3 · 60 s
+
+Antes de buscar diferencias entre niños, una comprobación: ¿el bosque causal da el mismo efecto promedio que las regresiones? Para el bosque comparamos el tercio de comunidades con más alza contra el tercio con menos.
+
+Cada barra cuenta niños según el efecto que el bosque predice para ellos. La línea punteada es el promedio del bosque, {coma(b_bos.estimacion, 3)} desviaciones estándar. La regresión con el mismo contraste da {coma(b_mco.estimacion, 3)}: prácticamente el mismo número.
+
+Una advertencia: la dispersión de la distribución mezcla diferencias reales y ruido de estimación. La prueba de calibración, que veremos más adelante, no logra separarlas.""")
+titulo(s, "Un bosque causal logra replicar el ATE de las especificaciones lineales")
+figura_metodo(s, FIG / "15_figuras_presentacion/f7_cate_distribucion.png",
+              "Terciles del alza dentro de cada provincia: tercio alto frente a tercio bajo",
+              "grf con 4.000 árboles, agrupado por comunidad; "
+              f"promedio con puntajes AIPW: {coma(b_bos.estimacion, 3)} "
+              f"(EE {coma(b_bos.ee, 3)}). "
+              f"MCO, especificación (4), mismo contraste: {coma(b_mco.estimacion, 3)} (EE {coma(b_mco.ee, 3)}).",
+              "Cómo leer: cada barra cuenta niños según el efecto que el bosque predice para ellos; la "
+              "línea punteada es el promedio. La dispersión mezcla diferencias reales y ruido de "
+              "estimación: la prueba de calibración no los distingue.")
+
+# -----------------------------------------------------------------------------
+# 8. Respuesta 2
 # -----------------------------------------------------------------------------
 
 s = lamina("Resultados", """Presentador 3 · 100 s
@@ -343,10 +439,13 @@ Segunda pregunta: ¿a quién le dolió más? Antes de ver los datos fijamos seis
 Cada panel compara dos grupos. El punto es el daño estimado en cada grupo, comparando el tercio de comunidades con más alza contra el tercio con menos; la línea es su rango plausible. En los doce grupos el punto queda a la izquierda del cero: todos se vieron afectados.
 
 Pero los grupos de cada panel se parecen mucho: las diferencias son pequeñas frente a su margen de error. Tras corregir por hacer muchas comparaciones a la vez, ninguna diferencia es clara. Tampoco confirmamos que el daño fuera mayor en las ciudades, como dicen Elmira y Qaim; ni lo descartamos.""")
-titulo(s, "Todos los grupos se vieron afectados; no encontramos uno al que le doliera claramente más")
-figura(s, FIG / "15_figuras_presentacion/f4_grupos.png", 1.42, 1.45, 10.5)
-como_leer(s, "Cómo leer: punto = daño en cada grupo; línea = rango plausible. Tampoco confirmamos que el "
-             "daño fuera mayor en zonas urbanas, como reportan Elmira y Qaim, ni lo descartamos.")
+titulo(s, "Un bosque causal no reproduce la heterogeneidad de las interacciones identificadas por Elmira y Qaim")
+figura_metodo(s, FIG / "15_figuras_presentacion/f4_grupos.png",
+              "Terciles del alza dentro de cada provincia, efecto por grupo (GATE)",
+              "GATE con puntajes doblemente robustos (AIPW); contrastes corregidos con Holm. "
+              "La réplica con MCO e interacciones está en el respaldo.",
+              "Cómo leer: punto = daño en cada grupo; línea = rango plausible. Todos los grupos "
+              "quedan a la izquierda de cero; tampoco confirmamos un daño mayor en zonas urbanas.")
 
 # -----------------------------------------------------------------------------
 # 8. La única pista
@@ -360,16 +459,20 @@ La única pista está en la edad. Los niños que tenían 0 a 2 años en 1997 mue
 
 Con unos cientos de comunidades, solo veríamos diferencias muy grandes. Así que "no encontramos diferencias" no quiere decir "el daño fue igual para todos".""")
 titulo(s, "Los menores de 3 años quizá sufrieron más, pero los datos no alcanzan para afirmarlo")
-figura(s, FIG / "15_figuras_presentacion/f5_potencia.png", 0.6, 1.55, 8.2)
-caja_texto(s, 9.15, 1.6, 3.6, 0.5, VERDE_OSC,
+subtitulo(s, "Bosque causal con terciles del alza: efecto por edad (GATE)")
+pic8 = figura(s, FIG / "15_figuras_presentacion/f5_potencia.png", 0.6, Y_FIG, 7.0)
+caja_texto(s, 9.15, Y_FIG + 0.05, 3.6, 0.5, VERDE_OSC,
            [("Exploratorio", 20, True, BLANCO, TITULO_F, PP_ALIGN.CENTER)],
            anclaje=MSO_ANCHOR.MIDDLE, margen=0.05)
-texto(s, 9.15, 2.3, 3.6, 3.9,
+texto(s, 9.15, Y_FIG + 0.75, 3.6, 3.3,
       [("0-2 años", 22, True, TEXTO),
-       (coma(edad.gate_0), 54, True, TEXTO, TITULO_F),
+       (coma(edad.gate_0), 44, True, TEXTO, TITULO_F),
        ("3-5 años", 22, True, TEXTO, None, None, 12),
-       (coma(edad.gate_1), 54, True, TEXTO, TITULO_F),
-       ("desviaciones estándar (más alza frente a menos alza)", 20, False, TEXTO, None, None, 8)])
+       (coma(edad.gate_1), 44, True, TEXTO, TITULO_F),
+       ("desviaciones estándar (más alza frente a menos alza)", 18, False, TEXTO, None, None, 6)])
+nota_metodo(s, Y_FIG + pic8.height / 914400,
+            "0-2 frente a 3-5 años; diferencia mínima detectable ≈ 2,8 × el margen de error del "
+            "contraste (aproximación normal).")
 como_leer(s, "Cómo leer: la barra naranja es la menor diferencia entre dos grupos que estos datos "
              "detectarían (aproximada); es el doble del daño promedio.")
 
@@ -379,15 +482,18 @@ como_leer(s, "Cómo leer: la barra naranja es la menor diferencia entre dos grup
 
 s = lamina("Resultados", """Presentador 3 · 100 s
 
-Tercera pregunta: ¿un algoritmo de aprendizaje automático encuentra a los más afectados mejor que una regla simple? Usamos un bosque causal, que busca por su cuenta a quién afectó más.
+Tercera pregunta: ¿un bosque causal, un método de aprendizaje automático, encuentra a los más afectados mejor que una regla simple? El bosque busca por su cuenta a quién afectó más.
 
-La prueba simula a la agencia: si atiende primero a los niños que señala cada regla, ¿esos niños sufrieron más que el promedio? Entrenamos el algoritmo en la mitad de las comunidades y lo evaluamos en la otra mitad.
+La prueba simula a la agencia: si atiende primero a los niños que señala cada regla, ¿esos niños sufrieron más que el promedio? Entrenamos el bosque en la mitad de las comunidades y lo evaluamos en la otra mitad.
 
-Más a la derecha es mejor. La línea vertical es no hacerlo mejor que escoger al azar. El algoritmo, y también las reglas de pobreza, zona urbana y compra de arroz, tienen rangos que cruzan esa línea: ninguna se distingue de escoger al azar, y ninguna supera a las otras. La prueba de calibración del algoritmo tampoco encuentra diferencias reales entre niños.""")
-titulo(s, "Un algoritmo no encuentra a los más afectados mejor que una regla simple")
-figura(s, FIG / "15_figuras_presentacion/f6_focalizacion.png", 1.42, 1.45, 10.5)
-como_leer(s, "Cómo leer: si la agencia atiende primero a quien señala cada regla, ¿esos niños sufrieron "
-             "más que el promedio? La calibración del algoritmo tampoco encuentra diferencias entre niños.")
+Más a la derecha es mejor. La línea vertical es no hacerlo mejor que escoger al azar. El bosque, y también las reglas de pobreza, zona urbana y compra de arroz, tienen rangos que cruzan esa línea: ninguna se distingue de escoger al azar, y ninguna supera a las otras. La prueba de calibración del bosque tampoco encuentra diferencias reales entre niños.""")
+titulo(s, "Un bosque causal no encuentra a los más afectados mejor que una regla simple")
+figura_metodo(s, FIG / "15_figuras_presentacion/f6_focalizacion.png",
+              "Evaluación con RATE (AUTOC) en una mitad de las comunidades",
+              "el bosque se entrena en la otra mitad; el RATE mide cuánto más daño sufren los priorizados "
+              "que el promedio; cada regla simple se evalúa igual.",
+              "Cómo leer: si la agencia atiende primero a quien señala cada regla, ¿esos niños sufrieron "
+              "más que el promedio? La calibración del bosque tampoco encuentra diferencias entre niños.")
 
 # -----------------------------------------------------------------------------
 # 10. Recomendación
@@ -399,7 +505,7 @@ s = lamina("Recomendación", """Presentador 4 · 110 s
 
 Hacer: vigilar el alza del precio del arroz comunidad por comunidad, que es lo que sí se asocia con menos crecimiento, y cubrir a todos los niños pequeños de las comunidades donde más sube.
 
-No hacer: usar un algoritmo para escoger a quién ayudar dentro de la comunidad, ni dejar fuera a los niños no pobres o rurales: con esta evidencia, no sabemos que hayan sufrido menos.
+No hacer: usar un bosque causal para escoger a quién ayudar dentro de la comunidad, ni dejar fuera a los niños no pobres o rurales: con esta evidencia, no sabemos que hayan sufrido menos.
 
 Por confirmar: los menores de 3 años. Es la única pista, pero no alcanza para convertirla en regla; habría que comprobarla con más datos.""")
 titulo(s, "Focalice por comunidad, no por hogar")
@@ -407,14 +513,14 @@ columnas = [("Hacer", VERDE, BLANCO,
              ["Vigilar el alza del arroz por comunidad.",
               "Cubrir a todos los niños pequeños donde más sube."]),
             ("No hacer", VERDE_OSC, BLANCO,
-             ["Escoger con un algoritmo dentro de la comunidad.",
+             ["Escoger con un bosque causal dentro de la comunidad.",
               "Excluir a los no pobres o a los rurales."]),
             ("Por confirmar", TINTE, TEXTO,
              ["Los menores de 3 años: una pista, no una regla."])]
 for k, (enc, fondo, col, items) in enumerate(columnas):
-    caja_texto(s, 0.6 + k * 4.1, 1.7, 3.85, 4.2, fondo,
+    caja_texto(s, 0.6 + k * 4.1, (H - 4.1) / 2, 3.85, 4.1, fondo,
                [(enc, 28, True, col, TITULO_F)] +
-               [(it, 22, False, col, None, None, 14) for it in items], margen=0.3)
+               [(it, 24, False, col, None, None, 14) for it in items], anclaje=MSO_ANCHOR.TOP, margen=0.3)
 
 # -----------------------------------------------------------------------------
 # 11. Aporte y límites
@@ -422,24 +528,24 @@ for k, (enc, fondo, col, items) in enumerate(columnas):
 
 s = lamina("Recomendación", """Presentador 4 · 110 s
 
-¿Qué añadimos? Primero, replicamos el resultado de Elmira y Qaim con errores que tienen en cuenta que los niños de una misma comunidad se parecen. Segundo, fijamos los grupos antes de mirar y corregimos por hacer muchas comparaciones a la vez. Tercero, hasta donde revisamos, es la primera prueba de si un algoritmo focaliza mejor que reglas simples ante este choque.
+¿Qué añadimos? Primero, replicamos el resultado de Elmira y Qaim con errores que tienen en cuenta que los niños de una misma comunidad se parecen. Segundo, fijamos los grupos antes de mirar y corregimos por hacer muchas comparaciones a la vez. Tercero, hasta donde revisamos, es la primera prueba de si un bosque causal focaliza mejor que reglas simples ante este choque.
 
 ¿Qué no podemos afirmar? Puede haber una tendencia previa, porque el placebo no es concluyente. Puede haber otros choques al mismo tiempo, como la sequía de El Niño o el humo de los incendios. En las comunidades donde más subió el arroz se midió a menos niños en 1997. El tamaño del efecto cambia con los valores extremos. Y tenemos poca precisión para comparar grupos.""")
 titulo(s, "Qué añadimos y qué no podemos afirmar")
-caja_texto(s, 0.6, 1.6, 5.9, 5.1, TINTE,
+caja_texto(s, 0.6, (H - 4.3) / 2, 5.9, 4.3, TINTE,
            [("Qué añadimos", 26, True, TEXTO, TITULO_F),
             ("Réplica con errores agrupados por comunidad.", 20, False, TEXTO, None, None, 12),
-            ("Grupos fijados de antemano y corregidos por hacer muchas comparaciones a la vez.",
+            ("Grupos fijados de antemano y corregidos por hacer muchas comparaciones a la vez (Holm).",
              20, False, TEXTO, None, None, 10),
-            ("Primera prueba, hasta donde revisamos, de si un algoritmo focaliza mejor que "
-             "reglas simples ante este choque.", 20, False, TEXTO, None, None, 10)], margen=0.3)
-caja_texto(s, 6.83, 1.6, 5.9, 5.1, VERDE_OSC,
+            ("Primera prueba, hasta donde revisamos, de si un bosque causal focaliza mejor que "
+             "reglas simples ante este choque.", 20, False, TEXTO, None, None, 10)], anclaje=MSO_ANCHOR.TOP, margen=0.3)
+caja_texto(s, 6.83, (H - 4.3) / 2, 5.9, 4.3, VERDE_OSC,
            [("Qué no podemos afirmar", 26, True, BLANCO, TITULO_F),
             ("Puede haber una tendencia previa.", 20, False, BLANCO, None, None, 12),
             ("Otros choques al mismo tiempo (sequía, humo).", 20, False, BLANCO, None, None, 8),
             ("Menos niños medidos donde más subió el arroz.", 20, False, BLANCO, None, None, 8),
             ("El tamaño cambia con los valores extremos.", 20, False, BLANCO, None, None, 8),
-            ("Poca precisión para comparar grupos.", 20, False, BLANCO, None, None, 8)], margen=0.3)
+            ("Poca precisión para comparar grupos.", 20, False, BLANCO, None, None, 8)], anclaje=MSO_ANCHOR.TOP, margen=0.3)
 
 # -----------------------------------------------------------------------------
 # 12. Cierre
@@ -453,7 +559,7 @@ Para cerrar, tres preguntas y tres respuestas.
 
 ¿Hubo niños a los que les afectó más? Todos se vieron afectados; la edad es la única pista, y no alcanza para afirmarla.
 
-¿Un algoritmo encuentra mejor a los más afectados? No: una regla simple funciona igual de bien.
+¿Un bosque causal encuentra mejor a los más afectados? No: una regla simple funciona igual de bien.
 
 Gracias. Quedamos atentos a sus preguntas.""")
 titulo(s, "Tres preguntas, tres respuestas")
@@ -461,10 +567,10 @@ qa = [("¿Los niños de las comunidades donde el arroz subió más crecieron men
        "Sí, crecieron menos (≈ 1,7 cm por cada duplicación del precio), con incertidumbre sobre el tamaño exacto."),
       ("¿Hubo niños a los que el alza afectó más?",
        "Todos se vieron afectados; la edad es la única pista."),
-      ("¿Un algoritmo encuentra a los más afectados mejor que una regla simple?",
+      ("¿Un bosque causal encuentra a los más afectados mejor que una regla simple?",
        "No: una regla simple funciona igual de bien.")]
 for k, (q, a) in enumerate(qa):
-    y = 1.55 + k * 1.45
+    y = 1.55 + k * 1.4
     caja_texto(s, 0.6, y, 0.75, 1.25, VERDE,
                [(str(k + 1), 32, True, BLANCO, TITULO_F, PP_ALIGN.CENTER)],
                anclaje=MSO_ANCHOR.MIDDLE, margen=0.02)
@@ -475,6 +581,69 @@ caja_texto(s, 0, 6.0, W, 0.85, VERDE_OSC,
            anclaje=MSO_ANCHOR.MIDDLE)
 
 N_PRINCIPALES = len(prs.slides)
+
+# -----------------------------------------------------------------------------
+# Referencias (APA 7), después del cierre y antes del respaldo; no cuenta en los 20 min
+# Cada una se verificó: E-Q y F-T contra los PDF de 07_Recursos/Articulos/; el resto, contra la
+# página del editor o de RePEc (23-nov-2026)
+# -----------------------------------------------------------------------------
+
+REFS = [  # (partes (texto, cursiva))
+    [("Athey, S., Tibshirani, J., & Wager, S. (2019). Generalized random forests. ", 0),
+     ("The Annals of Statistics, 47", 1), ("(2), 1148–1178. https://doi.org/10.1214/18-AOS1709", 0)],
+    [("Chernozhukov, V., Demirer, M., Duflo, E., & Fernández-Val, I. (2025). Fisher-Schultz lecture: Generic "
+      "machine learning inference on heterogeneous treatment effects in randomized experiments, with an "
+      "application to immunization in India. ", 0),
+     ("Econometrica, 93", 1), ("(4), 1121–1164. https://doi.org/10.3982/ECTA19303", 0)],
+    [("Elmira, E. S., & Qaim, M. (2026). Macroeconomic shocks and long-term nutritional outcomes: Insights "
+      "from the Asian financial crisis. ", 0), ("Global Food Security, 48", 1),
+     (", Article 100900. https://doi.org/10.1016/j.gfs.2025.100900", 0)],
+    [("Frankenberg, E., & Thomas, D. (2017). ", 0),
+     ("Human capital and shocks: Evidence on education, health and nutrition", 1),
+     (" (NBER Working Paper No. 23347). National Bureau of Economic Research. "
+      "http://www.nber.org/papers/w23347", 0)],
+    [("Strauss, J., Witoelar, F., & Sikoki, B. (2016). ", 0),
+     ("The fifth wave of the Indonesia Family Life Survey (IFLS5): Overview and field report", 1),
+     (" (RAND Working Paper No. WR-1143/1-NIA/NICHD). RAND Corporation. "
+      "https://www.rand.org/content/dam/rand/pubs/working_papers/WR1100/WR1143z1/RAND_WR1143z1.pdf", 0)],
+    [("Wager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using "
+      "random forests. ", 0), ("Journal of the American Statistical Association, 113", 1),
+     ("(523), 1228–1242. https://doi.org/10.1080/01621459.2017.1319839", 0)],
+    [("WHO Multicentre Growth Reference Study Group. (2006). ", 0),
+     ("WHO child growth standards: Length/height-for-age, weight-for-age, weight-for-length, "
+      "weight-for-height and body mass index-for-age: Methods and development", 1),
+     (". World Health Organization. https://www.who.int/publications/i/item/924154693X", 0)],
+    [("Yadlowsky, S., Fleming, S., Shah, N., Brunskill, E., & Wager, S. (2025). Evaluating treatment "
+      "prioritization rules via rank-weighted average treatment effects. ", 0),
+     ("Journal of the American Statistical Association, 120", 1),
+     ("(549), 38–51. https://doi.org/10.1080/01621459.2024.2393466", 0)],
+]
+autores = [r[0][0].split(",")[0] for r in REFS]
+assert autores == sorted(autores, key=str.lower), autores  # orden alfabético (APA)
+s = lamina("Referencias", "Referencias en formato APA 7. No cuenta en los 20 minutos.")
+titulo(s, "Referencias")
+caja = s.shapes.add_textbox(Inches(0.6), Inches(1.65), Inches(W - 1.2), Inches(5.2))
+tf = caja.text_frame
+tf.word_wrap = True
+for lado in ("margin_left", "margin_right", "margin_top", "margin_bottom"):
+    setattr(tf, lado, Inches(0.05))
+for i, partes in enumerate(REFS):
+    par = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+    par.space_after = Pt(5)
+    pPr = par._p.get_or_add_pPr()  # sangría francesa de APA: 0,5 in
+    pPr.set("marL", str(Inches(0.5)))
+    pPr.set("indent", str(-Inches(0.5)))
+    for txt, cursiva in partes:
+        r = par.add_run()
+        r.text = txt
+        r.font.size, r.font.name, r.font.italic = Pt(13), CUERPO_F, bool(cursiva)
+        r.font.color.rgb = rgb(TEXTO)
+        textos.append((len(prs.slides), txt, TEXTO, FONDO))
+
+(RAIZ / "04_Presentaciones/como_leer_laminas.md").write_text(
+    "# Cómo leer cada figura\n\nTextos de «Cómo leer» que se quitaron de las láminas. Los genera "
+    "`04_Presentaciones/_fuente/construir_presentacion.py`; no se editan a mano.\n\n"
+    + "\n".join(f"## Lámina {k}\n\n{x}\n" for k, x in COMO_LEER), encoding="utf-8")
 
 # -----------------------------------------------------------------------------
 # Respaldo
@@ -488,11 +657,11 @@ texto(s, 0.8, 2.9, W - 1.6, 1.5, [("Respaldo", 54, True, BLANCO, TITULO_F)], fon
 def respaldo_figura(t, archivo, notas):
     s = lamina(notas=notas)
     titulo(s, t)
-    pic = s.shapes.add_picture(str(archivo), 0, Inches(1.5), height=Inches(5.45))
+    pic = s.shapes.add_picture(str(archivo), 0, Inches(1.8), height=Inches(5.15))
     pic.left = int((prs.slide_width - pic.width) / 2)
     return s
 
-respaldo_figura("Respaldo: el algoritmo compara niños con probabilidades parecidas de estar en cada grupo",
+respaldo_figura("Respaldo: el bosque causal compara niños con probabilidades parecidas de estar en cada grupo",
                 FIG / "10_bosque/ninos_bosque_traslape.png",
                 "Traslape del bosque (10_bosque): probabilidad estimada entre 0,10 y 0,93; ningún niño fuera de 0,05-0,95.")
 respaldo_figura("Respaldo: el daño aparece en los tres cuartiles de mayor alza",
@@ -510,8 +679,20 @@ filas = [["Efecto por duplicación del precio"] + [coma(v, 3) for v in ate.beta]
          ["Precio del arroz de 1997", "No", "No", "No", "Sí"],
          ["Niños / comunidades"] + [f"{n:,}".replace(",", ".") + f" / {c}"
                                     for n, c in zip(ate.ninos, ate.comunidades)]]
-tabla(s, 0.6, 1.6, W - 1.2, ["", "(1)", "(2)", "(3)", "(4)"], filas,
-      [5.13, 1.75, 1.75, 1.75, 1.75], pt=16)
+beta_t = coma(a4.beta, 3).replace(",", "{,}").replace("−", "-")
+ee_t = coma(a4.ee_agrupado, 3).replace(",", "{,}")
+eq, (eq_w, eq_h) = ecuacion_png(
+    r"\widehat{\Delta\mathrm{HAZ}}_{ic} \;=\; \underset{(" + ee_t + r")}{" + beta_t + r"}\,\mathrm{Dosis}_c"
+    r"\;+\; \hat\gamma\,\ln P_{c,1997} \;+\; \mathbf{X}_{ic}'\,\hat{\boldsymbol{\delta}}"
+    r"\;+\; \hat\mu_{p(c)}")
+s.shapes.add_picture(eq, Inches((W - eq_w) / 2), Inches(1.75), width=Inches(eq_w))
+texto(s, 0.6, 1.75 + eq_h + 0.1, W - 1.2, 0.8,
+      [("Especificación (4): i = niño, c = comunidad en 1997, p = provincia. Dosis = cambio proporcional del "
+        "precio del arroz 1997-2000 (el coeficiente es el efecto por +100 %); X = controles de 1997; "
+        "efectos fijos de provincia. Entre paréntesis, el error estándar agrupado por comunidad.",
+        14, False, GRIS, None, PP_ALIGN.CENTER)])
+tabla(s, 0.6, 3.45, W - 1.2, ["", "(1)", "(2)", "(3)", "(4)"], filas,
+      [5.13, 1.75, 1.75, 1.75, 1.75], pt=14, alto_fila=0.36)
 
 inter = pd.read_csv(TAB / "09_interacciones_eq/ninos_interacciones_eq.csv")
 inter = inter[(inter.ee == "agrupado") & (inter.especificacion == 4)]
@@ -520,10 +701,10 @@ titulo(s, "Respaldo: ninguna de las cinco diferencias de Elmira y Qaim se distin
 filas = [[f"{r.grupo_1} frente a {r.grupo_0.lower()}",
           f"{coma(r.b2, 3)} ({coma(r.ee_b2, 3)})", coma(r.p_b2_holm, 3),
           f"{coma(r.eq_b2, 3)} ({coma(r.eq_ee, 3)})"] for r in inter.itertuples()]
-tabla(s, 0.6, 1.6, W - 1.2,
+tabla(s, 0.6, 1.85, W - 1.2,
       ["Diferencia", "Nuestra (margen de error)", "p corregido por múltiples comparaciones",
        "Elmira y Qaim (margen de error)"], filas, [4.5, 2.6, 2.4, 2.63], pt=16)
-texto(s, 0.6, 5.3, W - 1.2, 0.8,
+texto(s, 0.6, 5.5, W - 1.2, 0.8,
       [("Cambio en la estatura para la edad por cada duplicación del precio. Nuestros márgenes "
         "de error están agrupados por comunidad; los de Elmira y Qaim, no (cuadro A4 de su suplemento).",
         14, False, GRIS)])
@@ -535,12 +716,12 @@ filas = [["Predicción media (≈ 1 si el promedio está bien)", coma(cal.coefic
           coma(cal.ee[0], 3), coma(cal.p_unilateral[0], 3)],
          ["Predicción diferencial (> 0 si capta diferencias reales)", coma(cal.coeficiente[1], 3),
           coma(cal.ee[1], 3), coma(cal.p_unilateral[1], 3)]]
-tabla(s, 0.6, 1.8, W - 1.2, ["", "Coeficiente", "Margen de error", "p (una cola)"], filas,
+tabla(s, 0.6, 2.0, W - 1.2, ["", "Coeficiente", "Margen de error", "p (una cola)"], filas,
       [6.53, 1.9, 1.9, 1.8], pt=18)
 
 per = pd.read_csv(TAB / "13_perfil/ninos_perfil_cuartil_tau.csv")
 s = lamina(notas="Perfil por cuartil del efecto predicho (13_perfil). Descriptivo, sin validar.")
-titulo(s, "Respaldo: el algoritmo priorizaría sobre todo a los más pequeños")
+titulo(s, "Respaldo: el bosque causal priorizaría sobre todo a los más pequeños")
 pct = lambda v: f"{100 * v:.1f} %".replace(".", ",")
 filas = [["Efecto predicho medio"] + [coma(v, 3) for v in per.tau_medio],
          ["Edad en 1997 (meses)"] + [coma(v, 1) for v in per.edad_meses],
@@ -548,7 +729,7 @@ filas = [["Efecto predicho medio"] + [coma(v, 3) for v in per.tau_medio],
          ["Pobre"] + [pct(v) for v in per.pobre],
          ["Compra arroz"] + [pct(v) for v in per.comprador_neto],
          ["Madre con más que primaria"] + [pct(v) for v in per.madre_mas_primaria]]
-tabla(s, 0.6, 1.6, W - 1.2, ["", "Cuartil 1 (más daño predicho)", "Cuartil 2", "Cuartil 3",
+tabla(s, 0.6, 1.85, W - 1.2, ["", "Cuartil 1 (más daño predicho)", "Cuartil 2", "Cuartil 3",
                              "Cuartil 4 (menos)"], filas, [3.93, 2.4, 1.9, 1.9, 2.0], pt=16)
 
 sc = pd.read_csv(TAB / "11_gate/ninos_edad_sin_cola_exploratorio.csv")
@@ -557,26 +738,26 @@ titulo(s, "Respaldo: la pista de la edad crece sin los cambios de estatura extre
 filas = [[r.muestra, coma(r.g1_gate_0_2, 3), coma(r.g1_gate_3_5, 3),
           f"{coma(r.g1_delta, 3)} ({coma(r.g1_ee_delta, 3)})", coma(r.g1_p, 3)]
          for r in sc.itertuples()]
-tabla(s, 0.6, 1.8, W - 1.2, ["Muestra", "0-2 años", "3-5 años", "Diferencia (margen de error)",
+tabla(s, 0.6, 2.0, W - 1.2, ["Muestra", "0-2 años", "3-5 años", "Diferencia (margen de error)",
                              "p sin corregir"], filas, [3.73, 1.8, 1.8, 3.0, 1.8], pt=18)
-texto(s, 0.6, 3.7, W - 1.2, 0.8,
+texto(s, 0.6, 3.9, W - 1.2, 0.8,
       [("Exploratorio: no estaba en el plan y no se corrige por múltiples comparaciones.",
         16, False, GRIS)])
 
-respaldo_figura("Respaldo: curvas de priorización del algoritmo y de las reglas simples",
+respaldo_figura("Respaldo: curvas de priorización del bosque causal y de las reglas simples",
                 FIG / "14_rate/ninos_rate_toc.png",
                 "Curvas TOC (14_rate), escala de daño; 834 niños, 98 comunidades de evaluación.")
 
 # pie en todas menos la portada y el separador
 for k, s in enumerate(prs.slides, 1):
-    if k not in (1, N_PRINCIPALES + 1):
+    if k not in (1, N_PRINCIPALES + 2):
         pie(s, k)
 
 # -----------------------------------------------------------------------------
-# Verificaciones en el .pptx: 12 principales, ≥ 12 pt, contraste ≥ 4,5
+# Verificaciones en el .pptx: 13 principales, ≥ 12 pt, contraste ≥ 4,5
 # -----------------------------------------------------------------------------
 
-assert N_PRINCIPALES == 12, N_PRINCIPALES
+assert N_PRINCIPALES == 13, N_PRINCIPALES
 
 def luminancia(h):
     c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
@@ -604,7 +785,9 @@ for k, t, col, fondo in textos:
 if fallas:
     raise SystemExit("\n".join(fallas))
 
+import json
 SALIDA.parent.mkdir(exist_ok=True)
+(RENDER.parent / "_cajas.json").write_text(json.dumps(CAJAS))
 prs.save(SALIDA)
 
 # -----------------------------------------------------------------------------
@@ -623,6 +806,10 @@ except (ImportError, AttributeError):
     pass  # en otro sistema, instalar las fuentes o aceptar la sustitución
 try:
     with tempfile.TemporaryDirectory() as perfil:  # perfil limpio: relee la lista de fuentes
+        carpeta_fuentes = Path(perfil) / "user" / "fonts"  # fuentes propias del perfil (macOS/Linux)
+        carpeta_fuentes.mkdir(parents=True)
+        for f in ttf:
+            shutil.copy(f, carpeta_fuentes)
         subprocess.run([soffice, f"-env:UserInstallation={Path(perfil).as_uri()}", "--headless",
                         "--convert-to", "pdf", "--outdir", str(SALIDA.parent), str(SALIDA)],
                        check=True, capture_output=True)

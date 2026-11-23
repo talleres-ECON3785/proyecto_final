@@ -13,10 +13,12 @@
 #
 # Entradas: 01_Datos/03_Listos/bosque_terciles.rds
 # Salidas:  03_Resultados/Tablas/12_calibracion/ninos_calibracion.{png,csv}
+#           03_Resultados/Figuras/12_calibracion/ninos_cate_distribucion.png
 # =============================================================================
 
 # los paquetes los carga 00_main.R con pacman
 source("02_Scripts/00_formato_tablas.R")
+source("02_Scripts/00_formato_graficas.R")
 carpeta_salida <- "12_calibracion"
 
 guardado <- readRDS("01_Datos/03_Listos/bosque_terciles.rds")
@@ -61,3 +63,39 @@ tabla <- resultados |>
               "heterogeneidad más allá de los GATE pre-declarados.")
       )))
 guardar_tabla("ninos_calibracion", tabla, resultados, carpeta_salida)
+
+# --- Distribucion de los efectos predichos (CATE) ----------------------------
+# tau_hat fuera de la bolsa de cada nino. Descriptivo: su dispersion mezcla
+# heterogeneidad y ruido de estimacion; la calibracion dice si hay de la primera
+d <- mutate(d, tau = predict(bosque)$predictions)
+ate <- average_treatment_effect(bosque)
+message("tau_hat: mediana ", round(median(d$tau), 3), ", p5 ",
+        round(quantile(d$tau, 0.05), 3), ", p95 ", round(quantile(d$tau, 0.95), 3),
+        "; negativos ", round(100 * mean(d$tau < 0), 1), " %")
+
+fig <- ggplot(d, aes(tau)) +
+  geom_histogram(binwidth = 0.02, fill = paleta_categorica[1], alpha = 0.85) +
+  geom_vline(xintercept = 0, color = gris_secundario) +
+  geom_vline(xintercept = ate[["estimate"]], linetype = "dashed",
+             color = paleta_categorica[2], linewidth = 0.9) +
+  annotate("text", x = ate[["estimate"]], y = Inf, vjust = 1.5, hjust = 1.05,
+           color = paleta_categorica[2], size = 3.8,
+           label = sprintf("ATE (AIPW): %s (EE %s)",
+                           num(ate[["estimate"]], decimales$z),
+                           num(ate[["std.err"]], decimales$z))) +
+  labs(title = "Efecto predicho por el bosque para cada niño",
+       subtitle = paste0(subtitulo_contraste, " ", nrow(d), " niños en ",
+                         n_distinct(d$commid97), " comunidades."),
+       x = "Efecto predicho del tercil alto frente al bajo (cambio en HAZ, fuera de la bolsa)",
+       y = "Niños",
+       caption = sprintf(paste(
+         "Bosque causal (grf), X de 1997, agrupado por comunidad. La dispersión",
+         "mezcla heterogeneidad y ruido de estimación: la calibración no la",
+         "distingue\ndel ruido (predicción diferencial %s, p unilateral %s).",
+         "Ningún efecto individual tiene intervalo propio aquí; no se lee",
+         "niño por niño.\nTerciles del alza dentro de provincia; el tercil",
+         "medio no entra."),
+         num(resultados$coeficiente[2], decimales$z),
+         num(resultados$p_unilateral[2], decimales$estadistico))) +
+  tema_presentacion
+guardar_figura("ninos_cate_distribucion.png", fig, carpeta_salida)

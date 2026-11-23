@@ -2,17 +2,18 @@
 # 15_figuras_presentacion: figuras para proyectar en la sustentación
 # Proyecto final - ECON-3785 (2026-2): IFLS y precio del arroz 1997-98
 #
-# Seis figuras grandes y simples (12 x 5,6 in, 200 dpi), SIN titulo ni notas
+# Siete figuras grandes y simples (12 x 5,6 in, 200 dpi), SIN titulo ni notas
 # (eso lo dice la lamina), con rotulos directos. No estima nada nuevo: lee los
 # .csv de 03_Resultados/ (y, solo para F1, el alza por comunidad de la base de
 # precios, que no esta en ningun .csv). Intervalos = estimacion +/- 1,96 x EE.
 #   F1 alza del precio por comunidad      F4 efecto por grupo (6 dimensiones)
 #   F2 efecto principal frente a E-Q      F5 potencia para comparar grupos
 #   F3 robustez y placebo                 F6 focalizacion (RATE, escala de dano)
+#   F7 distribucion de los efectos predichos del bosque (CATE)
 #
-# Entradas: 01_Datos/02_Procesados/precio_arroz.rds (F1) y los .csv de
-#           06_ate, 08_validacion, 11_gate y 14_rate
-# Salidas:  03_Resultados/Figuras/15_figuras_presentacion/f1_alza.png ... f6_focalizacion.png
+# Entradas: 01_Datos/02_Procesados/precio_arroz.rds (F1), 01_Datos/03_Listos/bosque_terciles.rds
+#           (F7, solo predict) y los .csv de 06_ate, 08_validacion, 10_bosque, 11_gate y 14_rate
+# Salidas:  03_Resultados/Figuras/15_figuras_presentacion/f1_alza.png ... f7_cate_distribucion.png
 # =============================================================================
 
 # los paquetes los carga 00_main.R con pacman
@@ -165,7 +166,7 @@ f4 <- ggplot(f4_datos, aes(b, grupo, color = color)) +
 guardar("f4_grupos.png", f4)
 
 # -----------------------------------------------------------------------------
-# F5: potencia. Efecto promedio del algoritmo frente a la menor diferencia
+# F5: potencia. Efecto promedio del bosque frente a la menor diferencia
 #     entre grupos que los datos detectarian (MDE ~ 2,8 x EE, aproximada)
 # -----------------------------------------------------------------------------
 
@@ -195,13 +196,13 @@ guardar("f5_potencia.png", f5, width = 8.4, height = 4.8)
 # F6: focalizacion. Que tan bien prioriza cada regla a los mas afectados
 # -----------------------------------------------------------------------------
 
-reglas <- c(bosque = "Algoritmo", pobre = "Pobre", urbano97 = "Urbano",
+reglas <- c(bosque = "Bosque causal", pobre = "Pobre", urbano97 = "Urbano",
             comprador_neto = "Compra más arroz\nde lo que produce")
 f6_datos <- leer("14_rate/ninos_rate.csv") |>
   filter(version == "principal", tipo == "AUTOC") |>
   transmute(regla = factor(reglas[prioridad], levels = rev(reglas)), b = estimacion, ee,
             color = if_else(prioridad == "bosque", verde, gris))
-stopifnot(nrow(f6_datos) == 4, coma(f6_datos$b[f6_datos$regla == "Algoritmo"], 3) == "0,116")
+stopifnot(nrow(f6_datos) == 4, coma(f6_datos$b[f6_datos$regla == "Bosque causal"], 3) == "0,116")
 f6 <- ggplot(f6_datos, aes(b, regla, color = color)) +
   geom_vline(xintercept = 0, color = texto, linewidth = 0.8) +
   annotate("text", x = 0, y = 4.45, label = "No mejor que escoger al azar",
@@ -215,3 +216,28 @@ f6 <- ggplot(f6_datos, aes(b, regla, color = color)) +
   labs(x = "Qué tan bien prioriza a los más afectados (desviaciones estándar)", y = NULL) +
   tema
 guardar("f6_focalizacion.png", f6)
+
+# -----------------------------------------------------------------------------
+# F7: distribucion de los efectos predichos por el bosque (CATE), con su promedio
+#     (ATE AIPW) y el MCO de la especificacion (4) con el mismo contraste.
+#     Solo predice con el bosque ya guardado por 10_bosque; no reestima nada
+# -----------------------------------------------------------------------------
+
+ate_bosque <- leer("10_bosque/ninos_bosque_ate.csv")
+f7_datos <- tibble(tau = predict(readRDS("01_Datos/03_Listos/bosque_terciles.rds")$bosque)$predictions)
+b_bosque <- ate_bosque$estimacion[ate_bosque$estimador == "Bosque causal (AIPW)"]
+b_mco <- ate_bosque$estimacion[startsWith(ate_bosque$estimador, "MCO")]
+stopifnot(length(b_bosque) == 1, length(b_mco) == 1, nrow(f7_datos) == ate_bosque$ninos[1],
+          coma(b_bosque) == "−0,18", coma(b_mco) == "−0,19")
+f7 <- ggplot(f7_datos, aes(tau)) +
+  geom_histogram(binwidth = 0.02, fill = verde, color = "white", linewidth = 0.3) +
+  geom_vline(xintercept = 0, color = texto, linewidth = 0.8) +
+  geom_vline(xintercept = b_bosque, color = ocre, linewidth = 1.3, linetype = "dashed") +
+  annotate("text", x = b_bosque - 0.015, y = Inf, vjust = 1.6, hjust = 1, size = tam_rotulo,
+           color = ocre, fontface = "bold", lineheight = 0.9,
+           label = paste0("Promedio del bosque: ", coma(b_bosque), "\nMCO: ", coma(b_mco))) +
+  scale_x_continuous(labels = eje_coma, breaks = seq(-0.6, 0, 0.2)) +
+  labs(x = "Efecto predicho para cada niño (cambio en el HAZ)", y = "Niños") +
+  tema + theme(panel.grid.major.y = element_line(color = "#E3E3E3", linewidth = 0.5),
+               panel.grid.major.x = element_blank(), axis.title.y = element_text(size = 20))
+guardar("f7_cate_distribucion.png", f7)
