@@ -54,3 +54,5 @@ Claude outputs/
 04_Presentaciones/_fuente/_render/
 08_Entregables/*.pptx
 08_Entregables/*.pdf
+# Excepción (decisión de Samuel, 23-nov): el PDF final sí se versiona, con la portada de TIME
+!08_Entregables/presentacion_final.pdf
