@@ -300,9 +300,22 @@ El arroz es el alimento básico en Indonesia. Con la crisis, su precio subió en
 
 Este gráfico cuenta comunidades. En el eje horizontal está cuánto subió el precio del arroz en cada comunidad entre 1997 y 2000; la altura de cada barra es cuántas comunidades tuvieron esa alza. Son 297 comunidades de la encuesta.
 
-La línea marca la mitad: en la mitad de las comunidades el precio subió más de 70 %. Pero hay comunidades con alzas de 20 % y otras de más de 150 %. Esa diferencia entre comunidades es la que vamos a aprovechar.""")
+La línea marca la mitad: en la mitad de las comunidades el precio subió más de 70 %. Pero hay comunidades con alzas de 20 % y otras de más de 150 %. Esa diferencia entre comunidades es la que vamos a aprovechar.
+
+¿Por qué importa para Colombia? Aquí el 74 % de los hogares compra arroz, y los hogares pobres le dedican el 2,56 % de su gasto, más de diez veces lo que le dedican los de ingresos altos (0,21 %). Con un El Niño que se espera fuerte o muy fuerte hasta inicios de 2027, un alza repentina del arroz es un riesgo real. Por eso queremos entender cómo afecta la estatura de los niños, y en especial la de los más vulnerables (esta pregunta se dice, no está en la lámina).""")
 titulo(s, "El arroz subió un 70 % entre 1997 y 2000, y en unas comunidades mucho más")
-figura(s, FIG / "15_figuras_presentacion/f1_alza.png", (W - 10.0) / 2, Y_FIG, 10.0)
+W_F1, X_COL = 7.0, 7.9  # figura más angosta para dejar la columna de Colombia a la derecha
+H_CO = 2.91
+pic = figura(s, FIG / "15_figuras_presentacion/f1_alza.png", 0.6, Y_FIG, W_F1)
+Y_CO = Y_FIG + (pic.height / 914400 - H_CO) / 2  # columna centrada en vertical con la figura
+caja_texto(s, X_COL, Y_CO, W - 0.6 - X_COL, H_CO, TINTE,
+           [("¿Por qué importa para Colombia?", 20, True, TEXTO, TITULO_F),
+            ("El 74\u00a0% de los hogares compra arroz.", 16, False, TEXTO, None, None, 8, True),
+            ("Hogares pobres dedican 10 veces más de su ingreso que los de ingresos altos.", 16, False, TEXTO, None, None, 6, True),
+            ("Se espera un El Niño fuerte o muy fuerte hasta inicios de 2027.",
+             16, False, TEXTO, None, None, 6, True),
+            ("Fuentes: DANE (ENPH 2016-2017; ponderadores del IPC); NOAA (nov. 2026).",
+             12, False, GRIS, None, None, 10)], anclaje=MSO_ANCHOR.TOP, margen=0.25)
 como_leer(s, "Cómo leer: cada barra cuenta comunidades según cuánto subió allí el precio del arroz "
              "(297 comunidades). El arroz es el alimento básico; la crisis lo encareció de forma desigual.")
 
@@ -640,6 +653,13 @@ REFS = [  # (partes (texto, cursiva))
       "machine learning inference on heterogeneous treatment effects in randomized experiments, with an "
       "application to immunization in India. ", 0),
      ("Econometrica, 93", 1), ("(4), 1121–1164. https://doi.org/10.3982/ECTA19303", 0)],
+    [("Departamento Administrativo Nacional de Estadística. (2018). ", 0),
+     ("Encuesta Nacional de Presupuestos de los Hogares (ENPH) 2016-2017: Comunicado de prensa", 1),
+     (". https://www.dane.gov.co/files/investigaciones/boletines/enph/comunicado-enph-2017.pdf", 0)],
+    [("Departamento Administrativo Nacional de Estadística. (s. f.). ", 0),
+     ("Ponderaciones nuevo IPC", 1),
+     (". https://www.dane.gov.co/index.php/estadisticas-por-tema/precios-y-costos/indice-de-precios-al-"
+      "consumidor-ipc/ipc-actualizacion-metodologica-2019/ipc-ponderadores", 0)],
     [("Elmira, E. S., & Qaim, M. (2026). Macroeconomic shocks and long-term nutritional outcomes: Insights "
       "from the Asian financial crisis. ", 0), ("Global Food Security, 48", 1),
      (", Article 100900. https://doi.org/10.1016/j.gfs.2025.100900", 0)],
@@ -647,6 +667,8 @@ REFS = [  # (partes (texto, cursiva))
      ("Human capital and shocks: Evidence on education, health and nutrition", 1),
      (" (NBER Working Paper No. 23347). National Bureau of Economic Research. "
       "http://www.nber.org/papers/w23347", 0)],
+    [("NOAA Climate Prediction Center. (2026, 12 de noviembre). ", 0), ("ENSO diagnostic discussion", 1),
+     (". https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml", 0)],
     [("RAND Corporation. (2026). ", 0), ("IFLS data and documentation", 1),
      (" [Sitio web]. https://www.rand.org/health/surveys/FLS/IFLS/download.html", 0)],
     [("Wager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using "
@@ -672,14 +694,14 @@ for lado in ("margin_left", "margin_right", "margin_top", "margin_bottom"):
     setattr(tf, lado, Inches(0.05))
 for i, partes in enumerate(REFS):
     par = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-    par.space_after = Pt(5)
+    par.space_after = Pt(4)
     pPr = par._p.get_or_add_pPr()  # sangría francesa de APA: 0,5 in
     pPr.set("marL", str(Inches(0.5)))
     pPr.set("indent", str(-Inches(0.5)))
     for txt, cursiva in partes:
         r = par.add_run()
         r.text = txt
-        r.font.size, r.font.name, r.font.italic = Pt(13), CUERPO_F, bool(cursiva)
+        r.font.size, r.font.name, r.font.italic = Pt(12), CUERPO_F, bool(cursiva)
         r.font.color.rgb = rgb(TEXTO)
         textos.append((len(prs.slides), txt, TEXTO, FONDO))
 

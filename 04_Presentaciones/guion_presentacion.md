@@ -28,7 +28,7 @@ priorizados · 22 edad sin valores extremos · 23 curvas de priorización.
 | # | Título | Figura o elemento |
 |---|---|---|
 | 1 | ¿A quién golpeó más el arroz caro? | Portada de TIME (19-ene-1998) |
-| 2 | El arroz subió un 70 % entre 1997 y 2000, y en unas comunidades mucho más | F1 `f1_alza.png` |
+| 2 | El arroz subió un 70 % entre 1997 y 2000, y en unas comunidades mucho más | F1 `f1_alza.png` + panel «¿Por qué importa para Colombia?» (DANE, NOAA) |
 | 3 | Dos estudios con estos datos no coinciden, y nadie ha probado a quién proteger primero | Dos tarjetas + las tres preguntas |
 | 4 | Seguimos a 2.421 niños de la IFLS y comparamos comunidades con más y menos alza | Esquema 1997 → alza → 2000 |
 | 5 | Replicamos a Elmira y Qaim: donde el arroz subió más, los niños crecieron menos | F2 `f2_efecto_principal.png` |

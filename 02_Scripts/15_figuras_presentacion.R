@@ -119,12 +119,9 @@ f3 <- ggplot(f3_datos, aes(b, nombre, color = color)) +
                 linewidth = 1.3, orientation = "y") +
   geom_point(size = 5) +
   scale_color_identity() +
-  annotate("text", x = 0.09, y = 2.75, hjust = 0, vjust = 0.5, size = tam_rotulo, color = texto,
-           lineheight = 0.9,
-           label = "↓ Placebo: debería ser ~0.\nNo se distingue de cero,\npero no descarta una\ntendencia previa") +
-  scale_x_continuous(labels = eje_coma, breaks = seq(-0.8, 0.2, 0.2), limits = c(-0.85, 1.1)) +
+  scale_x_continuous(labels = eje_coma, breaks = seq(-0.8, 0.2, 0.2), limits = c(-0.85, 0.25)) +
   labs(x = "Desviaciones estándar por cada duplicación del precio", y = NULL) +
-  tema + theme(axis.title.x = element_text(hjust = 0.3))
+  tema
 guardar("f3_robustez.png", f3)
 
 # -----------------------------------------------------------------------------
