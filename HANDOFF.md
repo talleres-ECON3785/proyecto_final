@@ -104,6 +104,18 @@ preguntas).
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
 
+### 2026-11-22 (6): correcciones de la presentación final
+
+- Samuel Escandón (worktree, empujado a `SamuelEscandonC`), sesión autónoma.
+  - `04_Presentaciones/_fuente/construir_presentacion.py` corrige la
+    presentación (10 láminas, mismas cifras) y deja
+    `08_Entregables/presentacion_final.{pptx,pdf}`; la revisión del PDF no
+    encuentra textos montados ni cortados. Bigotes de ±1,96 EE en la lámina 3.
+  - La base, el `.pptx` y el `.pdf` no se versionan (portada de TIME).
+- Bitácora: [2026-11-22_rate-y-presentacion_5.md](06_Bitacoras/2026-11-22_rate-y-presentacion_5.md)
+- **Siguientes objetivos:** (1) ensayar con el PDF; (2) confirmar la fecha de
+  la portada; (3) P7: entrega.
+
 ### 2026-11-22 (5): RATE (P4.2) e insumos de la presentación
 
 - Samuel Escandón (worktree, empujado a `SamuelEscandonC`), sesión autónoma.

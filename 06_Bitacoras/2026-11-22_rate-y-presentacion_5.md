@@ -159,3 +159,62 @@ estructura de la presentación, pero no hay guion ni láminas.
   resultado urbano frente a E-Q (`05_Notas/09_interacciones_eq/H_interacciones_eq.md`)
   y `git pull` de la rama local `SamuelEscandonC` en el otro worktree.
 - P7.1-P7.3 (entrega).
+
+## Sesión posterior: correcciones de `presentacion_final.pptx` (pedido de Samuel)
+
+### Plan (escrito antes de implementar)
+
+- **Punto de partida.** El script `04_Presentaciones/_fuente/construir_presentacion.py`
+  no existía en ninguna rama; la única copia de la presentación estaba en
+  `04_Presentaciones/presentacion_final.pptx` del checkout principal (sin
+  versionar). Se copia como `04_Presentaciones/_fuente/presentacion_base.pptx`
+  y se escribe el script, que la toma como base, aplica las correcciones con
+  `python-pptx` y deja `08_Entregables/presentacion_final.{pptx,pdf}`, más un
+  PNG por lámina y una revisión automática de textos montados o fuera de la
+  página (con PyMuPDF sobre el PDF).
+- **Cambios** (los del pedido): lámina 3 (pie, notas del Presentador 1, bigotes
+  de ±1,96 EE calculados desde `06_ate/ninos_ate_especificaciones.csv`),
+  lámina 1 (portada sin solapes y crédito de TIME), lámina 5 (tabla, fuente y
+  título), lámina 10 (cuadrícula 2 × 3), lámina 9 (cuadros a la misma altura),
+  consistencia (rectángulos en lugar de ondas en 2, 6 y 8; títulos a la
+  izquierda; cuadro verde del pie), lámina 7 (figura de GATE más grande, sin
+  deformar). Además, lo que la revisión muestre montado (p. ej., la tabla y el
+  texto del panel de la lámina 4, los títulos que invaden la figura en 2 y 6).
+- **Decisiones.** Ninguna cifra cambia; el número de láminas sigue en 10. Las
+  figuras se insertan sin recortar ni deformar (CLAUDE.md §4.1). La escala de
+  las barras de la lámina 3 se recalcula para que quepan los bigotes.
+- **Riesgos.** (1) La fuente «Radio Canada» no está instalada ni incrustada:
+  LibreOffice la sustituye al exportar el PDF, y PowerPoint en otro equipo
+  también lo hará. Se dimensiona con márgenes. (2) La portada de TIME tiene
+  derechos de autor y el repositorio es público: el `.pptx`, el `.pdf` y la base
+  no se versionan (`.gitignore`); solo el script. **[REVISIÓN HUMANA]**
+
+### Resultado
+
+- `04_Presentaciones/_fuente/construir_presentacion.py` deja
+  `08_Entregables/presentacion_final.{pptx,pdf}` (10 láminas, sin cambiar
+  cifras) y un PNG por lámina en `04_Presentaciones/_fuente/_render/`. La
+  revisión automática del PDF (textos montados, sobre imágenes o fuera de la
+  página) da 0 problemas, y se revisaron a ojo las 10 láminas.
+- Cambios: lámina 1 (encabezado en una línea, título a la izquierda, pregunta
+  con mayúscula, portada de TIME más chica sin tapar texto, crédito «Portada:
+  TIME, 19 de enero de 1998» a 10 pt, nombres completos dentro del panel);
+  lámina 3 (sin «Opción B», bigotes de ±1,96 EE calculados desde el `.csv`
+  de 06_ate, escala de las barras recalculada, EE «agrupado» y «robusto sin
+  agrupar» en las etiquetas, notas nuevas del Presentador 1 de ~100 s);
+  lámina 5 (título nuevo, tabla más ancha con «−0,270 (0,153)» en una línea,
+  fuente debajo de la tabla); lámina 7 (panel de 3,15 M EMU, figura de GATE a
+  toda la altura disponible, sin deformar; pie visible); lámina 9 (tres
+  cuadros a la misma altura); lámina 10 (cuadrícula 2 × 3); láminas 2, 6 y 8
+  (rectángulos con el texto dentro en lugar de ondas); láminas 2, 4, 6 y 8
+  (títulos de 24 pt para que no invadan la figura; tabla y textos del panel
+  de la lámina 4 sin montarse); todos los títulos a la izquierda; cuadro
+  verde del pie en las láminas 2-10.
+- **La fecha de la portada** se leyó en la propia imagen («JANUARY 19, 1998»,
+  baja resolución). **[REVISIÓN HUMANA]**: confirmarla.
+- **Fuente:** «Radio Canada» no está instalada ni incrustada; el PDF usa la
+  sustitución de LibreOffice. Recomendación: presentar desde el PDF.
+- No se versionan la base, el `.pptx`, el `.pdf` ni los PNG (`.gitignore`):
+  la portada de TIME tiene derechos de terceros y el repositorio es público.
+  **[REVISIÓN HUMANA]**: para la entrega, subir la presentación a Bloque Neón
+  directamente.

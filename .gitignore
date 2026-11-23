@@ -47,3 +47,10 @@ __pycache__/
 
 # --- Salidas sueltas de Claude (local) ---------------------------------------
 Claude outputs/
+
+# --- Presentación final (la portada de TIME tiene derechos de terceros) ------
+# Se regeneran con 04_Presentaciones/_fuente/construir_presentacion.py
+04_Presentaciones/_fuente/*.pptx
+04_Presentaciones/_fuente/_render/
+08_Entregables/*.pptx
+08_Entregables/*.pdf
