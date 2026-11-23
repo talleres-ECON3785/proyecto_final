@@ -121,6 +121,7 @@ que solo haya que cambiar la base.
   Preparar preguntas: por qué `feols` y no el bosque para el ATE, contraste
   frente a crisis, errores agrupados, desgaste, diferencia con Frankenberg y
   Thomas (2017).
+- [ ] **P6.3** Recortar la presentación de 1.260 s a 1.200 s (la lámina 7 sumó 60 s), poner los nombres de los presentadores en el guion y ensayar con el PDF (23-nov).
 
 ## H7. Entrega
 

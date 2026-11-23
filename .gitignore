@@ -57,3 +57,6 @@ Claude outputs/
 08_Entregables/*.pdf
 # Excepción (decisión de Samuel, 23-nov): el PDF final sí se versiona, con la portada de TIME
 !08_Entregables/presentacion_final.pdf
+
+# Volcado de depuración de cajas del script de la presentación
+04_Presentaciones/_fuente/_cajas.json

@@ -1,10 +1,14 @@
 # Cómo leer cada figura
 
-Textos de «Cómo leer» que se quitaron de las láminas. Los genera `04_Presentaciones/_fuente/construir_presentacion.py`; no se editan a mano.
+Textos que se quitaron de las láminas: «Cómo leer» de cada figura y aclaraciones para el orador. Los genera `04_Presentaciones/_fuente/construir_presentacion.py`; no se editan a mano.
 
 ## Lámina 2
 
 Cómo leer: cada barra cuenta comunidades según cuánto subió allí el precio del arroz (297 comunidades). El arroz es el alimento básico; la crisis lo encareció de forma desigual.
+
+## Lámina 4
+
+Nota del orador (quitada de la lámina): fijamos los grupos y las pruebas antes de ver los resultados.
 
 ## Lámina 5
 
@@ -24,7 +28,7 @@ Cómo leer: punto = daño en cada grupo; línea = rango plausible. Todos los gru
 
 ## Lámina 9
 
-Cómo leer: la barra naranja es la menor diferencia entre dos grupos que estos datos detectarían (aproximada); es el doble del daño promedio.
+Cómo leer: la barra naranja es la menor diferencia entre dos grupos que estos datos detectarían (aproximada). La parte oscura llega al contraste más fácil de detectar (0,36) y la clara, al más difícil (0,44): es un rango entre los seis contrastes, no un intervalo de confianza. Es el doble del daño promedio.
 
 ## Lámina 10
 

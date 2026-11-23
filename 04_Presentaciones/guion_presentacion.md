@@ -37,8 +37,8 @@ priorizados · 22 edad sin valores extremos · 23 curvas de priorización.
 | 8 | Un bosque causal no reproduce la heterogeneidad de las interacciones identificadas por Elmira y Qaim | F4 `f4_grupos.png` |
 | 9 | Los menores de 3 años quizá sufrieron más, pero los datos no alcanzan para afirmarlo | F5 `f5_potencia.png` + dos cifras |
 | 10 | Un bosque causal no encuentra a los más afectados mejor que una regla simple | F6 `f6_focalizacion.png` |
-| 11 | Focalice por comunidad, no por hogar | Hacer / No hacer / Por confirmar |
-| 12 | Qué añadimos y qué no podemos afirmar | Dos columnas |
+| 11 | Recomendación: Focalizar por comunidad | Hacer / No hacer / Por confirmar |
+| 12 | Qué añadimos y limitaciones del estudio | Dos columnas |
 | 13 | Tres preguntas, tres respuestas | Preguntas y respuestas + cierre |
 
 Figuras en `03_Resultados/Figuras/15_figuras_presentacion/` (script

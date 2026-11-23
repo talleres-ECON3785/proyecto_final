@@ -90,7 +90,7 @@ f2 <- ggplot(f2_datos, aes(b, estudio, color = color)) +
   scale_y_discrete(expand = expansion(add = c(0.5, 0.9))) +
   labs(x = "Desviaciones estándar por cada duplicación del precio", y = NULL) +
   tema
-guardar("f2_efecto_principal.png", f2)
+guardar("f2_efecto_principal.png", f2, height = 6.6)  # más alta: comparte lámina con el panel de la ecuación
 
 # -----------------------------------------------------------------------------
 # F3: robustez y placebo
@@ -178,13 +178,15 @@ f5_datos <- tibble(
                levels = rev(c("Daño promedio\ndel alza", "Menor diferencia\ndetectable\nentre grupos"))),
   desde = c(abs(bosque$estimacion), min(mde)), hasta = c(NA, max(mde)),
   color = c(verde, ocre),
-  rotulo = c(coma(abs(bosque$estimacion)), paste0(coma(min(mde)), " a ", coma(max(mde)))))
+  rotulo = c(coma(abs(bosque$estimacion)),
+             paste0(coma(min(mde)), " a ", coma(max(mde)), "\nsegún el contraste")))
 f5 <- ggplot(f5_datos, aes(y = que)) +
+  # la parte clara va de la menor a la mayor diferencia detectable entre los seis contrastes
+  # (es un rango entre contrastes, no un intervalo de confianza)
+  geom_col(aes(x = coalesce(hasta, desde), fill = color), width = 0.55, alpha = 0.35) +
   geom_col(aes(x = desde, fill = color), width = 0.55) +
-  geom_errorbar(data = \(d) filter(d, !is.na(hasta)), aes(xmin = desde, xmax = hasta), width = 0.25, linewidth = 1.2,
-                color = texto, orientation = "y") +
-  geom_text(aes(x = coalesce(hasta, desde), label = rotulo), hjust = -0.12, size = tam_rotulo,
-            fontface = "bold", color = texto) +
+  geom_text(aes(x = coalesce(hasta, desde) + 0.02, label = rotulo), hjust = 0, size = tam_rotulo,
+            fontface = "bold", color = texto, lineheight = 0.9) +
   scale_fill_identity() +
   scale_x_continuous(labels = eje_coma, limits = c(0, 0.95), breaks = seq(0, 0.6, 0.2),
                      expand = expansion(mult = c(0, 0))) +

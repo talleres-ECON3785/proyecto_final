@@ -83,7 +83,7 @@ def rect(s, x, y, w, h, color, forma=MSO_SHAPE.RECTANGLE):
 
 def texto(s, x, y, w, h, parrafos, fondo=FONDO, anclaje=MSO_ANCHOR.TOP, forma=None,
           margen=0.05):
-    """parrafos: lista de (texto, pt, negrita, color, fuente, alineación, espacio_antes)."""
+    """parrafos: lista de (texto, pt, negrita, color, fuente, alineación, espacio_antes, viñeta)."""
     caja = forma if forma is not None else s.shapes.add_textbox(
         Inches(x), Inches(y), Inches(w), Inches(h))
     tf = caja.text_frame
@@ -93,19 +93,32 @@ def texto(s, x, y, w, h, parrafos, fondo=FONDO, anclaje=MSO_ANCHOR.TOP, forma=No
     for lado in ("margin_left", "margin_right", "margin_top", "margin_bottom"):
         setattr(tf, lado, Inches(margen))
     for i, p in enumerate(parrafos):
-        t, pt, neg, col, fuente, al, antes = (list(p) + [None] * 7)[:7]
+        t, pt, neg, col, fuente, al, antes, vineta = (list(p) + [None] * 8)[:8]
         par = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
         par.alignment = al or PP_ALIGN.LEFT
         if antes:
             par.space_before = Pt(antes)
-        r = par.add_run()
-        r.text = t
-        r.font.size = Pt(pt)
-        r.font.bold = bool(neg)
-        r.font.color.rgb = rgb(col or TEXTO)
-        # Radio Canada no trae negrita: lo negrito va en Radio Canada Big Bold
-        r.font.name = fuente or (TITULO_F if neg else CUERPO_F)
-        textos.append((len(prs.slides), t, col or TEXTO, fondo))
+        if vineta:  # viñeta con sangría francesa de 0,25 in
+            from lxml import etree
+            pPr = par._p.get_or_add_pPr()
+            pPr.set("marL", str(Inches(0.25)))
+            pPr.set("indent", str(-Inches(0.25)))
+            if vineta == "texto":  # viñeta escrita como texto: comparte línea base con la μ grande
+                t = [("•\t", None)] + (t if isinstance(t, list) else [(t, None)])
+            else:
+                etree.SubElement(pPr, "{http://schemas.openxmlformats.org/drawingml/2006/main}buChar", char="•")
+        # t puede ser una lista de (texto, estilo) con estilo "i" (cursiva), "b" (negrilla) o None
+        for trozo, estilo in (t if isinstance(t, list) else [(t, None)]):
+            r = par.add_run()
+            r.text = trozo
+            r.font.size = Pt(pt * 1.3 if estilo == "grande" else pt)  # "grande": cursiva más grande (la μ sale chica)
+            negrita = bool(neg) or estilo == "b"
+            r.font.bold = negrita
+            r.font.italic = estilo in ("i", "grande")
+            r.font.color.rgb = rgb(col or TEXTO)
+            # Radio Canada no trae negrita: lo negrito va en Radio Canada Big Bold
+            r.font.name = fuente or (TITULO_F if negrita else CUERPO_F)
+            textos.append((len(prs.slides), trozo, col or TEXTO, fondo))
     return caja
 
 CAJAS = []  # (lámina, x, y, w, h, color, margen) para auditar el relleno en el PDF
@@ -251,20 +264,23 @@ Nuestro caso es Indonesia en 1997 y 1998. Con la crisis asiática, el precio del
 La pregunta del cliente es simple: cuando suben los alimentos, ¿a qué niños hay que proteger primero? Para responderla seguimos la estatura de los niños antes y después del alza.""")
 ancho_verde = W * 0.6
 rect(s, 0, 0, ancho_verde, H, VERDE_OSC)
-texto(s, 0.7, 0.8, ancho_verde - 1.3, 1.95,
+# Bloques repartidos con la misma separación desde el borde superior de la portada de TIME (0,32 in,
+# fin de su marco rojo) hasta el inferior (7,20 in); las y salen de medir la tinta de cada bloque
+Y_PORT = {"titulo": 0.086, "subtitulo": 2.142, "para": 4.215, "autores": 5.411, "credito": 6.96}
+texto(s, 0.7, Y_PORT["titulo"], ancho_verde - 1.3, 2.0,
       [("¿A quién golpeó más el arroz caro?", 50, True, BLANCO, TITULO_F)], fondo=VERDE_OSC,
       anclaje=MSO_ANCHOR.TOP)
-texto(s, 0.7, 2.95, ancho_verde - 1.3, 1.5,
-      [("La crisis de 1997-98 en Indonesia, la estatura de los niños y cómo focalizar la ayuda",
-        24, False, BLANCO)], fondo=VERDE_OSC)
-texto(s, 0.7, 4.75, ancho_verde - 1.3, 0.85,
+texto(s, 0.7, Y_PORT["subtitulo"], ancho_verde - 1.3, 1.9,
+      [("Análisis de los efectos promedio y heterogéneos de la crisis financiera de Indonesia de 1997-98 "
+        "sobre la estatura de los niños", 24, False, BLANCO)], fondo=VERDE_OSC)
+texto(s, 0.7, Y_PORT["para"], ancho_verde - 1.3, 0.9,
       [("Para: una agencia que focaliza ayuda ante choques de precios de alimentos",
         20, True, BLANCO)], fondo=VERDE_OSC)
-texto(s, 0.7, 5.85, ancho_verde - 1.3, 1.05,
+texto(s, 0.7, Y_PORT["autores"], ancho_verde - 1.3, 1.2,
       [("Samuel Escandón, Douglas Plazas, Mateo Olmos, Santiago Muñoz", 20, False, BLANCO),
        ("Ciencia de Datos y Econometría Aplicada, 23-nov-2026", 16, False, BLANCO, None, None, 4)],
       fondo=VERDE_OSC)
-texto(s, 0.7, 7.02, ancho_verde - 1.3, 0.35,
+texto(s, 0.7, Y_PORT["credito"], ancho_verde - 1.3, 0.35,
       [("Portada: TIME, 19 de enero de 1998", 12, False, BLANCO)], fondo=VERDE_OSC)
 blob, (px, py) = portada_time()
 ancho_der = W - ancho_verde
@@ -304,14 +320,15 @@ Frankenberg y Thomas, en 2017, comparando zonas urbanas y rurales, no encuentran
 
 Ninguno de los dos pregunta lo que necesita la agencia: a quién proteger primero. Por eso nos hacemos tres preguntas. Uno: ¿los niños de comunidades donde el arroz subió más crecieron menos? Dos: ¿a algunos niños les afectó más, según su edad, sexo, pobreza, zona, la educación de su madre o si compraban arroz? Tres: ¿un bosque causal, un método de aprendizaje automático, encuentra a los más afectados mejor que una regla simple?""")
 titulo(s, "Dos estudios con estos datos no coinciden, y nadie ha probado a quién proteger primero")
-caja_texto(s, 0.6, 1.75, 5.9, 2.3, TINTE,
-           [("Elmira y Qaim (2026)", 22, True, TEXTO, TITULO_F),
+Y_TARJ, H_TARJ = 1.94, 1.75  # centradas entre el título y la franja verde (4,2)
+caja_texto(s, 0.6, Y_TARJ, 5.9, H_TARJ, TINTE,
+           [("Elmira y Qaim (2026)", 20, True, TEXTO, TITULO_F),
             ("El alza redujo la estatura: −0,135 desviaciones estándar por cada duplicación "
-             "del precio, y más en zonas urbanas.", 20, False, TEXTO, None, None, 6)], anclaje=MSO_ANCHOR.TOP, margen=0.3)
-caja_texto(s, 6.83, 1.75, 5.9, 2.3, TINTE,
-           [("Frankenberg y Thomas (2017)", 22, True, TEXTO, TITULO_F),
+             "del precio, y más en zonas urbanas.", 18, False, TEXTO, None, None, 6)], anclaje=MSO_ANCHOR.TOP, margen=0.25)
+caja_texto(s, 6.83, Y_TARJ, 5.9, H_TARJ, TINTE,
+           [("Frankenberg y Thomas (2017)", 20, True, TEXTO, TITULO_F),
             ("Comparando zonas urbanas y rurales: sin daño en la estatura de los niños.",
-             20, False, TEXTO, None, None, 6)], anclaje=MSO_ANCHOR.TOP, margen=0.3)
+             18, False, TEXTO, None, None, 6)], anclaje=MSO_ANCHOR.TOP, margen=0.25)
 caja_texto(s, 0, 4.2, W, 2.75, VERDE,
            [("Nuestras tres preguntas", 22, True, BLANCO, TITULO_F),
             ("1. ¿Los niños de las comunidades donde el arroz subió más crecieron menos?",
@@ -340,26 +357,29 @@ pasos = [("1997", "Calculamos el HAZ de cada niño de 0 a 5 años"),
 for k, (anio, desc) in enumerate(pasos):
     x = 0.6 + k * 4.3
     caja_texto(s, x, 1.8, 3.65, 1.75, VERDE,
-               [(anio, 24, True, BLANCO, TITULO_F, PP_ALIGN.CENTER),
-                (desc, 20, False, BLANCO, None, PP_ALIGN.CENTER, 4)],
+               [(anio, 22, True, BLANCO, TITULO_F, PP_ALIGN.CENTER),
+                (desc, 18, False, BLANCO, None, PP_ALIGN.CENTER, 4)],
                anclaje=MSO_ANCHOR.MIDDLE, margen=0.15)
     if k < 2:
-        rect(s, x + 3.72, 2.45, 0.5, 0.44, GRIS, MSO_SHAPE.RIGHT_ARROW)
+        flecha = rect(s, x + 3.65 + (0.65 - 0.42) / 2, 1.8 + (1.75 - 0.38) / 2, 0.42, 0.38, GRIS, MSO_SHAPE.RIGHT_ARROW)
+        flecha.adjustments[0] = 0.28  # cuerpo delgado, centrada entre los cuadros
 texto(s, 0.6, 3.65, W - 1.2, 0.5,
       [("Fuente: IFLS (Indonesia Family Life Survey), 1997 y 2000: 2.421 niños en 294 comunidades.",
         20, True, TEXTO)])
-caja_texto(s, 0.6, 4.3, 7.2, 2.65, TINTE,
-           [("¿Qué es el HAZ (estatura para la edad)?", 20, True, TEXTO, TITULO_F),
-            ("Lo calculamos con la referencia de la OMS: compara la estatura del niño con la de "
-             "niños sanos de su misma edad y sexo, en desviaciones estándar.", 18, False, TEXTO, None, None, 6),
+caja_texto(s, 0.6, 4.38, 6.7, 2.5, TINTE,
+           [("¿Qué es el HAZ (estatura para la edad)?", 22, True, TEXTO, TITULO_F),
+            ("Compara la estatura del niño con la de niños sanos de su misma edad y sexo, "
+             "en desviaciones estándar.", 16, False, TEXTO, None, None, 6),
+            ("Se calcula siguiendo lineamientos de la OMS.", 16, False, TEXTO, None, None, 6, True),
             ("Ejemplo: −1 es una desviación estándar por debajo; en estos niños, unos 5 cm.",
-             18, False, TEXTO, None, None, 6)], margen=0.3)
-texto(s, 8.15, 4.3, 4.6, 2.65, anclaje=MSO_ANCHOR.MIDDLE, parrafos=
-      [("Método: regresión del cambio en el HAZ (2000 menos 1997) sobre el alza del precio de "
-        "la comunidad, con errores agrupados por comunidad.", 16, True, TEXTO),
-       ("Fijamos los grupos y las pruebas antes de ver los resultados.", 16, False, TEXTO, None, None, 8),
-       ("Medimos el efecto de más alza frente a menos alza, no el de la crisis completa.",
-        16, False, TEXTO, None, None, 8)])
+             16, False, TEXTO, None, None, 4, True)], margen=0.3)
+texto(s, 7.7, 4.38, 5.05, 2.5, anclaje=MSO_ANCHOR.MIDDLE, parrafos=
+      [("¿Cómo estimamos?", 24, True, TEXTO, TITULO_F),
+       ("Regresión del cambio en el HAZ sobre el alza del precio de la comunidad.", 16, False, TEXTO, None, None, 6),
+       ("Errores agrupados por comunidad.", 16, False, TEXTO, None, None, 6, True),
+       ("Mide el efecto de una mayor alza, no el de la crisis.", 16, False, TEXTO, None, None, 4, True)])
+como_leer(s, "Nota del orador (quitada de la lámina): fijamos los grupos y las pruebas antes de ver los "
+             "resultados.")
 
 # -----------------------------------------------------------------------------
 # 5. Respuesta 1
@@ -376,12 +396,27 @@ El punto gris es Elmira y Qaim: −0,135. Nuestro efecto es mayor, pero los rang
 
 Un detalle técnico: nuestro margen de error tiene en cuenta que los niños de una misma comunidad se parecen entre sí; el de ellos no. Por eso nuestro rango es más ancho.""")
 titulo(s, "Replicamos a Elmira y Qaim: donde el arroz subió más, los niños crecieron menos")
-figura_metodo(s, FIG / "15_figuras_presentacion/f2_efecto_principal.png",
-              "MCO con el alza del precio como variable continua",
-              "cambio en el HAZ 1997-2000 sobre el cambio proporcional del precio, con controles de "
-              "1997, efectos fijos de provincia y log del precio de 1997; errores agrupados por comunidad.",
-              "Cómo leer: cada punto es el efecto promedio; la línea, su rango plausible al 95 %. "
-              "Más a la izquierda = más daño. 2.421 niños en 294 comunidades.")
+subtitulo(s, "MCO con el alza del precio como variable continua")
+DEFINICIONES = [  # una viñeta por definición: i, c, p y μ en cursiva, X en negrilla
+    [("i", "i"), (" - niño", None)], [("c", "i"), (" - comunidad", None)], [("p", "i"), (" - provincia", None)],
+    [("Dosis - cambio proporcional del precio (+1 = +100 %)", None)],
+    [("X", "b"), (" - controles de 1997", None)], [("μ", "grande"), (" - efectos fijos de provincia", None)]]
+# especificación (sin resultados) centrada arriba; figura y cuadro de definiciones debajo
+eq5, (eq5_w, eq5_h) = ecuacion_png(
+    r"\Delta\mathrm{HAZ}_{ic}=\beta\,\mathrm{Dosis}_c+\gamma\,\ln P_{c,1997}"
+    r"+\mathbf{X}_{ic}'\,\boldsymbol{\delta}+\mu_{p(c)}+\varepsilon_{ic}", pt=22)
+y_eq = Y_SUB + 0.4 + GAP - 0.04  # misma separación (GAP) bajo el subtítulo y sobre la figura
+s.shapes.add_picture(eq5, Inches((W - eq5_w) / 2), Inches(y_eq), width=Inches(eq5_w))
+y_fig5 = y_eq + eq5_h + GAP - 0.04
+pic5 = figura(s, FIG / "15_figuras_presentacion/f2_efecto_principal.png", 0.6, y_fig5, 7.3)
+alto5 = pic5.height / 914400
+X_P = 0.6 + 7.3 + 0.3
+H_DEF = 2.82  # alto ajustado al texto (alto de la tinta + 2 × margen); arriba, alineado con el tope de la figura
+caja5 = caja_texto(s, X_P, y_fig5, W - 0.6 - X_P, H_DEF, TINTE,
+                   [(d, 16, False, TEXTO, None, None, 5, "texto") for d in DEFINICIONES],
+                   anclaje=MSO_ANCHOR.TOP, margen=0.3)
+como_leer(s, "Cómo leer: cada punto es el efecto promedio; la línea, su rango plausible al 95 %. "
+             "Más a la izquierda = más daño. 2.421 niños en 294 comunidades.")
 
 # -----------------------------------------------------------------------------
 # 6. Qué tan sólido
@@ -474,7 +509,9 @@ nota_metodo(s, Y_FIG + pic8.height / 914400,
             "0-2 frente a 3-5 años; diferencia mínima detectable ≈ 2,8 × el margen de error del "
             "contraste (aproximación normal).")
 como_leer(s, "Cómo leer: la barra naranja es la menor diferencia entre dos grupos que estos datos "
-             "detectarían (aproximada); es el doble del daño promedio.")
+             "detectarían (aproximada). La parte oscura llega al contraste más fácil de detectar (0,36) y "
+             "la clara, al más difícil (0,44): es un rango entre los seis contrastes, no un intervalo de "
+             "confianza. Es el doble del daño promedio.")
 
 # -----------------------------------------------------------------------------
 # 9. Respuesta 3
@@ -508,7 +545,7 @@ Hacer: vigilar el alza del precio del arroz comunidad por comunidad, que es lo q
 No hacer: usar un bosque causal para escoger a quién ayudar dentro de la comunidad, ni dejar fuera a los niños no pobres o rurales: con esta evidencia, no sabemos que hayan sufrido menos.
 
 Por confirmar: los menores de 3 años. Es la única pista, pero no alcanza para convertirla en regla; habría que comprobarla con más datos.""")
-titulo(s, "Focalice por comunidad, no por hogar")
+titulo(s, "Recomendación: Focalizar por comunidad")
 columnas = [("Hacer", VERDE, BLANCO,
              ["Vigilar el alza del arroz por comunidad.",
               "Cubrir a todos los niños pequeños donde más sube."]),
@@ -517,10 +554,18 @@ columnas = [("Hacer", VERDE, BLANCO,
               "Excluir a los no pobres o a los rurales."]),
             ("Por confirmar", TINTE, TEXTO,
              ["Los menores de 3 años: una pista, no una regla."])]
+Y_COL, H_COL, OFF2 = (H - 4.1) / 2, 4.1, 2.25  # OFF2: el segundo bloque arranca a la misma altura en las dos primeras
 for k, (enc, fondo, col, items) in enumerate(columnas):
-    caja_texto(s, 0.6 + k * 4.1, (H - 4.1) / 2, 3.85, 4.1, fondo,
-               [(enc, 28, True, col, TITULO_F)] +
-               [(it, 24, False, col, None, None, 14) for it in items], anclaje=MSO_ANCHOR.TOP, margen=0.3)
+    x = 0.6 + k * 4.1
+    rect(s, x, Y_COL, 3.85, H_COL, fondo)
+    bloque1 = texto(s, x, Y_COL, 3.85, OFF2, [(enc, 26, True, col, TITULO_F),
+                                              (items[0], 22, False, col, None, None, 12)],
+                    fondo=fondo, anclaje=MSO_ANCHOR.TOP, margen=0.3)
+    bloque1.text_frame.margin_top = Inches(0.23)  # el interlineado ya deja ~0,07 in sobre la tinta
+    if len(items) > 1:
+        bloque2 = texto(s, x, Y_COL + OFF2, 3.85, H_COL - OFF2, [(items[1], 22, False, col)],
+                        fondo=fondo, anclaje=MSO_ANCHOR.TOP, margen=0.3)
+        bloque2.text_frame.margin_top = Inches(0)
 
 # -----------------------------------------------------------------------------
 # 11. Aporte y límites
@@ -531,7 +576,7 @@ s = lamina("Recomendación", """Presentador 4 · 110 s
 ¿Qué añadimos? Primero, replicamos el resultado de Elmira y Qaim con errores que tienen en cuenta que los niños de una misma comunidad se parecen. Segundo, fijamos los grupos antes de mirar y corregimos por hacer muchas comparaciones a la vez. Tercero, hasta donde revisamos, es la primera prueba de si un bosque causal focaliza mejor que reglas simples ante este choque.
 
 ¿Qué no podemos afirmar? Puede haber una tendencia previa, porque el placebo no es concluyente. Puede haber otros choques al mismo tiempo, como la sequía de El Niño o el humo de los incendios. En las comunidades donde más subió el arroz se midió a menos niños en 1997. El tamaño del efecto cambia con los valores extremos. Y tenemos poca precisión para comparar grupos.""")
-titulo(s, "Qué añadimos y qué no podemos afirmar")
+titulo(s, "Qué añadimos y limitaciones del estudio")
 caja_texto(s, 0.6, (H - 4.3) / 2, 5.9, 4.3, TINTE,
            [("Qué añadimos", 26, True, TEXTO, TITULO_F),
             ("Réplica con errores agrupados por comunidad.", 20, False, TEXTO, None, None, 12),
@@ -540,7 +585,7 @@ caja_texto(s, 0.6, (H - 4.3) / 2, 5.9, 4.3, TINTE,
             ("Primera prueba, hasta donde revisamos, de si un bosque causal focaliza mejor que "
              "reglas simples ante este choque.", 20, False, TEXTO, None, None, 10)], anclaje=MSO_ANCHOR.TOP, margen=0.3)
 caja_texto(s, 6.83, (H - 4.3) / 2, 5.9, 4.3, VERDE_OSC,
-           [("Qué no podemos afirmar", 26, True, BLANCO, TITULO_F),
+           [("Limitaciones", 26, True, BLANCO, TITULO_F),
             ("Puede haber una tendencia previa.", 20, False, BLANCO, None, None, 12),
             ("Otros choques al mismo tiempo (sequía, humo).", 20, False, BLANCO, None, None, 8),
             ("Menos niños medidos donde más subió el arroz.", 20, False, BLANCO, None, None, 8),
@@ -557,7 +602,7 @@ Para cerrar, tres preguntas y tres respuestas.
 
 ¿Los niños de las comunidades donde el arroz subió más crecieron menos? Sí: cerca de 1,7 centímetros menos por cada vez que el precio se duplicó, aunque el tamaño exacto es incierto.
 
-¿Hubo niños a los que les afectó más? Todos se vieron afectados; la edad es la única pista, y no alcanza para afirmarla.
+¿Hubo niños a los que les afectó más? No hay evidencia estadística que permita confirmar la existencia de efectos heterogéneos del alza en el precio del arroz. La edad es la única pista, pero no alcanza para afirmarla.
 
 ¿Un bosque causal encuentra mejor a los más afectados? No: una regla simple funciona igual de bien.
 
@@ -566,7 +611,7 @@ titulo(s, "Tres preguntas, tres respuestas")
 qa = [("¿Los niños de las comunidades donde el arroz subió más crecieron menos?",
        "Sí, crecieron menos (≈ 1,7 cm por cada duplicación del precio), con incertidumbre sobre el tamaño exacto."),
       ("¿Hubo niños a los que el alza afectó más?",
-       "Todos se vieron afectados; la edad es la única pista."),
+       "No hay evidencia estadística que permita confirmar la existencia de efectos heterogéneos del alza en el precio del arroz."),
       ("¿Un bosque causal encuentra a los más afectados mejor que una regla simple?",
        "No: una regla simple funciona igual de bien.")]
 for k, (q, a) in enumerate(qa):
@@ -602,10 +647,8 @@ REFS = [  # (partes (texto, cursiva))
      ("Human capital and shocks: Evidence on education, health and nutrition", 1),
      (" (NBER Working Paper No. 23347). National Bureau of Economic Research. "
       "http://www.nber.org/papers/w23347", 0)],
-    [("Strauss, J., Witoelar, F., & Sikoki, B. (2016). ", 0),
-     ("The fifth wave of the Indonesia Family Life Survey (IFLS5): Overview and field report", 1),
-     (" (RAND Working Paper No. WR-1143/1-NIA/NICHD). RAND Corporation. "
-      "https://www.rand.org/content/dam/rand/pubs/working_papers/WR1100/WR1143z1/RAND_WR1143z1.pdf", 0)],
+    [("RAND Corporation. (2026). ", 0), ("IFLS data and documentation", 1),
+     (" [Sitio web]. https://www.rand.org/health/surveys/FLS/IFLS/download.html", 0)],
     [("Wager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using "
       "random forests. ", 0), ("Journal of the American Statistical Association, 113", 1),
      ("(523), 1228–1242. https://doi.org/10.1080/01621459.2017.1319839", 0)],
@@ -641,7 +684,7 @@ for i, partes in enumerate(REFS):
         textos.append((len(prs.slides), txt, TEXTO, FONDO))
 
 (RAIZ / "04_Presentaciones/como_leer_laminas.md").write_text(
-    "# Cómo leer cada figura\n\nTextos de «Cómo leer» que se quitaron de las láminas. Los genera "
+    "# Cómo leer cada figura\n\nTextos que se quitaron de las láminas: «Cómo leer» de cada figura y aclaraciones para el orador. Los genera "
     "`04_Presentaciones/_fuente/construir_presentacion.py`; no se editan a mano.\n\n"
     + "\n".join(f"## Lámina {k}\n\n{x}\n" for k, x in COMO_LEER), encoding="utf-8")
 

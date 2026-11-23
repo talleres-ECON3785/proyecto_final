@@ -16,21 +16,20 @@ miércoles 11:59 pm (fechas exactas por confirmar).**
      marcar de PLAN.md. Se reescribe al cerrar cada sesión. -->
 
 Objetivos derivados de [`PLAN.md`](PLAN.md). Lo confirmado está en
-[`registro_decisiones.md`](registro_decisiones.md). **H2, H3 y H4 están
-completos** (22-nov). Insumos de la presentación:
-`04_Presentaciones/hallazgos_principales.txt` (todo el proyecto, con rutas) y
-`04_Presentaciones/estructura_presentacion.md` (15 láminas, apéndice y
-preguntas).
+[`registro_decisiones.md`](registro_decisiones.md). **H2, H3, H4 y las láminas
+(P6.1-P6.2) están completos**; la presentación tiene 23 láminas
+(`08_Entregables/presentacion_final.pdf`, guion en
+`04_Presentaciones/guion_presentacion.md`).
 
-1. **P6.1-P6.2: guion y láminas** a partir de `estructura_presentacion.md`:
-   poner los nombres de los presentadores 1-4 y armar las láminas con los
-   `.png` exportados.
-   - *Terminado cuando:* `04_Presentaciones/guion.md` y las láminas existen y
-     cada lámina usa la ruta indicada.
-2. **Decidir lo marcado [REVISIÓN HUMANA]** (urbano frente a E-Q) y, si se
-   quiere, producir la figura de la lámina 11 (potencia).
-3. **P7.1-P7.3: entrega** (`00_main.R` desde cero ya corre con 14 scripts;
-   falta README final y `.zip`).
+1. **P6.3: ajustar el tiempo y los presentadores.**
+   - *Archivo:* `04_Presentaciones/guion_presentacion.md` y las notas del orador
+     de `construir_presentacion.py`.
+   - *Terminado cuando:* el total de las 13 láminas principales suma 1.200 s
+     (hoy 1.260), cada presentador tiene nombre y se ensayó con el PDF.
+2. **P7.1: `00_main.R` desde cero** (borrando `03_Resultados/`, `02_Procesados/`
+   y `03_Listos/`) con los 15 scripts, sin errores.
+3. **P7.2-P7.3: README final y `.zip`** sin datos, con el PDF y las
+   instrucciones de descarga de RAND.
 
 **Bloqueos / preguntas abiertas:**
 
@@ -76,7 +75,7 @@ preguntas).
 - **Pipeline:** `00_main.R` corre de principio a fin ocho scripts:
   `01_tracks`, `02_precio_arroz`, `03_x_1997`, `04_haz`, `05_base`, `06_ate`,
   `07_cuartiles` y `08_validacion`, y desde el 22-nov (4) `09_interacciones_eq`,
-  `10_bosque`, `11_gate`, `12_calibracion`, `13_perfil` y `14_rate` (14 scripts). Las ampliaciones `anthro` y `anthroplus` están registradas.
+  `10_bosque`, `11_gate`, `12_calibracion`, `13_perfil` y `14_rate` (14 scripts) y `15_figuras_presentacion` (15 scripts, siete figuras para proyectar). Las ampliaciones `anthro` y `anthroplus` están registradas.
 - **Bases** (locales, ignoradas por git):
   - `02_Procesados/`: `tracks`, `precio_arroz` (297 comunidades), `x_1997` y
     `haz`;
@@ -96,6 +95,7 @@ preguntas).
   desgaste según el alza (con la revisión de P1.6), el efecto promedio (P2.1,
   matizado), la forma por cuartiles (P2.2), la validación (P2.3), y de H3 en
   adelante: interacciones de E-Q, bosque, GATE, calibración (nulo) y perfil.
+- **Presentación:** `08_Entregables/presentacion_final.pdf` (23 láminas: 13 principales, referencias APA, separador y 8 de respaldo), construida con `04_Presentaciones/_fuente/construir_presentacion.py` (Python, `python-pptx`, `pymupdf`, LibreOffice y `pdflatex`; fuera de `00_main.R`). Textos quitados de las láminas en `04_Presentaciones/como_leer_laminas.md`.
 - **Decisiones:** `registro_decisiones.md`, al día con lo de H1. Pre-registro en
   `10_Propuesta/07_preregistro_heterogeneidad.md`.
 
@@ -103,6 +103,21 @@ preguntas).
 
 <!-- La más reciente primero. Tres a cinco líneas por entrada; las anteriores
      no se editan. -->
+
+### 2026-11-23: ajustes de contenido y diseño de la presentación final
+
+- Santiago Muñoz (`main`, por instrucción expresa del usuario, que asume el
+  riesgo de trabajar en `main`). Método declarado en subtítulos (estimador +
+  estrategia), «bosque causal» en vez de «algoritmo», HAZ «calculado» con la
+  fuente IFLS, lámina nueva 7 (distribución de los efectos predichos; el
+  promedio del bosque −0,184 coincide con el MCO −0,188), lámina de
+  referencias APA y figura de potencia corregida (el «bigote» era un rango
+  entre contrastes, no un intervalo). Diseño: portada alineada con la de TIME,
+  relleno parejo de cajas, ecuación en LaTeX en la lámina 5 y el respaldo.
+  Agrega P6.3 (la presentación suma 1.260 s).
+- Bitácora: [2026-11-23_presentacion-ajustes-diseno.md](06_Bitacoras/2026-11-23_presentacion-ajustes-diseno.md)
+- **Siguientes objetivos:** (1) P6.3: 1.200 s y nombres de los presentadores;
+  (2) P7.1: `00_main.R` desde cero; (3) P7.2-P7.3: README final y `.zip`.
 
 ### 2026-11-22 (7): presentación rediseñada desde cero
 
