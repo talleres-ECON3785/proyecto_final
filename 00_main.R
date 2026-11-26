@@ -41,8 +41,7 @@ pacman::p_load(
   gt,           # formato de las tablas de la presentacion
   modelsummary, # tablas de regresion (output = "gt")
   fixest,       # feols(): efectos fijos y errores agrupados por commid97
-  glmnet,       # Lasso de doble seleccion de controles (ATE de referencia)
-  grf           # bosque causal con clusters, calibracion, RATE/TOC
+  grf          # bosque causal con clusters, calibracion, RATE/TOC
 )
 
 # -----------------------------------------------------------------------------
@@ -50,8 +49,10 @@ pacman::p_load(
 # -----------------------------------------------------------------------------
 
 # 01_Datos/01_Crudos/ no se versiona: cada integrante descarga los datos de
-# RAND (01_Datos/README.md). Aqui solo se comprueba que las cinco olas esten
-olas <- paste0("01_Datos/01_Crudos/IFLS", 1:5, "/Household Data")
+# RAND (01_Datos/README.md). Aqui solo se comprueba que esten las tres olas que
+# leen los scripts (IFLS1 de 1993, IFLS2 de 1997 e IFLS3 de 2000); IFLS4 e
+# IFLS5 solo se usaron en la revision de datos y no hacen falta para reproducir
+olas <- paste0("01_Datos/01_Crudos/IFLS", 1:3, "/Household Data")
 faltan <- olas[!dir.exists(olas)]
 if (length(faltan) > 0) {
   stop("Faltan los datos crudos de RAND en:\n  ", paste(faltan, collapse = "\n  "),

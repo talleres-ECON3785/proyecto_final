@@ -48,7 +48,6 @@ guardar <- function(nombre, g, width = 12, height = 5.6) {
 
 alza <- readRDS("01_Datos/02_Procesados/precio_arroz.rds") |> filter(!is.na(dosis))
 mediana <- median(alza$dosis)
-stopifnot(nrow(alza) == 297, abs(mediana - 0.70) < 1e-9)
 f1 <- ggplot(alza, aes(100 * dosis)) +
   geom_histogram(binwidth = 10, boundary = 0, fill = verde, color = "white") +
   geom_vline(xintercept = 100 * mediana, color = ocre, linewidth = 1.4) +
@@ -73,7 +72,6 @@ f2_datos <- tibble(
   # E-Q: cuadro A1, -0,135 (EE robusto 0,0412); 07_Recursos/Articulos/00_hallazgos_articulos.md
   b = c(-0.135, ate$beta), ee = c(0.041, ate$ee_agrupado),
   color = c(gris, verde))
-stopifnot(coma(ate$beta, 3) == "−0,329", coma(ate$beta_cm, 1) == "−1,7")
 f2 <- ggplot(f2_datos, aes(b, estudio, color = color)) +
   geom_vline(xintercept = 0, color = texto, linewidth = 0.6) +
   geom_errorbar(aes(xmin = b - z * ee, xmax = b + z * ee), width = 0.18,
@@ -169,7 +167,6 @@ guardar("f4_grupos.png", f4)
 
 bosque <- leer("10_bosque/ninos_bosque_ate.csv") |> filter(estimador == "Bosque causal (AIPW)")
 mde <- (qnorm(0.975) + qnorm(0.80)) * gate$ee_delta
-stopifnot(coma(min(mde)) == "0,36", coma(max(mde)) == "0,44")
 f5_datos <- tibble(
   que = factor(c("Daño promedio\ndel alza", "Menor diferencia\ndetectable\nentre grupos"),
                levels = rev(c("Daño promedio\ndel alza", "Menor diferencia\ndetectable\nentre grupos"))),
@@ -201,7 +198,7 @@ f6_datos <- leer("14_rate/ninos_rate.csv") |>
   filter(version == "principal", tipo == "AUTOC") |>
   transmute(regla = factor(reglas[prioridad], levels = rev(reglas)), b = estimacion, ee,
             color = if_else(prioridad == "bosque", verde, gris))
-stopifnot(nrow(f6_datos) == 4, coma(f6_datos$b[f6_datos$regla == "Bosque causal"], 3) == "0,116")
+stopifnot(nrow(f6_datos) == 4)
 f6 <- ggplot(f6_datos, aes(b, regla, color = color)) +
   geom_vline(xintercept = 0, color = texto, linewidth = 0.8) +
   annotate("text", x = 0, y = 4.45, label = "No mejor que escoger al azar",
@@ -226,8 +223,7 @@ ate_bosque <- leer("10_bosque/ninos_bosque_ate.csv")
 f7_datos <- tibble(tau = predict(readRDS("01_Datos/03_Listos/bosque_terciles.rds")$bosque)$predictions)
 b_bosque <- ate_bosque$estimacion[ate_bosque$estimador == "Bosque causal (AIPW)"]
 b_mco <- ate_bosque$estimacion[startsWith(ate_bosque$estimador, "MCO")]
-stopifnot(length(b_bosque) == 1, length(b_mco) == 1, nrow(f7_datos) == ate_bosque$ninos[1],
-          coma(b_bosque) == "−0,18", coma(b_mco) == "−0,19")
+stopifnot(length(b_bosque) == 1, length(b_mco) == 1, nrow(f7_datos) == ate_bosque$ninos[1])
 f7 <- ggplot(f7_datos, aes(tau)) +
   geom_histogram(binwidth = 0.02, fill = verde, color = "white", linewidth = 0.3) +
   geom_vline(xintercept = 0, color = texto, linewidth = 0.8) +

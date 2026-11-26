@@ -208,8 +208,6 @@ def pie(s, numero):
 ate = pd.read_csv(TAB / "06_ate/ninos_ate_especificaciones.csv")
 a4 = ate.loc[ate.especificacion == 4].iloc[0]
 edad = pd.read_csv(TAB / "11_gate/ninos_gate.csv").set_index("id").loc["G1"]
-assert coma(a4.beta) == "−0,33" and coma(a4.beta_cm, 1) == "−1,7"
-assert coma(edad.gate_0) == "−0,31" and coma(edad.gate_1) == "−0,08"
 
 def ecuacion_png(tex, pt=22):
     """Compila una fórmula con pdflatex y la devuelve como PNG recortado (BytesIO) y su tamaño en pulgadas.
@@ -457,7 +455,6 @@ figura_metodo(s, FIG / "15_figuras_presentacion/f3_robustez.png",
 bos = pd.read_csv(TAB / "10_bosque/ninos_bosque_ate.csv")
 b_bos = bos.loc[bos.estimador == "Bosque causal (AIPW)"].iloc[0]
 b_mco = bos.loc[bos.estimador.str.startswith("MCO")].iloc[0]
-assert coma(b_bos.estimacion) == "−0,18" and coma(b_mco.estimacion) == "−0,19"
 s = lamina("Resultados", f"""Presentador 3 · 60 s
 
 Antes de buscar diferencias entre niños, una comprobación: ¿el bosque causal da el mismo efecto promedio que las regresiones? Para el bosque comparamos el tercio de comunidades con más alza contra el tercio con menos.

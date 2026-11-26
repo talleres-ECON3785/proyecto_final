@@ -135,11 +135,11 @@ alza. No es el efecto de la crisis (todas la vivieron).
     (03_Resultados/Tablas/11_gate/ninos_gate.csv;
      figura 03_Resultados/Figuras/11_gate/ninos_gate.png)
     Δ = GATE(X = 1) − GATE(X = 0), HAZ entre terciles:
-      G1 3-5 años (frente a 0-2) ..... 0,229 (EE 0,150; p 0,127; Holm 0,764)
+      G1 3-5 años (frente a 0-2) ..... 0,229 (EE 0,150; p 0,128; Holm 0,765)
       G2 urbano ...................... −0,003 (EE 0,130; Holm 1,000)
       G3 madre más que primaria ...... −0,029 (EE 0,138; Holm 1,000)
       G4 mujer ....................... −0,026 (EE 0,139; Holm 1,000)
-      G5 comprador neto .............. −0,128 (EE 0,158; Holm 1,000)
+      G5 comprador neto .............. −0,127 (EE 0,158; Holm 1,000)
       G6 pobre ........................ 0,106 (EE 0,148; Holm 1,000)
     Ninguno pasa Holm. Los doce GATE son negativos (−0,08 a −0,31).
     BLP conjunta: solo descriptiva (03_Resultados/Tablas/11_gate/ninos_blp.csv).
@@ -147,7 +147,7 @@ alza. No es el efecto de la crisis (todas la vivieron).
 4.4 Señal exploratoria de la edad (fuera de PLAN.md y de Holm)
     (03_Resultados/Tablas/11_gate/ninos_edad_sin_cola_exploratorio.csv)
     GATE 0-2 años −0,313 (EE 0,136) frente a 3-5 años −0,083 (EE 0,055).
-    Sin los niños con |ΔHAZ| > 3: Δ G1 pasa de 0,229 (EE 0,150; p 0,127) a 0,283
+    Sin los niños con |ΔHAZ| > 3: Δ G1 pasa de 0,229 (EE 0,150; p 0,128) a 0,283
     (EE 0,119; p 0,018, SIN AJUSTAR); E1 de −0,096 (EE 0,207) a −0,213 (EE 0,146;
     p 0,146). Más daño en los menores de 3 años, en la misma dirección con dos
     estimadores, pero EXPLORATORIO: contrario a lo pre-declarado (más daño a los
@@ -182,17 +182,17 @@ alza. No es el efecto de la crisis (todas la vivieron).
   otra: 834 niños en 98 comunidades, bootstrap agrupado R = 500
   (03_Resultados/Tablas/14_rate/ninos_rate.csv;
    figura 03_Resultados/Figuras/14_rate/ninos_rate_toc.png):
-    AUTOC bosque (−τ̂) 0,116 (EE 0,116; p 0,313); pobre −0,092 (EE 0,082);
+    AUTOC bosque (−τ̂) 0,115 (EE 0,116; p 0,321); pobre −0,092 (EE 0,082);
     urbano 0,039 (EE 0,059); comprador neto 0,046 (EE 0,052).
-    Diferencias (familia F3, m = 3): bosque − pobre 0,208 (EE 0,150; Holm
-    0,492); bosque − urbano 0,077 (EE 0,119; Holm 1,000); bosque − comprador
-    neto 0,070 (EE 0,117; Holm 1,000). Ninguna pasa Holm.
-    Con las mitades invertidas (robustez, no pre-registrada): bosque 0,196 (EE
-    0,100); diferencias de 0,167 a 0,206, ninguna con p < 0,05.
+    Diferencias (familia F3, m = 3): bosque − pobre 0,207 (EE 0,150; Holm
+    0,503); bosque − urbano 0,076 (EE 0,119; Holm 1,000); bosque − comprador
+    neto 0,068 (EE 0,117; Holm 1,000). Ninguna pasa Holm.
+    Con las mitades invertidas (robustez, no pre-registrada): bosque 0,198 (EE
+    0,100; p 0,048); diferencias de 0,169 a 0,208, ninguna con p < 0,05.
 - Perfil de los que priorizaría el bosque (descriptivo, sin validar)
   (03_Resultados/Tablas/13_perfil/ninos_perfil_cuartil_tau.csv): ordena sobre
-  todo por edad. Cuartil de más daño predicho: 22,5 meses de edad media en
-  1997 y 25,2 % de 3-5 años; cuartil de menos daño predicho: 51,7 meses y
+  todo por edad. Cuartil de más daño predicho: 22,4 meses de edad media en
+  1997 y 24,9 % de 3-5 años; cuartil de menos daño predicho: 51,7 meses y
   82,0 %. Pobreza y zona urbana casi no cambian entre cuartiles.
 
 
@@ -239,7 +239,7 @@ alza. No es el efecto de la crisis (todas la vivieron).
   nuestros 2.421; 05_Notas/01_tracks/D_cohortes_desgaste.md).
 - Las X de 1997 predicen bien el tercil del alza (traslape delgado en partes
   de la distribución).
-- El RATE depende de una sola partición en mitades (0,116 frente a 0,196 al
+- El RATE depende de una sola partición en mitades (0,115 frente a 0,198 al
   invertirlas).
 
 

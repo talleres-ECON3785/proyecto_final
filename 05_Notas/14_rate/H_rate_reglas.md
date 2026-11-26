@@ -4,7 +4,7 @@
 - **Etapa / alcance:** H; contraste entre comunidades del tercil alto y bajo del alza
 - **Script de origen:** `02_Scripts/14_rate.R`
 - **Hipótesis relacionada:** pregunta 3 (familia F3, m = 3). Ninguna diferencia pasa Holm
-- **Última verificación:** 2026-11-22, con `02_Scripts/14_rate.R` (P4.2)
+- **Última verificación:** 2026-11-25, con `00_main.R` completo desde cero
 
 ## Evidencia
 
@@ -19,23 +19,24 @@ provincia. Bootstrap de grf agrupado por comunidad, R = 500.
 
 **Escala de daño:** el bosque de evaluación usa Y = −ΔHAZ, así que AUTOC > 0 =
 la regla encuentra a niños con más pérdida de HAZ que el promedio. Chequeo
-numérico: con Y = +ΔHAZ el AUTOC del bosque es −0,116, el mismo número con el
+numérico: con Y = +ΔHAZ el AUTOC del bosque es −0,115, el mismo número con el
 signo cambiado (columna `autoc_bosque_y_talla` del `.csv`).
 
 | Prioridad | AUTOC (EE) | p | p Holm (F3) | Mitades invertidas (EE) |
 |---|---:|---:|---:|---:|
-| Bosque (−τ̂) | 0,116 (0,116) | 0,313 | — | 0,196 (0,100) |
+| Bosque (−τ̂) | 0,115 (0,116) | 0,321 | — | 0,198 (0,100) |
 | Pobre | −0,092 (0,082) | 0,263 | — | 0,029 (0,078) |
 | Urbano | 0,039 (0,059) | 0,504 | — | −0,010 (0,067) |
 | Comprador neto | 0,046 (0,052) | 0,376 | — | 0,021 (0,047) |
-| Bosque − pobre | 0,208 (0,150) | 0,164 | 0,492 | 0,167 (0,131) |
-| Bosque − urbano | 0,077 (0,119) | 0,515 | 1,000 | 0,206 (0,111) |
-| Bosque − comprador neto | 0,070 (0,117) | 0,548 | 1,000 | 0,176 (0,100) |
+| Bosque − pobre | 0,207 (0,150) | 0,168 | 0,503 | 0,169 (0,131) |
+| Bosque − urbano | 0,076 (0,119) | 0,525 | 1,000 | 0,208 (0,111) |
+| Bosque − comprador neto | 0,068 (0,117) | 0,558 | 1,000 | 0,177 (0,099) |
 
 - **Mitades invertidas** (robustez, sin Holm; 766 niños en 97 comunidades, 2
   perdidos por NA): todas las diferencias positivas; las de menor p son
-  bosque − urbano (p 0,064) y bosque − comprador neto (p 0,078); el
-  AUTOC del bosque solo, 0,196 (p 0,050). Promedio de las dos versiones
+  bosque − urbano (p 0,062) y bosque − comprador neto (p 0,075); el
+  AUTOC del bosque solo, 0,198 (p 0,048, sin Holm ni pre-registro; con las
+  cifras de la máquina de Samuel era p 0,050). Promedio de las dos versiones
   (columna `promedio_dos_mitades`): AUTOC del bosque 0,156.
 - **Propensiones** de la mitad de evaluación entre 0,136 y 0,841 (0,136 a
   0,886 en la invertida): sin valores extremos.
@@ -48,7 +49,7 @@ signo cambiado (columna `autoc_bosque_y_talla` del `.csv`).
   las tres reglas simples, pero esa ventaja es pequeña frente a su margen de
   error y no se distingue de cero después de corregir por mirar tres
   comparaciones. Tampoco se distingue de cero que el bosque encuentre a los más
-  dañados (AUTOC 0,116, EE 0,116).
+  dañados (AUTOC 0,115, EE 0,116).
 - Priorizar por pobreza da, si acaso, lo contrario (los pobres con algo menos
   daño que el promedio), también sin distinguirse de cero.
 - Al invertir las mitades, el bosque sale algo mejor, pero eso no es la prueba
@@ -73,7 +74,7 @@ signo cambiado (columna `autoc_bosque_y_talla` del `.csv`).
 - Cada mitad tiene unas 100 comunidades: los EE del AUTOC son del orden del
   ATE del bosque (−0,184 en escala de talla).
 - El resultado depende de la partición al azar: las dos versiones dan cifras
-  distintas (0,116 frente a 0,196 para el bosque). No se promedió sobre muchas
+  distintas (0,115 frente a 0,198 para el bosque). No se promedió sobre muchas
   particiones (no estaba pre-registrado).
 - En escala de daño y con tratamiento por terciles, la TOC se lee como ganancia
   relativa entre reglas, no como casos de desnutrición evitados (pre-registro
@@ -83,3 +84,4 @@ signo cambiado (columna `autoc_bosque_y_talla` del `.csv`).
 ## Historial
 
 - 2026-11-22: creación (P4.2).
+- 2026-11-25: cifras del bosque regeneradas con la corrida completa de `00_main.R` en la máquina de Santiago (las anteriores salieron de la de Samuel; `grf` cambia en el tercer decimal entre computadores). Conclusiones sin cambio.

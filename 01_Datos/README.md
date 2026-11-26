@@ -21,7 +21,9 @@ en [`CLAUDE.md`](CLAUDE.md); la descripción de cada ola, en las guías
 3. Descargar, para cada ola, los **datos de hogar** y los **datos comunitarios**
    en formato Stata (`.dta`), y la documentación (guía de usuario, codebooks y
    cuestionarios).
-   - IFLS1 (1993), IFLS2 (1997), IFLS3 (2000), IFLS4 (2007-08) e IFLS5 (2014-15).
+   - Para reproducir el pipeline bastan IFLS1 (1993), IFLS2 (1997) e IFLS3
+     (2000). IFLS4 (2007-08) e IFLS5 (2014-15) solo se usaron en la revisión de
+     datos (guías de cada ola) y no hacen falta.
    - IFLS2: el módulo de pruebas cognitivas (`bek`) puede venir aparte; hace
      falta (guía IFLS2 §2 y §9.4).
    - IFLS2+ (1998) no está en la descarga pública y el proyecto no la usa.
@@ -45,8 +47,8 @@ Las guías (`00_guia_IFLSx.md`) ya están en cada carpeta porque sí se versiona
 El número de archivos `.dta` que debe haber en cada carpeta está en la sección 2
 de cada guía; sirve para comprobar que la descarga quedó completa.
 
-`00_main.R` se detiene con un mensaje si falta alguna de las cinco carpetas
-`Household Data`.
+`00_main.R` se detiene con un mensaje si falta la carpeta `Household Data` de
+IFLS1, IFLS2 o IFLS3.
 
 ## 3. Qué se versiona y qué no
 
@@ -59,8 +61,20 @@ de cada guía; sirve para comprobar que la descarga quedó completa.
 
 ## 4. Cómo citar
 
-Citar la IFLS y el informe de campo de cada ola (volumen 1 de la documentación
-de cada ola, en su carpeta `Documentation`). Referencias que ya están en las
-guías: IFLS1, RAND DRU-1195/1; IFLS5, Strauss, Witoelar y Sikoki (2016), RAND
-WR-1143/1. **Pendiente:** completar las de IFLS2, IFLS3 e IFLS4 desde su
-documentación local (no se copiaron aquí sin verificar).
+Citar la IFLS con el informe de campo de cada ola, como recomienda la guía de
+usuario de RAND (verificado en `IFLS2/Documentation/volume1.pdf` e
+`IFLS3/Household Documentation/IFLS2000_UsersGuide_vol1.pdf`):
+
+- IFLS1: Frankenberg, E. y L. Karoly (1995). «The 1993 Indonesian Family Life
+  Survey: Overview and Field Report». RAND, DRU-1195/1-NICHD/AID.
+- IFLS2: Frankenberg, E. y D. Thomas (2000). «The Indonesia Family Life Survey
+  (IFLS): Study Design and Results from Waves 1 and 2». RAND,
+  DRU-2238/1-NIA/NICHD.
+- IFLS3: Strauss, J., K. Beegle, B. Sikoki, A. Dwiyanto, Y. Herawati y F.
+  Witoelar (2004). «The Third Wave of the Indonesia Family Life Survey (IFLS3):
+  Overview and Field Report». RAND, WR-144/1-NIA/NICHD.
+- IFLS4 (revisión de datos): Strauss, J., F. Witoelar, B. Sikoki y A. M. Wattie
+  (2009). «The Fourth Wave of the Indonesia Family Life Survey: Overview and
+  Field Report», vol. 1. RAND, WR-675/1-NIA/NICHD.
+- IFLS5 (revisión de datos): Strauss, J., F. Witoelar y B. Sikoki (2016). RAND,
+  WR-1143/1.

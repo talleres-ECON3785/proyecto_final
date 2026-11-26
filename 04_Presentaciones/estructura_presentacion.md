@@ -126,7 +126,7 @@ por comunidad.
 ### 10. Ninguno de los seis grupos pre-declarados sufrió más que su complemento después de corregir por comparaciones múltiples
 - **Mensaje:** el daño se ve en todos los grupos; no detectamos diferencias entre ellos.
 - **Visual:** `03_Resultados/Figuras/11_gate/ninos_gate.png`
-- **Cifras:** menor p Holm 0,764 (edad); los doce GATE entre −0,08 y −0,31;
+- **Cifras:** menor p Holm 0,765 (edad); los doce GATE entre −0,08 y −0,31;
   0-2 años −0,313 (EE 0,136) frente a 3-5 años −0,083 (EE 0,055)
   (`03_Resultados/Tablas/11_gate/ninos_gate.csv`).
 - **Tiempo / presentador:** 110 s · Presentador 3.
@@ -166,8 +166,8 @@ por comunidad.
 ### 13. Priorizar con el bosque no encuentra a los más dañados mejor que priorizar por pobreza, zona urbana o compra neta de arroz
 - **Mensaje:** el algoritmo no supera a las reglas simples (ni las reglas entre sí).
 - **Visual:** `03_Resultados/Figuras/14_rate/ninos_rate_toc.png`
-- **Cifras:** AUTOC bosque 0,116 (EE 0,116); diferencias bosque − regla 0,070
-  a 0,208, menor p Holm 0,492; 834 niños, 98 comunidades
+- **Cifras:** AUTOC bosque 0,115 (EE 0,116); diferencias bosque − regla 0,068
+  a 0,207, menor p Holm 0,503; 834 niños, 98 comunidades
   (`03_Resultados/Tablas/14_rate/ninos_rate.csv`).
 - **Tiempo / presentador:** 110 s · Presentador 4.
 - **Notas del orador:** Simulamos a la agencia escogiendo a quién atender
@@ -179,8 +179,8 @@ por comunidad.
 ### 14. El bosque priorizaría sobre todo a los más pequeños, pero ese orden no está validado
 - **Mensaje:** perfil descriptivo, en variables que el cliente observa.
 - **Visual:** `03_Resultados/Tablas/13_perfil/ninos_perfil_cuartil_tau.png`
-- **Cifras:** edad media 22,5 meses en el cuartil de más daño predicho frente a
-  51,7 en el de menos; 3-5 años: 25,2 % frente a 82,0 %
+- **Cifras:** edad media 22,4 meses en el cuartil de más daño predicho frente a
+  51,7 en el de menos; 3-5 años: 24,9 % frente a 82,0 %
   (`03_Resultados/Tablas/13_perfil/ninos_perfil_cuartil_tau.csv`).
 - **Tiempo / presentador:** 65 s · Presentador 4.
 - **Notas del orador:** Si alguien usara el bosque, escogería a los menores de

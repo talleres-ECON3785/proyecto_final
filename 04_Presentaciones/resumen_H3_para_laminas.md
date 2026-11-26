@@ -31,15 +31,15 @@ Escala: HAZ (desviaciones estándar de talla para la edad, OMS), cambio
   Las X de 1997 predicen bien el tercil (mediana de `W.hat` 0,155 en el bajo y
   0,719 en el alto).
   → `03_Resultados/Figuras/10_bosque/ninos_bosque_traslape.png`
-- **Ninguno de los seis contrastes GATE pasa Holm** (menor p Holm 0,764). Los
+- **Ninguno de los seis contrastes GATE pasa Holm** (menor p Holm 0,765). Los
   doce GATE son negativos (−0,08 a −0,31).
   → `03_Resultados/Figuras/11_gate/ninos_gate.png` y
   `03_Resultados/Tablas/11_gate/ninos_gate.png`
 - Lo que más se aleja es la **edad**: 0-2 años −0,313 (0,136) frente a 3-5
-  años −0,083 (0,055); Δ = 0,229 (0,150), p = 0,127, Holm 0,764. Contrario a
+  años −0,083 (0,055); Δ = 0,229 (0,150), p = 0,128, Holm 0,765. Contrario a
   lo pre-declarado (más daño a los 3-5), en la misma dirección que la réplica
   de E-Q; ninguno con precisión suficiente.
-- Comprador neto −0,221 frente a −0,093 (Δ −0,128, EE 0,158); urbano y rural
+- Comprador neto −0,221 frente a −0,093 (Δ −0,127, EE 0,158); urbano y rural
   iguales (Δ −0,003). BLP conjunta solo descriptiva.
   → `03_Resultados/Tablas/11_gate/ninos_blp.png`
 
@@ -54,7 +54,7 @@ comunidades no se detecta que haya dañado más a unos que a otros.
   comunidades.
   → `03_Resultados/Tablas/12_calibracion/ninos_calibracion.png`
 - **Perfil** (descriptivo): el bosque ordena sobre todo por edad. Cuartil de
-  más daño predicho (−0,342): 22,5 meses de edad media, 25 % de 3-5 años;
+  más daño predicho (−0,342): 22,4 meses de edad media, 25 % de 3-5 años;
   cuartil de menos daño (0,000): 51,7 meses, 82 % de 3-5 años. Pobreza y zona
   urbana casi no cambian entre cuartiles.
   → `03_Resultados/Tablas/13_perfil/ninos_perfil_cuartil_tau.png`

@@ -20,18 +20,18 @@ sobre el indicador, EE agrupado por comunidad. Escala: HAZ entre terciles. Δ < 
 
 | | X = 1 frente a X = 0 | GATE X = 1 | GATE X = 0 | Δ (EE) | p | p Holm (F1) | Comunidades (X1 / X0) |
 |---|---|---:|---:|---:|---:|---:|---:|
-| G1 | 3-5 años frente a 0-2 | −0,083 (0,055) | −0,313 (0,136) | 0,229 (0,150) | 0,127 | 0,764 | 190 / 182 |
+| G1 | 3-5 años frente a 0-2 | −0,083 (0,055) | −0,313 (0,136) | 0,229 (0,150) | 0,128 | 0,765 | 190 / 182 |
 | G2 | urbano frente a rural | −0,185 (0,095) | −0,183 (0,089) | −0,003 (0,130) | 0,983 | 1,000 | 111 / 84 |
 | G3 | madre con más que primaria frente a primaria o menos | −0,206 (0,096) | −0,177 (0,098) | −0,029 (0,138) | 0,831 | 1,000 | 162 / 169 |
 | G4 | mujer frente a varón | −0,197 (0,095) | −0,171 (0,096) | −0,026 (0,139) | 0,850 | 1,000 | 184 / 184 |
-| G5 | comprador neto frente a no comprador neto | −0,221 (0,085) | −0,093 (0,121) | −0,128 (0,158) | 0,419 | 1,000 | 186 / 142 |
+| G5 | comprador neto frente a no comprador neto | −0,221 (0,085) | −0,093 (0,121) | −0,127 (0,158) | 0,420 | 1,000 | 186 / 142 |
 | G6 | pobre frente a no pobre | −0,103 (0,129) | −0,209 (0,075) | 0,106 (0,148) | 0,474 | 1,000 | 118 / 190 |
 
 - **BLP conjunta** (1.538 niños sin faltantes, 195 comunidades; descriptiva,
   fuera de Holm): coeficientes entre −0,168 (comprador neto, EE 0,171) y
   +0,211 (3-5 años, EE 0,166); ninguno mayor que 1,3 veces su EE.
 - **Exploratorio (fuera de PLAN.md y de Holm), edad sin los 70 niños del bosque con |ΔHAZ| > 3:**
-  G1 Δ pasa de 0,229 (EE 0,150; p 0,127) a 0,283 (0,119; p 0,018 sin ajustar) y E1 β2 de −0,096 (0,207) a −0,213 (0,146; p 0,146); `03_Resultados/Tablas/11_gate/ninos_edad_sin_cola_exploratorio.{png,csv}`. La cola se mantiene en lo principal (decisión previa de P1.6).
+  G1 Δ pasa de 0,229 (EE 0,150; p 0,128) a 0,283 (0,119; p 0,018 sin ajustar) y E1 β2 de −0,096 (0,207) a −0,213 (0,146; p 0,146); `03_Resultados/Tablas/11_gate/ninos_edad_sin_cola_exploratorio.{png,csv}`. La cola se mantiene en lo principal (decisión previa de P1.6).
 
 ## Qué dice, en lenguaje intuitivo
 

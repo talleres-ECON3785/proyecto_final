@@ -4,7 +4,7 @@
 - **Etapa / alcance:** H; descriptivo
 - **Script de origen:** `02_Scripts/13_perfil.R`
 - **Hipótesis relacionada:** pregunta 3, perfil de los priorizados (P4.3). Describe el orden del bosque; no prueba diferencias
-- **Última verificación:** 2026-11-22, con `02_Scripts/13_perfil.R` (P4.3)
+- **Última verificación:** 2026-11-25, con `00_main.R` completo desde cero
 
 ## Evidencia
 
@@ -12,18 +12,18 @@
 
 Efecto predicho por el bosque de `10_bosque` (τ̂ fuera de la bolsa, tercil alto
 frente a bajo del alza) para 1.602 niños en 195 comunidades, en cuartiles entre
-niños (unos 400 por cuartil, 132 a 150 comunidades cada uno).
+niños (unos 400 por cuartil, 131 a 150 comunidades cada uno).
 
 | | Cuartil 1 (más daño predicho) | 2 | 3 | Cuartil 4 (menos daño predicho) |
 |---|---:|---:|---:|---:|
-| Efecto predicho medio (HAZ) | −0,342 | −0,180 | −0,086 | 0,000 |
-| Edad en 1997 (meses) | 22,5 | 36,7 | 44,9 | 51,7 |
-| 3-5 años | 25,2 % | 45,9 % | 72,0 % | 82,0 % |
-| Urbano | 44,1 % | 41,1 % | 38,8 % | 39,5 % |
-| Madre con más que primaria | 41,5 % | 37,2 % | 42,5 % | 24,9 % |
-| Mujer | 57,9 % | 48,1 % | 52,0 % | 41,2 % |
-| Comprador neto | 73,3 % | 72,2 % | 65,2 % | 69,5 % |
-| Pobre | 26,9 % | 23,0 % | 20,1 % | 29,8 % |
+| Efecto predicho medio (HAZ) | −0,342 | −0,180 | −0,085 | 0,001 |
+| Edad en 1997 (meses) | 22,4 | 36,8 | 44,9 | 51,7 |
+| 3-5 años | 24,9 % | 46,1 % | 72,0 % | 82,0 % |
+| Urbano | 44,4 % | 40,6 % | 39,0 % | 39,5 % |
+| Madre con más que primaria | 41,4 % | 37,3 % | 42,5 % | 24,9 % |
+| Mujer | 57,9 % | 47,9 % | 51,2 % | 42,2 % |
+| Comprador neto | 73,1 % | 72,8 % | 64,9 % | 69,5 % |
+| Pobre | 27,2 % | 22,5 % | 20,3 % | 29,8 % |
 | Tamaño del hogar | 6,4 | 6,0 | 5,5 | 5,3 |
 
 ## Qué dice, en lenguaje intuitivo
@@ -57,3 +57,4 @@ niños (unos 400 por cuartil, 132 a 150 comunidades cada uno).
 ## Historial
 
 - 2026-11-22: creación (P4.3).
+- 2026-11-25: cifras del bosque regeneradas con la corrida completa de `00_main.R` en la máquina de Santiago (las anteriores salieron de la de Samuel; `grf` cambia en el tercer decimal entre computadores). Conclusiones sin cambio.
